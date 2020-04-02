@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/welcome_navigate"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.finalprojectapp.ui.login.LoginFragment"
+        android:label="activity_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/startMainApplication"
+            app:destination="@id/mainMenuFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainMenuFragment2"
+        android:name="com.example.finalprojectapp.ui.MainMenuFragment"
+        android:label="MainMenuFragment" />
+</navigation>

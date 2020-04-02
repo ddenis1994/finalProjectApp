@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "445654267827",
+    "firebase_url": "https://passwordsce.firebaseio.com",
+    "project_id": "passwordsce",
+    "storage_bucket": "passwordsce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:445654267827:android:b80a66551c05a13bc9bdc6",
+        "android_client_info": {
+          "package_name": "com.example.finalprojectapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "445654267827-ijfde0vio4q1epbkm74et7eocp3k6947.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.finalprojectapp",
+            "certificate_hash": "3fe1a2031cdf2c6550f942c12b21ea4ca53ba1c9"
+          }
+        },
+        {
+          "client_id": "445654267827-ce9gvdkdij2hsr8rm5m7fkfsberndp4p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.finalprojectapp",
+            "certificate_hash": "73f343f5432ef048c6200bcba095d3032d2274f6"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUZIfOZu7_QBqlfLzt6yJWGz6dqCadrcM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
