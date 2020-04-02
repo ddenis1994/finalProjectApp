@@ -46,7 +46,7 @@ class SaveDataOrganizeWorker(context: Context,
 
         val encrypted= CredentialEncrypt("password")
 
-        val data = ServiceCredentialsServer(
+        var data = ServiceCredentialsServer(
             serviceName,
             Timestamp(Date()),
             //TODO return the user id in production
@@ -60,6 +60,9 @@ class SaveDataOrganizeWorker(context: Context,
                 )
                 )
             }
+        data=encrypted.encrypt(data)
+
+        data=encrypted.decrypt(data)
 
        db.collection("services").add(data)
         .addOnSuccessListener { decument->
