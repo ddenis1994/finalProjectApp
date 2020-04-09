@@ -5,7 +5,6 @@ import android.app.assist.AssistStructure
 class AutoFillNodeData(node: AssistStructure.ViewNode) {
 
     var textValue:String?=null
-
     var dataValue:Long?=null
     var id:String?=null
 

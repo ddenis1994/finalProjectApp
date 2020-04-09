@@ -1,8 +1,7 @@
 package com.example.finalprojectapp.crypto
 
-import com.example.finalprojectapp.data.model.ServiceCredentialsServer
 import java.security.SecureRandom
-import java.util.*
+import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
@@ -45,7 +44,6 @@ class CredentialEncrypt(private val password:String) {
         }
         return encryptedData
     }
-
     fun decryptAll(data: MutableList<Map<String, Any>>?): MutableList<Map<String, Any>> {
         val decryptedData: MutableList<Map<String, Any>> = mutableListOf()
         if (data.isNullOrEmpty())
