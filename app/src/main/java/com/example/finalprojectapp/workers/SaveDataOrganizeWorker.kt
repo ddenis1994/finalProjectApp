@@ -7,6 +7,7 @@ import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.example.finalprojectapp.autoFillService.AutoFillNodeData
 import com.example.finalprojectapp.crypto.CredentialEncrypt
+import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.ServiceCredentialsServer
 import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import com.google.common.reflect.TypeToken
@@ -44,14 +45,12 @@ class SaveDataOrganizeWorker(context: Context,
                 .whereEqualTo("name",serviceName)
                 .get()
                 .addOnSuccessListener {query ->
-                    val newCredentials = mutableListOf<Map<String,Any>>()
+                    val newCredentials = mutableListOf<Credentials>()
                     val encrypted= CredentialEncrypt("password")
                     credentialsData.forEach {
                         newCredentials.add(
-                            hashMapOf(
-                                "hint" to it.autofillHints!!.toList(),
-                                "data" to it.textValue!!
-                            )
+                            Credentials(it.autofillHints!!.toList(),it.textValue!!,null,null)
+
                         )
                     }
                     if (query.isEmpty) {

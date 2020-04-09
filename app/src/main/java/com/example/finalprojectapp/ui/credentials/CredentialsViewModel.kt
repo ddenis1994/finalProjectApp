@@ -14,7 +14,7 @@ class CredentialsViewModel : ViewModel() {
         var t= ServicesAndPasswords(
             Service(0,"test"),
             mutableListOf<Credentials>().apply {
-                add(Credentials(0,0,"testCre","test","test","test"))
+                add(Credentials(mutableListOf(),"test","test","test"))
             }
         )
 

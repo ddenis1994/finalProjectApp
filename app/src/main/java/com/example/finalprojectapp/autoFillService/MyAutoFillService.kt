@@ -38,14 +38,18 @@ class MyAutoFillService : AutofillService() , LifecycleOwner {
                 val presentation = AutofillHelper
                         .newRemoteViews(packageName, "tap to sing in", R.drawable.ic_lock_lock)
                 val dataset = Dataset.Builder()
+                val h=myParser.result
                 autofillFields.allAutofillHints.forEachIndexed { index, hint ->
                     myParser.result.forEach { cre ->
-                        if (hint == cre.hint)
-                            dataset.setValue(
+                        cre.hint.forEach {hint2->
+                            if (hint == hint2)
+                                dataset.setValue(
                                     autofillFields.autofillIds[index],
-                                    AutofillValue.forText(cre.value),
+                                    AutofillValue.forText(cre.data),
                                     presentation
-                            )
+                                )
+                        }
+
                     }
                 }
                 responseBuilder.addDataset(dataset.build())

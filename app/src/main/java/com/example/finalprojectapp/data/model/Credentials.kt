@@ -1,10 +1,16 @@
 package com.example.finalprojectapp.data.model
 
 data class Credentials (
-    val credentialsId: Long,
-    val serviceId: Long,
-    val hint:String,
-    val value:String,
-    val IV:String,
-    val salt:String
-)
+    val hint:List<String>,
+    val data:String,
+    val iv:String?,
+    val salt:String?
+){
+    constructor() : this(
+        mutableListOf<String>(),
+        "",
+        "",
+        ""
+    )
+
+}

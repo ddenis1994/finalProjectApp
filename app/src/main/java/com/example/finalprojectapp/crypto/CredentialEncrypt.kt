@@ -1,5 +1,6 @@
 package com.example.finalprojectapp.crypto
 
+import com.example.finalprojectapp.data.model.Credentials
 import java.security.SecureRandom
 import java.util.Base64
 import javax.crypto.Cipher
@@ -18,10 +19,10 @@ class CredentialEncrypt(private val password:String) {
     private var key: SecretKeySpec? = null
 
 
-    fun encryptAll(plainText: MutableList<Map<String, Any>>?): MutableList<Map<String, Any>> {
+    fun encryptAll(plainText: MutableList<Credentials>?): MutableList<Credentials> {
         if (plainText.isNullOrEmpty())
             return mutableListOf()
-        val encryptedData: MutableList<Map<String, Any>> = mutableListOf()
+        val encryptedData: MutableList<Credentials> = mutableListOf()
         val encoder = Base64.getEncoder()
         plainText.forEach {
             val salt = ByteArray(16)
@@ -32,48 +33,63 @@ class CredentialEncrypt(private val password:String) {
             secretBytes = keyFactory.generateSecret(keySpec).encoded
             key = SecretKeySpec(secretBytes, "AES")
             cipher.init(Cipher.ENCRYPT_MODE, key, IvParameterSpec(iv))
-            cipher.update(it["data"].toString().toByteArray(Charsets.UTF_8))
+            cipher.update(it.data.toByteArray(Charsets.UTF_8))
             encryptedData.add(
-                hashMapOf(
-                    "hint" to it["hint"].toString(),
-                    "data" to encoder.encodeToString(cipher.doFinal()),
-                    "iv" to encoder.encodeToString(iv),
-                    "salt" to encoder.encodeToString(salt)
+                Credentials(
+                    it.hint,
+                    encoder.encodeToString(cipher.doFinal()),
+                    encoder.encodeToString(iv),
+                    encoder.encodeToString(salt)
                 )
             )
         }
         return encryptedData
     }
-    fun decryptAll(data: MutableList<Map<String, Any>>?): MutableList<Map<String, Any>> {
-        val decryptedData: MutableList<Map<String, Any>> = mutableListOf()
+    fun decryptAll(data: MutableList<Credentials>?): MutableList<Credentials> {
+        val decryptedData: MutableList<Credentials> = mutableListOf()
         if (data.isNullOrEmpty())
             return decryptedData
         val decoder = Base64.getDecoder()
         data.forEach { decryptedMap ->
-            keySpec = PBEKeySpec(
-                password.toCharArray(),
-                decoder.decode(decryptedMap["salt"].toString()),
-                65536,
-                256
-            )
-            secretBytes = keyFactory.generateSecret(keySpec).encoded
-            key = SecretKeySpec(secretBytes, "AES")
-            cipher.init(
-                Cipher.DECRYPT_MODE,
-                key,
-                IvParameterSpec(decoder.decode(decryptedMap["iv"].toString()))
-            )
-            cipher.update(
-                decoder.decode(
-                    decryptedMap["data"].toString().toByteArray(Charsets.UTF_8)
+            if (decryptedMap.iv.isNullOrEmpty() or decryptedMap.salt.isNullOrEmpty()) {
+                decryptedData.add(
+                    Credentials(
+                        decryptedMap.hint,
+                        cipher.doFinal().toString(Charsets.UTF_8),
+                        null,
+                        null
+                    )
                 )
-            )
-            decryptedData.add(
-                hashMapOf(
-                    "hint" to decryptedMap["hint"].toString(),
-                    "data" to cipher.doFinal().toString(Charsets.UTF_8)
+            } else {
+                keySpec = PBEKeySpec(
+                    password.toCharArray(),
+                    decoder.decode(decryptedMap.salt.toString()),
+                    65536,
+                    256
                 )
-            )
+                secretBytes = keyFactory.generateSecret(keySpec).encoded
+                key = SecretKeySpec(secretBytes, "AES")
+                cipher.init(
+                    Cipher.DECRYPT_MODE,
+                    key,
+                    IvParameterSpec(decoder.decode(decryptedMap.iv.toString()))
+                )
+
+                var temp=cipher.doFinal(
+                    decoder.decode(
+                    decryptedMap.data.toByteArray(Charsets.UTF_8)
+                )
+                ).toString(Charsets.UTF_8)
+                decryptedData.add(
+                    Credentials(
+                        decryptedMap.hint,
+                        temp,
+                        null,
+                        null
+                    )
+
+                )
+            }
         }
         return decryptedData
     }

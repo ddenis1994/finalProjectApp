@@ -40,7 +40,7 @@ class InnerCredentialsAdapter(private val children : List<Credentials>):
                     }
                 }
                 GlobalScope.launch {
-                    result.postValue(decrepitCredentials(binding.credentialsData!!).value)
+                    result.postValue(decrepitCredentials(binding.credentialsData!!).data)
                 }
             }
 
