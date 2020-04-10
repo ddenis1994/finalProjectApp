@@ -44,13 +44,11 @@ class InnerCredentialsAdapter(private val children : List<Credentials>):
                 }
             }
 
-            //end init fun
         }
 
 
         private fun decrepitCredentials(cre: Credentials): Credentials {
             val encrypted = CredentialEncrypt("password")
-
             return encrypted.decrypt(cre)
         }
 

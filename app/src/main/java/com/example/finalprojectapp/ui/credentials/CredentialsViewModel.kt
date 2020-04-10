@@ -16,16 +16,11 @@ class CredentialsViewModel : ViewModel() {
     fun getCredentialsData() {
         val db = FirebaseFirestore.getInstance()
         val user = FirebaseAuth.getInstance().currentUser!!
-        db.collection("users")
-            .whereEqualTo("userId",user.uid)
-            .get()
-            .addOnSuccessListener {
-                db.collection("users").document(it.documents[0].id)
-                    .collection("services")
-                    .get().addOnSuccessListener {documentSnapshot->
-                        val data=documentSnapshot.toObjects<ServiceCredentialsServer>()
-                        _allPasswords.postValue(data)
-                    }
+        db.collection("users").document(user.uid)
+            .collection("services").get()
+            .addOnSuccessListener { documentSnapshot->
+                val data=documentSnapshot.toObjects<ServiceCredentialsServer>()
+                _allPasswords.postValue(data)
             }
 
     }

@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.data.model.ServiceCredentialsServer
 import com.example.finalprojectapp.databinding.ListServicePasswordBinding
 
@@ -38,8 +37,7 @@ class MyAdapter(private val myDataSet: List<ServiceCredentialsServer>) :
                 val temp=item.name
                     .replace("."," ", false)
                     .split(" ")
-                item.name=temp[temp.size-1].capitalize()
-                cardData=item
+                cardData=item.copy(name = temp[temp.size-1].capitalize())
 
             }
         }

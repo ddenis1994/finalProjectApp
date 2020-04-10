@@ -1,7 +1,6 @@
 package com.example.finalprojectapp.workers
 
 import android.content.Context
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
@@ -9,7 +8,6 @@ import com.example.finalprojectapp.autoFillService.AutoFillNodeData
 import com.example.finalprojectapp.crypto.CredentialEncrypt
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.ServiceCredentialsServer
-import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import com.google.common.reflect.TypeToken
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -40,47 +38,22 @@ class SaveDataOrganizeWorker(context: Context,
         val credentialsData: MutableList<AutoFillNodeData> =
             Gson().fromJson(imageUriInput!!, mutableListTutorialType)
 
-        val userDocumented: String? = getUserDoc()
-        val job = db.collection("users").document(userDocumented!!)
-            .collection("services")
-            .whereEqualTo("name", serviceName)
-            .get()
-            .addOnSuccessListener { query ->
-                val newCredentials = mutableListOf<Credentials>()
-                val encrypted = CredentialEncrypt("password")
-                credentialsData.forEach {
-                    newCredentials.add(
-                        Credentials(it.autofillHints!!.toList(), it.textValue!!, null, null)
-                    )
-                }
-                if (query.isEmpty) {
-                    val data = ServiceCredentialsServer(
-                        serviceName!!,
-                        Timestamp(Date()),
-                        user.uid,
-                        newCredentials
-                    )
-                    data.credentials = encrypted.encryptAll(data.credentials)
-
-                    db.collection("users").document(userDocumented)
-                        .collection("services").add(data)
-                        .addOnFailureListener { e ->
-                            Log.i("worker", e.toString())
-                        }
-                        .addOnSuccessListener {
-                            Result.success()
-                        }
-                } else {
-                    db.collection("users").document(userDocumented)
-                        .collection("services").document(query.documents[0].id)
-                        .update("credentials", newCredentials)
-                        .addOnFailureListener { e ->
-                            Log.i("worker", e.toString())
-                            Result.failure()
-                        }
-                }
-
-            }
+        val newCredentials = mutableListOf<Credentials>()
+        val encrypted = CredentialEncrypt("password")
+        credentialsData.forEach {
+            newCredentials.add(
+                Credentials(it.autofillHints!!.toList(), it.textValue!!, null, null)
+            )
+        }
+        val data = ServiceCredentialsServer(
+            serviceName!!,
+            Timestamp(Date()),
+            user.uid,
+            newCredentials
+        )
+        db.collection("users").document(user.uid)
+            .collection("services").document(serviceName)
+            .set(data.copy(credentials = encrypted.encryptAll(data.credentials)))
 
         Result.success()
     }
@@ -102,10 +75,6 @@ class SaveDataOrganizeWorker(context: Context,
 
     }
 
-    private fun getUserDoc(): String? {
-        val sharedPreferences= SingleEncryptedSharedPreferences().getSharedPreference(applicationContext)
-        return sharedPreferences.getString("userDoc","none")
-    }
 
     private fun createOutputData(reasonData: String): Data {
         return Data.Builder()
