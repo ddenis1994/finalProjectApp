@@ -93,11 +93,11 @@ class CredentialEncrypt(private val password:String) {
         }
         return decryptedData
     }
-    fun decrypt(data: HashMap<String, Any>?): HashMap<String, Any> {
+    fun decrypt(data: Credentials?): Credentials {
         val decoder = Base64.getDecoder()
         keySpec = PBEKeySpec(
             password.toCharArray(),
-            decoder.decode(data?.get("salt").toString()),
+            decoder.decode(data?.salt.toString()),
             65536,
             256
         )
@@ -106,15 +106,19 @@ class CredentialEncrypt(private val password:String) {
         cipher.init(
             Cipher.DECRYPT_MODE,
             key,
-            IvParameterSpec(decoder.decode(data!!["iv"].toString()))
+            IvParameterSpec(decoder.decode(data!!.iv.toString()))
         )
         cipher.update(
             decoder.decode(
-                data["data"].toString().toByteArray(Charsets.UTF_8)
+                data.data.toByteArray(Charsets.UTF_8)
             ))
-            return hashMapOf(
-                "hint" to data["hint"].toString(),
-                "data" to cipher.doFinal().toString(Charsets.UTF_8))
+            return Credentials(
+            data.hint,
+            cipher.doFinal().toString(Charsets.UTF_8),
+            null,
+            null
+        )
+
     }
 
 

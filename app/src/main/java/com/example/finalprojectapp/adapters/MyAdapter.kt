@@ -7,10 +7,10 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.data.model.Service
-import com.example.finalprojectapp.data.model.ServicesAndPasswords
+import com.example.finalprojectapp.data.model.ServiceCredentialsServer
 import com.example.finalprojectapp.databinding.ListServicePasswordBinding
 
-class MyAdapter(private val myDataSet: List<ServicesAndPasswords>) :
+class MyAdapter(private val myDataSet: List<ServiceCredentialsServer>) :
     RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
 
 
@@ -32,13 +32,13 @@ class MyAdapter(private val myDataSet: List<ServicesAndPasswords>) :
                 }
             }
         }
-        fun bind(item: Service) {
+        fun bind(item: ServiceCredentialsServer) {
             binding.apply {
                 //make right value for string to fill
-                var temp=item.serviceName
+                val temp=item.name
                     .replace("."," ", false)
                     .split(" ")
-                item.serviceName=temp[temp.size-1].capitalize()
+                item.name=temp[temp.size-1].capitalize()
                 cardData=item
 
             }
@@ -57,10 +57,10 @@ class MyAdapter(private val myDataSet: List<ServicesAndPasswords>) :
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        var data = myDataSet[position]
-        holder.bind(data.service)
+        val data = myDataSet[position]
+        holder.bind(data)
         holder.recyclerView.apply {
-            adapter=InnerCredentialsAdapter(data.credentials)
+            adapter=InnerCredentialsAdapter(data.credentials!!)
             layoutManager=
                 LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)
 

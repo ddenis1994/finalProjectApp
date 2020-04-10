@@ -39,9 +39,8 @@ class MyClientParser (val requestClient:AssistStructure){
     private fun parseClientForSave(forFill: Boolean, context:Context) {
         if(forFill) {
             val db = FirebaseFirestore.getInstance()
-            val user = FirebaseAuth.getInstance().currentUser!!
+
             val sharedPreferences= SingleEncryptedSharedPreferences().getSharedPreference(context)
-            Log.i("test12","make request")
             db.collection("users").document(sharedPreferences.getString("userDoc","none")!!)
                 .collection("services")
                 .whereEqualTo("name",requestClientPackage)

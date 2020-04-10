@@ -18,7 +18,6 @@ class CredentialsFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private val TAG:String="main_activity"
 
 
     override fun onCreateView(
@@ -33,6 +32,7 @@ class CredentialsFragment : Fragment() {
                 adapter=viewAdapter
             }
         })
+        credentialsViewModel.getCredentialsData()
 
         return root
     }

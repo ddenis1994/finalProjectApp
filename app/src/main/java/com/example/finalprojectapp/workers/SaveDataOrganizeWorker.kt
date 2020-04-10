@@ -25,64 +25,64 @@ class SaveDataOrganizeWorker(context: Context,
                              workerParams: WorkerParameters
 )
     : CoroutineWorker(context, workerParams) {
-    override suspend fun doWork(): Result = coroutineScope{
+    override suspend fun doWork(): Result = coroutineScope {
 
         val db = FirebaseFirestore.getInstance()
         val user = FirebaseAuth.getInstance().currentUser!!
 
         val imageUriInput = inputData.getString("data")
-        val serviceName=inputData.getString("serviceRequest")
-        val testDataResult=checkData(serviceName, imageUriInput,user)
-        if (testDataResult!=null)
+        val serviceName = inputData.getString("serviceRequest")
+        val testDataResult = checkData(serviceName, imageUriInput, user)
+        if (testDataResult != null)
             return@coroutineScope Result.failure(testDataResult)
 
         val mutableListTutorialType = object : TypeToken<MutableList<AutoFillNodeData>>() {}.type
-        val credentialsData: MutableList<AutoFillNodeData> = Gson().fromJson(imageUriInput!!, mutableListTutorialType)
+        val credentialsData: MutableList<AutoFillNodeData> =
+            Gson().fromJson(imageUriInput!!, mutableListTutorialType)
 
-        val userDocumented:String?=getUserDoc()
-            db.collection("users").document(userDocumented!!)
-                .collection("services")
-                .whereEqualTo("name",serviceName)
-                .get()
-                .addOnSuccessListener {query ->
-                    val newCredentials = mutableListOf<Credentials>()
-                    val encrypted= CredentialEncrypt("password")
-                    credentialsData.forEach {
-                        newCredentials.add(
-                            Credentials(it.autofillHints!!.toList(),it.textValue!!,null,null)
+        val userDocumented: String? = getUserDoc()
+        val job = db.collection("users").document(userDocumented!!)
+            .collection("services")
+            .whereEqualTo("name", serviceName)
+            .get()
+            .addOnSuccessListener { query ->
+                val newCredentials = mutableListOf<Credentials>()
+                val encrypted = CredentialEncrypt("password")
+                credentialsData.forEach {
+                    newCredentials.add(
+                        Credentials(it.autofillHints!!.toList(), it.textValue!!, null, null)
+                    )
+                }
+                if (query.isEmpty) {
+                    val data = ServiceCredentialsServer(
+                        serviceName!!,
+                        Timestamp(Date()),
+                        user.uid,
+                        newCredentials
+                    )
+                    data.credentials = encrypted.encryptAll(data.credentials)
 
-                        )
-                    }
-                    if (query.isEmpty) {
-                        val data = ServiceCredentialsServer(
-                            serviceName!!,
-                            Timestamp(Date()),
-                            user.uid,
-                            newCredentials)
-                        data.credentials=encrypted.encryptAll(data.credentials)
-
-                        db.collection("users").document(userDocumented)
-                            .collection("services").add(data)
-                            .addOnFailureListener { e ->
-                                Log.i("worker", e.toString())
-                            }
-                    }
-                    else{
-                        db.collection("users").document(userDocumented)
-                            .collection("services").document(query.documents[0].id)
-                            .update("credentials",newCredentials)
-                            .addOnFailureListener {e->
-                                Log.i("worker", e.toString())
-                            }
+                    db.collection("users").document(userDocumented)
+                        .collection("services").add(data)
+                        .addOnFailureListener { e ->
+                            Log.i("worker", e.toString())
+                        }
+                        .addOnSuccessListener {
+                            Result.success()
+                        }
+                } else {
+                    db.collection("users").document(userDocumented)
+                        .collection("services").document(query.documents[0].id)
+                        .update("credentials", newCredentials)
+                        .addOnFailureListener { e ->
+                            Log.i("worker", e.toString())
+                            Result.failure()
+                        }
                 }
 
-        }
-
-
-
+            }
 
         Result.success()
-
     }
 
     private fun checkData(

@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class InnerCredentialsAdapter(private val children : List<Credentials>):
     RecyclerView.Adapter<InnerCredentialsAdapter.ViewHolder>(){
-    val visibility= MutableLiveData<Boolean>()
+    private val visibility= MutableLiveData<Boolean>()
 
     class ViewHolder(private val binding: Credentials1Binding)
         : RecyclerView.ViewHolder(binding.root) {
@@ -50,9 +50,8 @@ class InnerCredentialsAdapter(private val children : List<Credentials>):
 
         private fun decrepitCredentials(cre: Credentials): Credentials {
             val encrypted = CredentialEncrypt("password")
-            //TODO fix the decryptd
-            //return encrypted.decrypt(cre)
-            return cre
+
+            return encrypted.decrypt(cre)
         }
 
         fun bind(data: Credentials) {
