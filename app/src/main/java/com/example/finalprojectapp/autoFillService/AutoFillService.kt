@@ -31,7 +31,7 @@ class AutoFillService : AutofillService() , LifecycleOwner {
         val myParser= ClientParser(structure)
         myParser.parseForFill()
 
-        val autoFillFields = myParser.autofillFields
+        val autoFillFields = myParser.autoFillFields
         myParser.falseResult.observe(this, androidx.lifecycle.Observer {
             val responseBuilder = FillResponse.Builder()
             if(it==true) {

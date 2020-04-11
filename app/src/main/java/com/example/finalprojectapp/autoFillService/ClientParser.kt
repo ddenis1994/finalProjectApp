@@ -1,6 +1,5 @@
 package com.example.finalprojectapp.autoFillService
 import android.app.assist.AssistStructure
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.finalprojectapp.autoFillService.model.FilledAutofillFieldCollection
 import com.example.finalprojectapp.crypto.CredentialEncrypt
@@ -19,7 +18,7 @@ class ClientParser (private val requestClient:AssistStructure){
     private val requestClientPackage:String = requestClient.activityComponent.packageName
     private val nodesCount=requestClient.windowNodeCount
 
-    val autofillFields = AutofillFieldMetadataCollection()
+    val autoFillFields = AutofillFieldMetadataCollection()
     private var filledAutoFillFieldCollection: FilledAutofillFieldCollection = FilledAutofillFieldCollection()
 
     val autoFillDataForSaveList= mutableListOf<AutoFillNodeData>()
@@ -60,22 +59,21 @@ class ClientParser (private val requestClient:AssistStructure){
                                 result = encrypted.decryptAll(city.credentials)
                         }
                         filledAutoFillFieldCollection = FilledAutofillFieldCollection()
+                        //mast have the parser in hare because this is call back
                         for (i in 0 until this.nodesCount)
                             parseNodeWindows(forFill, requestClient.getWindowNodeAt(i).rootViewNode)
                         falseResult.postValue(result.isNotEmpty())
                     }
         }
-        else {
-            for (i in 0 until this.nodesCount) {
+        else
+            for (i in 0 until this.nodesCount)
                 parseNodeWindows(forFill, requestClient.getWindowNodeAt(i).rootViewNode)
-            }
-        }
     }
     private fun parseNodeWindows(forFill: Boolean,node: AssistStructure.ViewNode) {
         node.autofillHints?.let { autoFillHints ->
             if (autoFillHints.isNotEmpty()) {
                 if (forFill) {
-                    autofillFields.add(AutofillFieldMetadata(node))
+                    autoFillFields.add(AutofillFieldMetadata(node))
                 } else {
                     val result=AutoFillNodeData(node)
                     autoFillDataForSaveList.add(result)
