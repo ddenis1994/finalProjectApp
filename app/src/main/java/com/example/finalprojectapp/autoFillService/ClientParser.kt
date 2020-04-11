@@ -11,7 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 
 
-class MyClientParser (private val requestClient:AssistStructure){
+class ClientParser (private val requestClient:AssistStructure){
     // db variables
     private val db = FirebaseFirestore.getInstance()
     private val user = FirebaseAuth.getInstance().currentUser
@@ -46,37 +46,24 @@ class MyClientParser (private val requestClient:AssistStructure){
 
     private fun parse(forFill: Boolean) {
         if(forFill) {
-            if (user != null) {
+            if (user != null)
                 db.collection("users").document(user.uid)
                     .collection("services").document(requestClientPackage)
                     .get()
                     .addOnSuccessListener {
-                        if(!it.exists())
+                        if(it.data.isNullOrEmpty())
                             falseResult.postValue(false)
                         else {
                             val city = it.toObject<ServiceCredentialsServer>()
                             val encrypted= CredentialEncrypt("password")
-                            if (city != null) {
+                            if (city != null)
                                 result = encrypted.decryptAll(city.credentials)
-                                //finish getting the data need to apply
-                                filledAutoFillFieldCollection = FilledAutofillFieldCollection()
-                                for (i in 0 until this.nodesCount) {
-                                    parseNodeWindows(forFill, requestClient.getWindowNodeAt(i).rootViewNode)
-                                }
-                                //
-                                falseResult.postValue(true)
-                            }
-                            else{
-                                falseResult.postValue(false)
-                                Log.e("autoFillParser","cannot resolve data from query firebase")
-                            }
                         }
+                        filledAutoFillFieldCollection = FilledAutofillFieldCollection()
+                        for (i in 0 until this.nodesCount)
+                            parseNodeWindows(forFill, requestClient.getWindowNodeAt(i).rootViewNode)
+                        falseResult.postValue(result.isNotEmpty())
                     }
-            }
-            else{
-                Log.e("autoFillParser","cannot find uid")
-                falseResult.postValue(false)
-            }
         }
         else {
             for (i in 0 until this.nodesCount) {

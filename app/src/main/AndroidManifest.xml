@@ -20,8 +20,8 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".autoFillService.MyAutoFillService"
-            android:label="My Autofill Service"
+            android:name=".autoFillService.AutoFillService"
+            android:label="Auto fill Service"
             android:permission="android.permission.BIND_AUTOFILL_SERVICE">
             <intent-filter>
                 <action android:name="android.service.autofill.AutofillService" />

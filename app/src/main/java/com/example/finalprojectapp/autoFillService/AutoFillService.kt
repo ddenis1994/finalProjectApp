@@ -19,7 +19,7 @@ import com.example.finalprojectapp.workers.SaveDataOrganizeWorker
 import com.google.gson.Gson
 
 
-class MyAutoFillService : AutofillService() , LifecycleOwner {
+class AutoFillService : AutofillService() , LifecycleOwner {
 
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
@@ -28,7 +28,7 @@ class MyAutoFillService : AutofillService() , LifecycleOwner {
         val context: List<FillContext> = request.fillContexts
         val structure: AssistStructure = context[context.size - 1].structure
 
-        val myParser= MyClientParser(structure)
+        val myParser= ClientParser(structure)
         myParser.parseForFill()
 
         val autoFillFields = myParser.autofillFields
@@ -75,7 +75,7 @@ class MyAutoFillService : AutofillService() , LifecycleOwner {
             val context = request.fillContexts
             val structure = context[context.size - 1].structure
 
-            val parser=MyClientParser(structure)
+            val parser=ClientParser(structure)
             parser.parseForSave()
 
             val gson=Gson().toJson(parser.autoFillDataForSaveList)
