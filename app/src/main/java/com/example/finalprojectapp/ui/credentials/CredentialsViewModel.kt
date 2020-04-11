@@ -22,6 +22,5 @@ class CredentialsViewModel : ViewModel() {
                 val data=documentSnapshot.toObjects<ServiceCredentialsServer>()
                 _allPasswords.postValue(data)
             }
-
     }
 }

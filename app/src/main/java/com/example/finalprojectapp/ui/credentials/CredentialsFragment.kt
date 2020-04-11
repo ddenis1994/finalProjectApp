@@ -13,6 +13,7 @@ import com.example.finalprojectapp.R
 import com.example.finalprojectapp.adapters.MyAdapter
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_cre.*
+import kotlinx.android.synthetic.main.fragment_cre.view.*
 
 class CredentialsFragment : Fragment() {
     private val credentialsViewModel: CredentialsViewModel by activityViewModels()
@@ -28,6 +29,8 @@ class CredentialsFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_cre, container, false)
         credentialsViewModel.allPasswords.observe(viewLifecycleOwner, Observer {
+            root.progressBarForLoading.visibility=View.GONE
+            root.textViewForLoading.visibility=View.GONE
             viewAdapter = MyAdapter(it)
             recyclerView.apply {
                 adapter=viewAdapter

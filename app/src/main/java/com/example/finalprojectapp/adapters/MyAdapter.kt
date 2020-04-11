@@ -37,7 +37,8 @@ class MyAdapter(private val myDataSet: List<ServiceCredentialsServer>) :
                 val temp=item.name
                     .replace("."," ", false)
                     .split(" ")
-                cardData=item.copy(name = temp[temp.size-1].capitalize())
+                cardData=item
+                //cardData=item.copy(name = temp[temp.size-1].capitalize())
 
             }
         }

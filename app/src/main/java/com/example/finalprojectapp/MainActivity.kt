@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         val settings = FirebaseFirestoreSettings.Builder()
             .setHost("10.0.2.2:8080")
             .setSslEnabled(false)
-            .setPersistenceEnabled(false)
+            .setPersistenceEnabled(true)
             .build()
 
         val firestore = FirebaseFirestore.getInstance()
@@ -26,6 +26,13 @@ class MainActivity : AppCompatActivity() {
 
 
  */
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+            .setPersistenceEnabled(true)
+            .build()
+        val firestore = FirebaseFirestore.getInstance()
+        firestore.firestoreSettings = settings
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }

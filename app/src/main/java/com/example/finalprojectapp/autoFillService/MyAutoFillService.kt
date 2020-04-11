@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.finalprojectapp.autoFillService
 
 import android.R
@@ -26,25 +28,22 @@ class MyAutoFillService : AutofillService() , LifecycleOwner {
         val context: List<FillContext> = request.fillContexts
         val structure: AssistStructure = context[context.size - 1].structure
 
-        val parser = StructureParser(structure)
-        parser.parseForFill()
-        val autofillFields = parser.autofillFields
-
         val myParser= MyClientParser(structure)
-        myParser.parseForSave(true,this)
+        myParser.parseForFill()
+
+        val autoFillFields = myParser.autofillFields
         myParser.falseResult.observe(this, androidx.lifecycle.Observer {
             val responseBuilder = FillResponse.Builder()
             if(it==true) {
                 val presentation = AutofillHelper
                         .newRemoteViews(packageName, "tap to sing in", R.drawable.ic_lock_lock)
-                val dataset = Dataset.Builder()
-                val h=myParser.result
-                autofillFields.allAutofillHints.forEachIndexed { index, hint ->
+                val dataSet = Dataset.Builder()
+                autoFillFields.allAutofillHints.forEachIndexed { index, hint ->
                     myParser.result.forEach { cre ->
                         cre.hint.forEach {hint2->
                             if (hint == hint2)
-                                dataset.setValue(
-                                    autofillFields.autofillIds[index],
+                                dataSet.setValue(
+                                    autoFillFields.autofillIds[index],
                                     AutofillValue.forText(cre.data),
                                     presentation
                                 )
@@ -52,17 +51,17 @@ class MyAutoFillService : AutofillService() , LifecycleOwner {
 
                     }
                 }
-                responseBuilder.addDataset(dataset.build())
+                responseBuilder.addDataset(dataSet.build())
             }
-            else  if(autofillFields.autofillIds.size>0) {
+            else  if(autoFillFields.autofillIds.size>0) {
 
                 responseBuilder.setSaveInfo(
                         SaveInfo.Builder(
                                 SaveInfo.SAVE_DATA_TYPE_USERNAME or SaveInfo.SAVE_DATA_TYPE_PASSWORD or SaveInfo.SAVE_DATA_TYPE_EMAIL_ADDRESS,
-                                autofillFields.autofillIds.toTypedArray()
+                                autoFillFields.autofillIds.toTypedArray()
                         ).build())
             }
-            if(autofillFields.autofillIds.size>0)
+            if(autoFillFields.autofillIds.size>0)
                 callback.onSuccess(responseBuilder.build())
             else
                 callback.onFailure("cannot sort this out")
@@ -77,14 +76,9 @@ class MyAutoFillService : AutofillService() , LifecycleOwner {
             val structure = context[context.size - 1].structure
 
             val parser=MyClientParser(structure)
-            parser.parseForSave(false,this)
+            parser.parseForSave()
 
             val gson=Gson().toJson(parser.autoFillDataForSaveList)
-            parser.autoFillDataForSaveList.forEach{
-                it.autofillHints?.forEach { hint ->
-
-                }
-            }
             val dataToPass= Data.Builder()
                     .put("data",gson)
                     .put("serviceRequest",parser.packageClientName())

@@ -29,16 +29,4 @@ object CommonUtil{
     }
 
 
-    fun bundleToString(data: Bundle?): String {
-        if (data == null) {
-            return "N/A"
-        }
-        val builder = StringBuilder()
-        bundleToString(builder, data)
-        return builder.toString()
-    }
-
-    fun createGson(): Gson {
-        return GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create()
-    }
 }
