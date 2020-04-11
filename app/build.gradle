@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'de.mannodermaus.android-junit5'
+apply plugin: 'kotlinx-serialization'
 
 android {
     compileSdkVersion 29
@@ -48,10 +49,15 @@ android {
         exclude "META-INF/LICENSE*"
     }
 
+
 }
+
 
 dependencies {
     def room_version = "2.2.5"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // or "kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0" // JVM dependency
 
     //local DB
     implementation "androidx.room:room-runtime:$room_version"

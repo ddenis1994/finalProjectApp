@@ -2,22 +2,22 @@ package com.example.finalprojectapp.localDB
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.finalprojectapp.data.model.LocalCredentials
+import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.LocalServiceCredentials
 
 @Dao
 interface LocalCredentialsDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(password: LocalCredentials):Long
+    suspend fun insert(password: Credentials):Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(credentials: List<LocalCredentials>)
+    suspend fun insertAll(credentials: List<Credentials>)
 
     @Delete
-    suspend fun deleteCredentials(credential : LocalCredentials)
+    suspend fun deleteCredentials(credential : Credentials)
 
     @Query("select * from passwords")
-    fun selectAllPasswords(): LiveData<List<LocalCredentials>>
+    fun selectAllPasswords(): LiveData<List<Credentials>>
 
     @Transaction
     @Query("SELECT * FROM services WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords)")

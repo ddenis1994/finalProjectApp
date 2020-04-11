@@ -36,6 +36,8 @@ class CredentialEncrypt(private val password:String) {
             cipher.update(it.data.toByteArray(Charsets.UTF_8))
             encryptedData.add(
                 Credentials(
+                    0,
+                    0,
                     it.hint,
                     encoder.encodeToString(cipher.doFinal()),
                     encoder.encodeToString(iv),
@@ -54,6 +56,8 @@ class CredentialEncrypt(private val password:String) {
             if (decryptedMap.iv.isNullOrEmpty() or decryptedMap.salt.isNullOrEmpty()) {
                 decryptedData.add(
                     Credentials(
+                        0,
+                        0,
                         decryptedMap.hint,
                         cipher.doFinal().toString(Charsets.UTF_8),
                         null,
@@ -82,6 +86,8 @@ class CredentialEncrypt(private val password:String) {
                 ).toString(Charsets.UTF_8)
                 decryptedData.add(
                     Credentials(
+                        0,
+                        0,
                         decryptedMap.hint,
                         temp,
                         null,
@@ -113,6 +119,8 @@ class CredentialEncrypt(private val password:String) {
                 data.data.toByteArray(Charsets.UTF_8)
             ))
             return Credentials(
+                0,
+                0,
             data.hint,
             cipher.doFinal().toString(Charsets.UTF_8),
             null,

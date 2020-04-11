@@ -9,5 +9,5 @@ data class LocalServiceCredentials (
         parentColumn = "serviceId",
         entityColumn = "serviceId"
     )
-    var credentials: List<LocalCredentials>
+    var credentials: List<Credentials>
 )

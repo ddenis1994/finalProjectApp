@@ -4,10 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.finalprojectapp.data.model.LocalCredentials
+import androidx.room.TypeConverters
+import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.LocalService
 
-@Database(entities = [LocalService::class,LocalCredentials::class], version = 1, exportSchema = false)
+@Database(entities = [LocalService::class,Credentials::class], version = 2, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class PasswordRoomDatabase: RoomDatabase() {
 
     abstract fun localCredentialsDAO(): LocalCredentialsDAO
