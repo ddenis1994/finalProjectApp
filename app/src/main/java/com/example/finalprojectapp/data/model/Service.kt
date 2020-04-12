@@ -16,7 +16,7 @@ data class Service (
     @Ignore
     val userId: String?,
     @Ignore
-    val credentials: MutableList<Credentials>?,
+    var credentials: MutableList<Credentials>?,
     @Exclude
     @PrimaryKey(autoGenerate = true) var serviceId: Long=0
 ){

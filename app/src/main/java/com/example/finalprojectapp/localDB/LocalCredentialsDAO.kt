@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.room.*
 import com.example.finalprojectapp.data.model.Credentials
-import com.example.finalprojectapp.data.model.LocalServiceCredentials
+import com.example.finalprojectapp.data.model.LocalServices
 import com.example.finalprojectapp.data.model.Service
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -29,14 +29,14 @@ interface LocalCredentialsDAO {
 
     @Transaction
     @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords)")
-    fun getAllServiceCredentials(): LiveData<List<LocalServiceCredentials>>
+    fun getAllServiceCredentials(): LiveData<List<LocalServices>>
 
     @Transaction
     @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords) and name LIKE :service")
-    fun searchServiceCredentials(service:String): LiveData<List<LocalServiceCredentials>>
+    fun searchServiceCredentials(service:String): LiveData<List<LocalServices>>
 
     @Transaction
-    suspend fun insertServiceCredentials(credentials: List<LocalServiceCredentials>): MutableLiveData<MutableList<Long>> {
+    suspend fun insertServiceCredentials(credentials: List<LocalServices>): MutableLiveData<MutableList<Long>> {
         val final= MutableLiveData<MutableList<Long>>()
         val list= mutableListOf<Long>()
         GlobalScope.launch {

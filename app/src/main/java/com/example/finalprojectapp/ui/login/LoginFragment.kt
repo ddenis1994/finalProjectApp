@@ -154,10 +154,10 @@ class LoginFragment : Fragment() {
             .collection("services").get()
             .addOnSuccessListener { it ->
                 val result=it.toObjects<Service>()
-                val data= mutableListOf<LocalServiceCredentials>()
+                val data= mutableListOf<LocalServices>()
                 result.forEach {
                     data.add(
-                        LocalServiceCredentials(
+                        LocalServices(
                         it,
                         it.credentials!!.toList()
                     ))
