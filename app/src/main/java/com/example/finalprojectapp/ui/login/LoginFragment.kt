@@ -1,6 +1,7 @@
 package com.example.finalprojectapp.ui.login
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -161,6 +162,10 @@ class LoginFragment : Fragment() {
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO) {
                             localDB.localCredentialsDAO().insertServiceCredentials(result)
+                            with (requireContext().getSharedPreferences("mainPreferences", Context.MODE_PRIVATE).edit()){
+                                putBoolean("encrypted", true)
+                                commit()
+                            }
                             val updateWorkRequest = OneTimeWorkRequestBuilder<DBWorkerDecryption>()
                                 .build()
                             WorkManager.getInstance(requireContext()).enqueue(updateWorkRequest)

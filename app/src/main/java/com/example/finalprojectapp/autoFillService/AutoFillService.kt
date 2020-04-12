@@ -5,18 +5,20 @@ package com.example.finalprojectapp.autoFillService
 import android.R
 import android.annotation.SuppressLint
 import android.app.assist.AssistStructure
+import android.content.Context
 import android.os.CancellationSignal
 import android.service.autofill.*
 import android.util.Log
 import android.view.autofill.AutofillValue
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.*
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.finalprojectapp.workers.SaveDataOrganizeWorker
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class AutoFillService : AutofillService() , LifecycleOwner {
@@ -28,25 +30,29 @@ class AutoFillService : AutofillService() , LifecycleOwner {
         val context: List<FillContext> = request.fillContexts
         val structure: AssistStructure = context[context.size - 1].structure
 
-        val myParser= ClientParser(structure)
+        val myParser= ClientParser(structure,applicationContext as Context,lifecycleScope)
+
         myParser.parseForFill()
 
         val autoFillFields = myParser.autoFillFields
-        myParser.falseResult.observe(this, androidx.lifecycle.Observer {
+
+        myParser.result.observe(this, Observer {
             val responseBuilder = FillResponse.Builder()
-            if(it==true) {
+            if(it.isNotEmpty()) {
                 val presentation = AutofillHelper
                         .newRemoteViews(packageName, "tap to sing in", R.drawable.ic_lock_lock)
                 val dataSet = Dataset.Builder()
-                autoFillFields.allAutofillHints.forEachIndexed { index, hint ->
-                    myParser.result.forEach { cre ->
-                        cre.hint.forEach {hint2->
-                            if (hint == hint2)
-                                dataSet.setValue(
-                                    autoFillFields.autofillIds[index],
-                                    AutofillValue.forText(cre.data),
-                                    presentation
-                                )
+                autoFillFields.allAutofillHints.forEachIndexed { index, hintFromAndroid ->
+                    it.forEach { service ->
+                        service.credentials?.forEach {cre ->
+                            cre.hint.forEach { hintFromLocalDB ->
+                                if (hintFromAndroid == hintFromLocalDB)
+                                    dataSet.setValue(
+                                        autoFillFields.autofillIds[index],
+                                        AutofillValue.forText(cre.data),
+                                        presentation
+                                    )
+                            }
                         }
 
                     }
@@ -75,7 +81,7 @@ class AutoFillService : AutofillService() , LifecycleOwner {
             val context = request.fillContexts
             val structure = context[context.size - 1].structure
 
-            val parser=ClientParser(structure)
+            val parser=ClientParser(structure,applicationContext as Context,lifecycleScope)
             parser.parseForSave()
 
             val gson=Gson().toJson(parser.autoFillDataForSaveList)

@@ -35,14 +35,10 @@ class CredentialEncrypt(private val password:String) {
             cipher.init(Cipher.ENCRYPT_MODE, key, IvParameterSpec(iv))
             cipher.update(it.data.toByteArray(Charsets.UTF_8))
             encryptedData.add(
-                Credentials(
-                    0,
-                    0,
-                    it.hint,
-                    encoder.encodeToString(cipher.doFinal()),
-                    encoder.encodeToString(iv),
-                    encoder.encodeToString(salt)
-                )
+                it.copy(
+                    data = encoder.encodeToString(cipher.doFinal()),
+                    iv =encoder.encodeToString(iv),
+                    salt =  encoder.encodeToString(salt))
             )
         }
         return encryptedData
@@ -79,7 +75,7 @@ class CredentialEncrypt(private val password:String) {
                     IvParameterSpec(decoder.decode(decryptedMap.iv.toString()))
                 )
 
-                var temp=cipher.doFinal(
+                val temp=cipher.doFinal(
                     decoder.decode(
                     decryptedMap.data.toByteArray(Charsets.UTF_8)
                 )
