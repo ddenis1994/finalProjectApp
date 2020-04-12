@@ -154,19 +154,11 @@ class LoginFragment : Fragment() {
             .collection("services").get()
             .addOnSuccessListener { it ->
                 val result=it.toObjects<Service>()
-                val data= mutableListOf<LocalServices>()
-                result.forEach {
-                    data.add(
-                        LocalServices(
-                        it,
-                        it.credentials!!.toList()
-                    ))
-                }
                 val localDB=PasswordRoomDatabase.getDatabase(requireContext())
 
                 lifecycleScope.launch {
                     val result2=withContext(Dispatchers.Default) {
-                        localDB.localCredentialsDAO().insertServiceCredentials(data)
+                        localDB.localCredentialsDAO().insertServiceCredentials(result)
                     }
 
                     result2.observeForever( Observer {
@@ -174,7 +166,7 @@ class LoginFragment : Fragment() {
                         Log.i("test","test")
                         lifecycleScope.launch {
                             val result2 = withContext(Dispatchers.Default) {
-                                localDB.localCredentialsDAO().getAllServiceCredentials()
+                                localDB.localCredentialsDAO().getAllServiceCredentialsPublic()
                             }
                             result2.observeForever( Observer {
                                 Log.i("test","test")

@@ -49,7 +49,7 @@ class SaveDataOrganizeWorker(context: Context,
             serviceName!!,
             Timestamp(Date()),
             user.uid,
-            newCredentials
+            newCredentials.toList()
         )
         db.collection("users").document(user.uid)
             .collection("services").document(serviceName)

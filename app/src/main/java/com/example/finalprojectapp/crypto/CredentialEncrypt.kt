@@ -19,7 +19,7 @@ class CredentialEncrypt(private val password:String) {
     private var key: SecretKeySpec? = null
 
 
-    fun encryptAll(plainText: MutableList<Credentials>?): MutableList<Credentials> {
+    fun encryptAll(plainText: List<Credentials>?): MutableList<Credentials> {
         if (plainText.isNullOrEmpty())
             return mutableListOf()
         val encryptedData: MutableList<Credentials> = mutableListOf()
@@ -47,7 +47,7 @@ class CredentialEncrypt(private val password:String) {
         }
         return encryptedData
     }
-    fun decryptAll(data: MutableList<Credentials>?): MutableList<Credentials> {
+    fun decryptAll(data: List<Credentials>?): MutableList<Credentials> {
         val decryptedData: MutableList<Credentials> = mutableListOf()
         if (data.isNullOrEmpty())
             return decryptedData

@@ -120,5 +120,8 @@ dependencies {
     testImplementation "io.mockk:mockk:1.9.3"
     androidTestImplementation "io.mockk:mockk-android:1.9.3"
 
+    //live data
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
+
 
 }

@@ -1,58 +1,81 @@
 package com.example.finalprojectapp.localDB
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import androidx.room.*
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.LocalServices
 import com.example.finalprojectapp.data.model.Service
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Dao
 interface LocalCredentialsDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertService(service: Service):Long
+    suspend fun insertService(service: Service): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(password: Credentials):Long
+    suspend fun insert(password: Credentials): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(credentials: List<Credentials>)
 
     @Delete
-    suspend fun deleteCredentials(credential : Credentials)
+    suspend fun deleteCredentials(credential: Credentials)
 
     @Query("select * from passwords")
     fun selectAllPasswords(): LiveData<List<Credentials>>
 
     @Transaction
     @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords)")
-    fun getAllServiceCredentials(): LiveData<List<LocalServices>>
+    fun getAllServiceCredentialsPrivate(): List<LocalServices>
 
-    @Transaction
-    @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords) and name LIKE :service")
-    fun searchServiceCredentials(service:String): LiveData<List<LocalServices>>
-
-    @Transaction
-    suspend fun insertServiceCredentials(credentials: List<LocalServices>): MutableLiveData<MutableList<Long>> {
-        val final= MutableLiveData<MutableList<Long>>()
-        val list= mutableListOf<Long>()
-        GlobalScope.launch {
-            credentials.forEach {
-                val result = insertService(it.service)
-                list.add(result)
-                it.credentials.forEach { cre ->
-                    insert(cre.copy(serviceId = result))
+    suspend fun getAllServiceCredentialsPublic(): LiveData<List<Service>> {
+        return liveData {
+            withContext<Unit>(Dispatchers.IO) {
+                val result = getAllServiceCredentialsPrivate()
+                val list = mutableListOf<Service>()
+                result.forEach { localService ->
+                    list.add(Service(localService))
                 }
-
+                emit(list.toList())
             }
-            final.postValue(list)
         }
-        return final
+
     }
 
 
+    @Transaction
+    @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords) and name LIKE :service")
+    fun searchServiceCredentialsPrivate(service: String): List<LocalServices>
 
+    suspend fun searchServiceCredentialsPublic(service: String): LiveData<List<Service>> {
+        return liveData {
+            withContext<Unit>(Dispatchers.IO) {
+                val result = searchServiceCredentialsPrivate(service)
+                val list = mutableListOf<Service>()
+                result.forEach { localService ->
+                    list.add(Service(localService))
+                }
+                emit(list.toList())
+            }
+        }
+
+    }
+
+
+    suspend fun insertServiceCredentials(credentials: List<Service>): LiveData<List<Long>> {
+        return liveData {
+                val list = mutableListOf<Long>()
+                credentials.forEach {
+                    val result = insertService(it)
+                    list.add(result)
+                    it.credentials?.forEach { cre ->
+                        insert(cre.copy(serviceId = result))
+                    }
+                }
+                emit(list.toList())
+            }
+    }
 }

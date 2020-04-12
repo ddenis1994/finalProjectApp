@@ -1,8 +1,6 @@
 package com.example.finalprojectapp.data.model
 
-import androidx.room.Entity
-import androidx.room.Ignore
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.ServerTimestamp
@@ -16,7 +14,7 @@ data class Service (
     @Ignore
     val userId: String?,
     @Ignore
-    var credentials: MutableList<Credentials>?,
+    var credentials: List<Credentials>?,
     @Exclude
     @PrimaryKey(autoGenerate = true) var serviceId: Long=0
 ){
@@ -25,6 +23,13 @@ data class Service (
         null,
         null,
         null
+    )
+    constructor(temp:LocalServices):this(
+        temp.service.name,
+        null,
+        null,
+        temp.credentials,
+        temp.service.serviceId
     )
 
 }
