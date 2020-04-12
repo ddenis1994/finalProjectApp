@@ -16,9 +16,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.finalprojectapp.workers.SaveDataOrganizeWorker
 import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class AutoFillService : AutofillService() , LifecycleOwner {
@@ -36,14 +33,13 @@ class AutoFillService : AutofillService() , LifecycleOwner {
 
         val autoFillFields = myParser.autoFillFields
 
-        myParser.result.observe(this, Observer {
+        myParser.result.observe(this, Observer {service ->
             val responseBuilder = FillResponse.Builder()
-            if(it.isNotEmpty()) {
+            if(service!=null) {
                 val presentation = AutofillHelper
                         .newRemoteViews(packageName, "tap to sing in", R.drawable.ic_lock_lock)
                 val dataSet = Dataset.Builder()
                 autoFillFields.allAutofillHints.forEachIndexed { index, hintFromAndroid ->
-                    it.forEach { service ->
                         service.credentials?.forEach {cre ->
                             cre.hint.forEach { hintFromLocalDB ->
                                 if (hintFromAndroid == hintFromLocalDB)
@@ -52,15 +48,12 @@ class AutoFillService : AutofillService() , LifecycleOwner {
                                         AutofillValue.forText(cre.data),
                                         presentation
                                     )
-                            }
                         }
-
                     }
                 }
                 responseBuilder.addDataset(dataSet.build())
             }
-            else  if(autoFillFields.autofillIds.size>0) {
-
+            else if(autoFillFields.autofillIds.size>0) {
                 responseBuilder.setSaveInfo(
                         SaveInfo.Builder(
                                 SaveInfo.SAVE_DATA_TYPE_USERNAME or SaveInfo.SAVE_DATA_TYPE_PASSWORD or SaveInfo.SAVE_DATA_TYPE_EMAIL_ADDRESS,

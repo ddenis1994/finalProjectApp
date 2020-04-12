@@ -1,6 +1,7 @@
 package com.example.finalprojectapp.localDB
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.room.*
 import com.example.finalprojectapp.data.model.Credentials
@@ -61,17 +62,13 @@ interface LocalCredentialsDAO {
 
     @Transaction
     @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords) and name LIKE :service")
-    fun searchServiceCredentialsPrivate(service: String): List<LocalServices>
+    fun searchServiceCredentialsPrivate(service: String): LocalServices
 
-    suspend fun searchServiceCredentialsPublic(service: String): LiveData<List<Service>> {
+    suspend fun searchServiceCredentialsPublic(service: String): LiveData<Service> {
         return liveData {
-            withContext<Unit>(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
                 val result = searchServiceCredentialsPrivate(service)
-                val list = mutableListOf<Service>()
-                result.forEach { localService ->
-                    list.add(Service(localService))
-                }
-                emit(list.toList())
+                emit(Service(result))
             }
         }
 

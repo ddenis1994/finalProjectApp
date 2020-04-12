@@ -35,13 +35,13 @@ class ClientParser (
 
     val autoFillDataForSaveList= mutableListOf<AutoFillNodeData>()
 
-    suspend fun getCredentials() =
+    private suspend fun getCredentials() =
         PasswordRoomDatabase.
         getDatabase(context).
         localCredentialsDAO().
         searchServiceCredentialsPublic(requestClientPackage)
 
-        var  result=MutableLiveData<List<Service>>()
+        var  result=MutableLiveData<Service>()
 
         fun packageClientName(): String {
             return requestClientPackage
@@ -61,7 +61,7 @@ class ClientParser (
             if(forFill) {
                 coroutineScope.launch {
                     withContext(Dispatchers.IO) {
-                        result = getCredentials() as MutableLiveData<List<Service>>
+                        result = getCredentials() as MutableLiveData<Service>
                     }
                 }
             }
