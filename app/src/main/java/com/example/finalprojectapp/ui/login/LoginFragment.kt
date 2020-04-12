@@ -148,7 +148,7 @@ class LoginFragment : Fragment() {
         db.collection("users").document(user.uid)
             .collection("services").get()
             .addOnSuccessListener {
-                val result=it.toObjects<ServiceCredentialsServer>()
+                val result=it.toObjects<Service>()
                 val data= mutableListOf<LocalServiceCredentials>()
 
 

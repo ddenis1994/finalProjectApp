@@ -4,7 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.finalprojectapp.autoFillService.model.FilledAutofillFieldCollection
 import com.example.finalprojectapp.crypto.CredentialEncrypt
 import com.example.finalprojectapp.data.model.Credentials
-import com.example.finalprojectapp.data.model.ServiceCredentialsServer
+import com.example.finalprojectapp.data.model.Service
+
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
@@ -53,7 +54,7 @@ class ClientParser (private val requestClient:AssistStructure){
                         if(it.data.isNullOrEmpty())
                             falseResult.postValue(false)
                         else {
-                            val city = it.toObject<ServiceCredentialsServer>()
+                            val city = it.toObject<Service>()
                             val encrypted= CredentialEncrypt("password")
                             if (city != null)
                                 result = encrypted.decryptAll(city.credentials)

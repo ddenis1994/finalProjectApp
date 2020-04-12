@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Relation
 
 data class LocalServiceCredentials (
-    @Embedded val service: LocalService,
+    @Embedded val service: Service,
     @Relation(
         parentColumn = "serviceId",
         entityColumn = "serviceId"

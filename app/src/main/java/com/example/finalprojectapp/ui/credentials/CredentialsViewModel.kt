@@ -3,15 +3,16 @@ package com.example.finalprojectapp.ui.credentials
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.finalprojectapp.data.model.ServiceCredentialsServer
+import com.example.finalprojectapp.data.model.Service
+
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObjects
 
 class CredentialsViewModel : ViewModel() {
 
-    private val _allPasswords = MutableLiveData<List<ServiceCredentialsServer>>()
-    val allPasswords: LiveData<List<ServiceCredentialsServer>> = _allPasswords
+    private val _allPasswords = MutableLiveData<List<Service>>()
+    val allPasswords: LiveData<List<Service>> = _allPasswords
 
     fun getCredentialsData() {
         val db = FirebaseFirestore.getInstance()
@@ -19,7 +20,7 @@ class CredentialsViewModel : ViewModel() {
         db.collection("users").document(user.uid)
             .collection("services").get()
             .addOnSuccessListener { documentSnapshot->
-                val data=documentSnapshot.toObjects<ServiceCredentialsServer>()
+                val data=documentSnapshot.toObjects<Service>()
                 _allPasswords.postValue(data)
             }
     }

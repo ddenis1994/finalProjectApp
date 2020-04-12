@@ -18,7 +18,7 @@ data class Service (
     @Ignore
     val credentials: MutableList<Credentials>?,
     @Exclude
-    @PrimaryKey(autoGenerate = true) val serviceId: Long=0
+    @PrimaryKey(autoGenerate = true) var serviceId: Long=0
 ){
     constructor() : this(
         "",

@@ -6,10 +6,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalprojectapp.data.model.ServiceCredentialsServer
+import com.example.finalprojectapp.data.model.Service
+
 import com.example.finalprojectapp.databinding.ListServicePasswordBinding
 
-class MyAdapter(private val myDataSet: List<ServiceCredentialsServer>) :
+class MyAdapter(private val myDataSet: List<Service>) :
     RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
 
 
@@ -31,7 +32,7 @@ class MyAdapter(private val myDataSet: List<ServiceCredentialsServer>) :
                 }
             }
         }
-        fun bind(item: ServiceCredentialsServer) {
+        fun bind(item: Service) {
             binding.apply {
                 //make right value for string to fill
                 val temp=item.name

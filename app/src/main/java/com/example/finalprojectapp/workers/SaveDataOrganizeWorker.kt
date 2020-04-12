@@ -7,7 +7,7 @@ import androidx.work.WorkerParameters
 import com.example.finalprojectapp.autoFillService.AutoFillNodeData
 import com.example.finalprojectapp.crypto.CredentialEncrypt
 import com.example.finalprojectapp.data.model.Credentials
-import com.example.finalprojectapp.data.model.ServiceCredentialsServer
+import com.example.finalprojectapp.data.model.Service
 import com.google.common.reflect.TypeToken
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -45,7 +45,7 @@ class SaveDataOrganizeWorker(context: Context,
                 Credentials(0,0,it.autofillHints!!.toList(), it.textValue!!, null, null)
             )
         }
-        val data = ServiceCredentialsServer(
+        val data = Service(
             serviceName!!,
             Timestamp(Date()),
             user.uid,

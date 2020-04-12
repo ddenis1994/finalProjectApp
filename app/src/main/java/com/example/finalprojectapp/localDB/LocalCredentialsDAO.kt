@@ -20,11 +20,13 @@ interface LocalCredentialsDAO {
     fun selectAllPasswords(): LiveData<List<Credentials>>
 
     @Transaction
-    @Query("SELECT * FROM services WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords)")
+    @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords)")
     fun getAllServiceCredentials(): LiveData<List<LocalServiceCredentials>>
 
     @Transaction
-    @Query("SELECT * FROM services WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords) and serviceName LIKE :service")
+    @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords) and name LIKE :service")
     fun searchServiceCredentials(service:String): LiveData<List<LocalServiceCredentials>>
+
+
 
 }
