@@ -5,7 +5,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.ServerTimestamp
 
-@Entity(tableName = "service")
+@Entity(tableName = "service",indices = [Index(value = ["name"],unique = true)])
 data class Service (
     var name:String,
     @Ignore
