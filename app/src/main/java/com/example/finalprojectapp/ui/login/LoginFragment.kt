@@ -16,10 +16,12 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.data.Result
 import com.example.finalprojectapp.data.model.*
+import com.example.finalprojectapp.localDB.PasswordRoomDatabase
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -31,6 +33,9 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObjects
 import kotlinx.android.synthetic.main.fragment_login.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 
@@ -147,10 +152,41 @@ class LoginFragment : Fragment() {
         val user = FirebaseAuth.getInstance().currentUser!!
         db.collection("users").document(user.uid)
             .collection("services").get()
-            .addOnSuccessListener {
+            .addOnSuccessListener { it ->
                 val result=it.toObjects<Service>()
                 val data= mutableListOf<LocalServiceCredentials>()
+                result.forEach {
+                    data.add(
+                        LocalServiceCredentials(
+                        it,
+                        it.credentials!!.toList()
+                    ))
+                }
+                val localDB=PasswordRoomDatabase.getDatabase(requireContext())
 
+                lifecycleScope.launch {
+                    val result2=withContext(Dispatchers.Default) {
+                        localDB.localCredentialsDAO().insertServiceCredentials(data)
+                    }
+
+                    result2.observeForever( Observer {
+                        Log.i("test","test")
+                        Log.i("test","test")
+                        lifecycleScope.launch {
+                            val result2 = withContext(Dispatchers.Default) {
+                                localDB.localCredentialsDAO().getAllServiceCredentials()
+                            }
+                            result2.observeForever( Observer {
+                                Log.i("test","test")
+                                Log.i("test","test")
+                            })
+                        }
+                    })
+
+
+                }
+
+                Log.i("test","test")
 
             }
 

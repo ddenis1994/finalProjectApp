@@ -14,7 +14,7 @@ data class Service (
     @ServerTimestamp
     val time: Timestamp?,
     @Ignore
-    val userId: String,
+    val userId: String?,
     @Ignore
     val credentials: MutableList<Credentials>?,
     @Exclude
@@ -23,7 +23,7 @@ data class Service (
     constructor() : this(
         "",
         null,
-        "",
+        null,
         null
     )
 
