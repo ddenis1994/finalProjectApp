@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.Service
 
-@Database(entities = [Service::class,Credentials::class], version = 4, exportSchema = false)
+@Database(entities = [Service::class,Credentials::class], version = 5, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class PasswordRoomDatabase: RoomDatabase() {
 

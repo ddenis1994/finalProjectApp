@@ -118,15 +118,10 @@ class CredentialEncrypt(private val password:String) {
             decoder.decode(
                 data.data.toByteArray(Charsets.UTF_8)
             ))
-            return Credentials(
-                0,
-                0,
-            data.hint,
-            cipher.doFinal().toString(Charsets.UTF_8),
-            null,
-            null
-        )
-
+        return data.copy(
+            data = cipher.doFinal().toString(Charsets.UTF_8),
+            iv = null,
+            salt = null)
     }
 
 

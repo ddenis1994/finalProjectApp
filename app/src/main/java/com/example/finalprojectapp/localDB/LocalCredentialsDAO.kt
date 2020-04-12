@@ -4,13 +4,23 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.room.*
 import com.example.finalprojectapp.data.model.Credentials
-import com.example.finalprojectapp.data.model.LocalServices
+
 import com.example.finalprojectapp.data.model.Service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+
+
 @Dao
 interface LocalCredentialsDAO {
+    data class LocalServices (
+        @Embedded val service: Service,
+        @Relation(
+            parentColumn = "serviceId",
+            entityColumn = "serviceId"
+        )
+        var credentials: List<Credentials>
+    )
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertService(service: Service): Long
@@ -26,6 +36,9 @@ interface LocalCredentialsDAO {
 
     @Query("select * from passwords")
     fun selectAllPasswords(): LiveData<List<Credentials>>
+
+    @Query("select * from passwords Where iv IS NOT NULL")
+    suspend fun getAllEncryptedCredentials(): List<Credentials>
 
     @Transaction
     @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords)")

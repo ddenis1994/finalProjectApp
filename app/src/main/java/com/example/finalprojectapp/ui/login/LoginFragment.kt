@@ -18,10 +18,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.data.Result
 import com.example.finalprojectapp.data.model.*
 import com.example.finalprojectapp.localDB.PasswordRoomDatabase
+import com.example.finalprojectapp.workers.DBWorkerDecryption
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -152,36 +155,18 @@ class LoginFragment : Fragment() {
         val user = FirebaseAuth.getInstance().currentUser!!
         db.collection("users").document(user.uid)
             .collection("services").get()
-            .addOnSuccessListener { it ->
-                val result=it.toObjects<Service>()
-                val localDB=PasswordRoomDatabase.getDatabase(requireContext())
-
-                lifecycleScope.launch {
-                    val result2=withContext(Dispatchers.Default) {
-                        localDB.localCredentialsDAO().insertServiceCredentials(result)
-                    }
-
-                    result2.observeForever( Observer {
-                        Log.i("test","test")
-                        Log.i("test","test")
-                        lifecycleScope.launch {
-                            val result2 = withContext(Dispatchers.Default) {
-                                localDB.localCredentialsDAO().getAllServiceCredentialsPublic()
-                            }
-                            result2.observeForever( Observer {
-                                Log.i("test","test")
-                                Log.i("test","test")
-                            })
+            .addOnSuccessListener {
+                val result = it.toObjects<Service>()
+                val localDB = PasswordRoomDatabase.getDatabase(requireContext())
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            localDB.localCredentialsDAO().insertServiceCredentials(result)
+                            val updateWorkRequest = OneTimeWorkRequestBuilder<DBWorkerDecryption>()
+                                .build()
+                            WorkManager.getInstance(requireContext()).enqueue(updateWorkRequest)
                         }
-                    })
-
-
                 }
-
-                Log.i("test","test")
-
             }
-
 
     }
 
@@ -200,7 +185,7 @@ class LoginFragment : Fragment() {
         }
     }
 
-    private fun singInGoogle(): Unit {
+    private fun singInGoogle() {
         val signInIntent = mGoogleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
@@ -235,15 +220,15 @@ class LoginFragment : Fragment() {
                 }
                 else {
                     auth.createUserWithEmailAndPassword(acct.email.toString(), "test5656")
-                        .addOnCompleteListener(this.requireActivity()) { task ->
-                            if (task.isSuccessful) {
+                        .addOnCompleteListener(this.requireActivity()) { LoginTask ->
+                            if (LoginTask.isSuccessful) {
                                 val user = LoggedInUser(java.util.UUID.randomUUID().toString(), acct.displayName.toString())
                                 val res= Result.Success(user)
                                 loginViewModel.updateResult(res)
                             } else {
-                                val res= Result.Error(IOException("Error logging in", task.exception))
+                                val res= Result.Error(IOException("Error logging in", LoginTask.exception))
                                 loginViewModel.updateResult(res)
-                                Log.w(TAG, "createUserWithEmail:failure",task.exception)
+                                Log.w(TAG, "createUserWithEmail:failure",LoginTask.exception)
                             }
 
                         }

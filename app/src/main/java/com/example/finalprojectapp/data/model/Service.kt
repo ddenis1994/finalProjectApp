@@ -1,6 +1,7 @@
 package com.example.finalprojectapp.data.model
 
 import androidx.room.*
+import com.example.finalprojectapp.localDB.LocalCredentialsDAO
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.ServerTimestamp
@@ -24,7 +25,7 @@ data class Service (
         null,
         null
     )
-    constructor(temp:LocalServices):this(
+    constructor(temp: LocalCredentialsDAO.LocalServices):this(
         temp.service.name,
         null,
         null,

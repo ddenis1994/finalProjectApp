@@ -1,10 +1,11 @@
 package com.example.finalprojectapp.data.model
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.firebase.firestore.Exclude
 
-@Entity(tableName = "passwords")
+@Entity(tableName = "passwords",indices = [Index(value = ["serviceId","hint"],unique = true)])
 data class Credentials (
     @PrimaryKey(autoGenerate = true)
     @Exclude
