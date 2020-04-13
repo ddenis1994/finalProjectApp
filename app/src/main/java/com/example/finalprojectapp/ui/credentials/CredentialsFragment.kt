@@ -11,12 +11,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.adapters.MyAdapter
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.finalprojectapp.data.viewModels.CredentialsViewModel
+import com.example.finalprojectapp.utils.InjectorUtils
 import kotlinx.android.synthetic.main.fragment_cre.*
 import kotlinx.android.synthetic.main.fragment_cre.view.*
 
 class CredentialsFragment : Fragment() {
-    private val credentialsViewModel: CredentialsViewModel by activityViewModels()
+    private val credentialsViewModel: CredentialsViewModel by activityViewModels(){
+
+        InjectorUtils.provideCredentialsViewModelFactory(this)
+
+    }
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -36,7 +41,6 @@ class CredentialsFragment : Fragment() {
                 adapter=viewAdapter
             }
         })
-        credentialsViewModel.getCredentialsData()
 
         return root
     }

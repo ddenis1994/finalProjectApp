@@ -1,10 +1,7 @@
 package com.example.finalprojectapp.localDB
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.finalprojectapp.data.model.Service
 
 
@@ -25,4 +22,6 @@ interface ServiceDAO {
 
     @Query("SELECT EXISTS(SELECT 1 FROM service WHERE name LIKE :serviceName LIMIT 1)")
     fun isExists(serviceName: String):LiveData<Boolean>
+
+
 }

@@ -12,7 +12,7 @@ import com.example.finalprojectapp.data.model.Service
 @TypeConverters(Converters::class)
 abstract class PasswordRoomDatabase: RoomDatabase() {
 
-    abstract fun localCredentialsDAO(): LocalCredentialsDAO
+    abstract fun localCredentialsDAO(): CredentialsDAO
     abstract fun serviceDAO(): ServiceDAO
     companion object {
         @Volatile

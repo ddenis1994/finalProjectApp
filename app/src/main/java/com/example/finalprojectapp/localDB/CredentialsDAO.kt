@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 
 
 @Dao
-interface LocalCredentialsDAO {
+interface CredentialsDAO {
     data class LocalServices (
         @Embedded val service: Service,
         @Relation(
@@ -45,7 +45,7 @@ interface LocalCredentialsDAO {
     @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords)")
     fun getAllServiceCredentialsPrivate(): List<LocalServices>
 
-    suspend fun getAllServiceCredentialsPublic(): LiveData<List<Service>> {
+    fun getAllServiceCredentialsPublic(): LiveData<List<Service>> {
         return liveData {
             withContext<Unit>(Dispatchers.IO) {
                 val result = getAllServiceCredentialsPrivate()
@@ -64,7 +64,7 @@ interface LocalCredentialsDAO {
     @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords) and name LIKE :service")
     fun searchServiceCredentialsPrivate(service: String): LocalServices
 
-    suspend fun searchServiceCredentialsPublic(service: String): LiveData<Service> {
+    fun searchServiceCredentialsPublic(service: String): LiveData<Service> {
         return liveData {
             withContext(Dispatchers.IO) {
                 val result = searchServiceCredentialsPrivate(service)
@@ -75,7 +75,7 @@ interface LocalCredentialsDAO {
     }
 
 
-    suspend fun insertServiceCredentials(credentials: List<Service>): LiveData<List<Long>> {
+    fun insertServiceCredentials(credentials: List<Service>): LiveData<List<Long>> {
         return liveData {
                 val list = mutableListOf<Long>()
                 credentials.forEach {
@@ -88,4 +88,16 @@ interface LocalCredentialsDAO {
                 emit(list.toList())
             }
     }
+
+    fun insertSingleServiceCredentials(credentials: Service): LiveData<Long> {
+        return liveData {
+                val result = insertService(credentials)
+                credentials.credentials?.forEach { cre ->
+                    insert(cre.copy(serviceId = result))
+            }
+            emit(result)
+        }
+    }
+
+
 }

@@ -159,6 +159,7 @@ class LoginFragment : Fragment() {
             .addOnSuccessListener {
                 val result = it.toObjects<Service>()
                 val localDB = PasswordRoomDatabase.getDatabase(requireContext())
+                //TODO change the got data from hare (cannot get all data every time)
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO) {
                             localDB.localCredentialsDAO().insertServiceCredentials(result)

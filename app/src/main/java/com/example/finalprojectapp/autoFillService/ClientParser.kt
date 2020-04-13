@@ -2,23 +2,13 @@ package com.example.finalprojectapp.autoFillService
 import android.app.assist.AssistStructure
 import android.content.Context
 import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
-import com.example.finalprojectapp.autoFillService.model.FilledAutofillFieldCollection
-import com.example.finalprojectapp.crypto.CredentialEncrypt
-import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.Service
-import com.example.finalprojectapp.localDB.LocalCredentialsDAO
 import com.example.finalprojectapp.localDB.PasswordRoomDatabase
 
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.coroutineContext
 
 
 class ClientParser (
