@@ -81,11 +81,6 @@ interface CredentialsDAO {
     @Delete
     fun deleteService(serviceName: Service)
 
-
-
-
-
-
     suspend fun insertSingleServiceCredentials(credentials: Service) {
         withContext(Dispatchers.IO) {
             searchServiceCredentialsPrivate(credentials.name)?.let {ser->
@@ -113,7 +108,6 @@ interface CredentialsDAO {
                     result.credentials?.forEach {
                         deleteCredentials(it)
                     }
-                    insertSingleServiceCredentials(result)
             }
         }
     }

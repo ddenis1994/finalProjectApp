@@ -56,7 +56,6 @@ class MainMenuFragment : Fragment() {
 
                 val localDB = PasswordRoomDatabase.getDatabase(requireContext())
                     for (dc in querySnapshot!!.documentChanges) {
-
                         when (dc.type) {
                             DocumentChange.Type.REMOVED -> {
                                 lifecycleScope.launch {
