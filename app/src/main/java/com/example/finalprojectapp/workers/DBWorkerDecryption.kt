@@ -15,6 +15,7 @@ class DBWorkerDecryption(appContext: Context, workerParams: WorkerParameters)
         test.forEach {
             localDB.localCredentialsDAO().updateCredentials(decryption.decrypt(it))
         }
+
         with (applicationContext.getSharedPreferences("mainPreferences",Context.MODE_PRIVATE).edit()) {
             putBoolean("encrypted", false)
             commit()
