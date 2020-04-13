@@ -34,6 +34,9 @@ interface CredentialsDAO {
     @Delete
     fun deleteCredentials(credential: Credentials)
 
+    @Update
+    fun updateCredentials(credential: Credentials)
+
     @Query("select * from passwords")
     fun selectAllPasswords(): LiveData<List<Credentials>>
 

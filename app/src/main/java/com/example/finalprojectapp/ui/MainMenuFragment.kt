@@ -53,7 +53,6 @@ class MainMenuFragment : Fragment() {
             .addSnapshotListener(MetadataChanges.INCLUDE) { querySnapshot, firebaseFirestoreException ->
                 if (firebaseFirestoreException != null)
                     return@addSnapshotListener
-
                 val localDB = PasswordRoomDatabase.getDatabase(requireContext())
                     for (dc in querySnapshot!!.documentChanges) {
                         when (dc.type) {

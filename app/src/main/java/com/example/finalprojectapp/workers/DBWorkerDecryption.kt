@@ -13,7 +13,7 @@ class DBWorkerDecryption(appContext: Context, workerParams: WorkerParameters)
         val decryption =CredentialEncrypt("password")
         val test = localDB.localCredentialsDAO().getAllEncryptedCredentials()
         test.forEach {
-            localDB.localCredentialsDAO().insert(decryption.decrypt(it))
+            localDB.localCredentialsDAO().updateCredentials(decryption.decrypt(it))
         }
         with (applicationContext.getSharedPreferences("mainPreferences",Context.MODE_PRIVATE).edit()) {
             putBoolean("encrypted", false)
@@ -21,6 +21,4 @@ class DBWorkerDecryption(appContext: Context, workerParams: WorkerParameters)
         }
         return Result.success()
     }
-
-
 }
