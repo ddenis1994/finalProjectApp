@@ -2,19 +2,18 @@ package com.example.finalprojectapp.localDB
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.liveData
 import androidx.room.*
 import com.example.finalprojectapp.data.model.Credentials
-
 import com.example.finalprojectapp.data.model.Service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
-
 @Dao
 interface CredentialsDAO {
-    data class LocalServices (
+    data class LocalServices(
         @Embedded val service: Service,
         @Relation(
             parentColumn = "serviceId",
@@ -23,17 +22,17 @@ interface CredentialsDAO {
         var credentials: List<Credentials>
     )
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertService(service: Service): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(password: Credentials): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(credentials: List<Credentials>)
 
     @Delete
-    suspend fun deleteCredentials(credential: Credentials)
+    fun deleteCredentials(credential: Credentials)
 
     @Query("select * from passwords")
     fun selectAllPasswords(): LiveData<List<Credentials>>
@@ -43,59 +42,79 @@ interface CredentialsDAO {
 
     @Transaction
     @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords)")
-    fun getAllServiceCredentialsPrivate(): List<LocalServices>
+    fun getAllServiceCredentialsPrivate(): LiveData<List<LocalServices>>
 
     fun getAllServiceCredentialsPublic(): LiveData<List<Service>> {
-        return liveData {
-            withContext<Unit>(Dispatchers.IO) {
-                val result = getAllServiceCredentialsPrivate()
+            val result = getAllServiceCredentialsPrivate()
+
+            val changeDetection=MutableLiveData<List<Service>>()
+            val test=Observer<List<LocalServices>>{
                 val list = mutableListOf<Service>()
-                result.forEach { localService ->
-                    list.add(Service(localService))
+                it.forEach {service->
+                    list.add(Service(service))
                 }
-                emit(list.toList())
+                changeDetection.postValue(list.toList())
+
             }
-        }
+            result.observeForever (test)
+        return changeDetection
 
     }
 
 
     @Transaction
     @Query("SELECT * FROM service WHERE serviceId IN (SELECT DISTINCT(serviceId) FROM passwords) and name LIKE :service")
-    fun searchServiceCredentialsPrivate(service: String): LocalServices
+    fun searchServiceCredentialsPrivate(service: String): LocalServices?
 
-    fun searchServiceCredentialsPublic(service: String): LiveData<Service> {
+    fun searchServiceCredentialsPublic(service: String): LiveData<Service?> {
         return liveData {
             withContext(Dispatchers.IO) {
                 val result = searchServiceCredentialsPrivate(service)
-                emit(Service(result))
+                if (result == null)
+                    emit(null)
+                else
+                    emit(Service(result))
             }
         }
 
     }
+    @Delete
+    fun deleteService(serviceName: Service)
 
 
-    fun insertServiceCredentials(credentials: List<Service>): LiveData<List<Long>> {
-        return liveData {
-                val list = mutableListOf<Long>()
-                credentials.forEach {
-                    val result = insertService(it)
-                    list.add(result)
-                    it.credentials?.forEach { cre ->
-                        insert(cre.copy(serviceId = result))
-                    }
+
+
+
+
+    suspend fun insertSingleServiceCredentials(credentials: Service) {
+        withContext(Dispatchers.IO) {
+            searchServiceCredentialsPrivate(credentials.name)?.let {ser->
+                deleteService(Service(ser))
+                Service(ser).credentials?.forEach {
+                    deleteCredentials(it)
                 }
-                emit(list.toList())
             }
+
+        val result = insertService(credentials)
+        credentials.credentials?.forEach { cre ->
+            insert(cre.copy(serviceId = result))
+        }
+    }
     }
 
-    fun insertSingleServiceCredentials(credentials: Service): LiveData<Long> {
-        return liveData {
-                val result = insertService(credentials)
-                credentials.credentials?.forEach { cre ->
-                    insert(cre.copy(serviceId = result))
+
+    suspend fun deleteFullService(credentials: Service){
+            withContext(Dispatchers.IO) {
+                val result = searchServiceCredentialsPrivate(credentials.name)?.let {
+                    Service(it)
+                }
+                if (result != null) {
+                    deleteService(result)
+                    result.credentials?.forEach {
+                        deleteCredentials(it)
+                    }
+                    insertSingleServiceCredentials(result)
             }
-            emit(result)
         }
     }
 

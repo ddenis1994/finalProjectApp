@@ -8,10 +8,10 @@ import com.example.finalprojectapp.data.model.Service
 @Dao
 interface ServiceDAO {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(service: Service):Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(services: List<Service>):List<Long>
 
     @Query("SELECT * FROM service ORDER BY name")
@@ -22,6 +22,9 @@ interface ServiceDAO {
 
     @Query("SELECT EXISTS(SELECT 1 FROM service WHERE name LIKE :serviceName LIMIT 1)")
     fun isExists(serviceName: String):LiveData<Boolean>
+
+    @Delete
+    fun delete(serviceName: Service)
 
 
 }

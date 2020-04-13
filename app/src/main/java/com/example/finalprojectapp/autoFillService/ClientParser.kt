@@ -25,13 +25,13 @@ class ClientParser (
 
     val autoFillDataForSaveList= mutableListOf<AutoFillNodeData>()
 
-    private suspend fun getCredentials() =
+    private fun getCredentials() =
         PasswordRoomDatabase.
         getDatabase(context).
         localCredentialsDAO().
         searchServiceCredentialsPublic(requestClientPackage)
 
-        var  result=MutableLiveData<Service>()
+        var  result=MutableLiveData<Service?>()
 
         fun packageClientName(): String {
             return requestClientPackage
@@ -49,11 +49,7 @@ class ClientParser (
 
         private fun parse(forFill: Boolean) {
             if(forFill) {
-                coroutineScope.launch {
-                    withContext(Dispatchers.IO) {
-                        result = getCredentials() as MutableLiveData<Service>
-                    }
-                }
+                result = getCredentials() as MutableLiveData<Service?>
             }
             for (i in 0 until this.nodesCount)
                 parseNodeWindows(forFill, requestClient.getWindowNodeAt(i).rootViewNode)

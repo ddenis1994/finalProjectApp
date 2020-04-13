@@ -1,4 +1,4 @@
-package com.example.finalprojectapp.data.viewModels
+package com.example.finalprojectapp.ui.credentials
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,7 +18,4 @@ class CredentialsViewModel internal constructor(
     private val _allPasswords = mainRepository.getAllData()
     val allPasswords: LiveData<List<Service>> = _allPasswords
 
-
-
-    val data = mainRepository.getAllData()
 }

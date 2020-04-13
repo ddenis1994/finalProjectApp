@@ -1,38 +1,26 @@
 package com.example.finalprojectapp.localDB
 
-import androidx.lifecycle.LiveData
 import com.example.finalprojectapp.data.model.Service
 
 class MainRepository private constructor(
-    private val credentialsDao: CredentialsDAO,
-    private val serviceDAO: ServiceDAO
+    private val credentialsDao: CredentialsDAO
 )  {
 
     fun getAllData() =
         credentialsDao.getAllServiceCredentialsPublic()
 
-    fun insertListService(service: List<Service>) =
-        credentialsDao.insertServiceCredentials(service)
 
-    fun insertService(service: Service) =
-        credentialsDao.insertSingleServiceCredentials(service)
 
-    fun getService(name:String):LiveData<Service> =
+
+    fun getService(name:String) =
         credentialsDao.searchServiceCredentialsPublic(name)
-
-
-
-
-
-
     companion object {
-
         // For Singleton instantiation
         @Volatile private var instance: MainRepository? = null
 
-        fun getInstance(credentialsDao: CredentialsDAO,serviceDAO: ServiceDAO) =
+        fun getInstance(credentialsDao: CredentialsDAO) =
             instance ?: synchronized(this) {
-                instance ?: MainRepository(credentialsDao,serviceDAO).also { instance = it }
+                instance ?: MainRepository(credentialsDao).also { instance = it }
             }
     }
 }

@@ -5,7 +5,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.firebase.firestore.Exclude
 
-@Entity(tableName = "passwords",indices = [Index(value = ["serviceId","hint"],unique = true)])
+@Entity(tableName = "passwords",indices = [Index(value = ["serviceId","hint","data"],unique = true)])
 data class Credentials (
     @PrimaryKey(autoGenerate = true)
     @Exclude

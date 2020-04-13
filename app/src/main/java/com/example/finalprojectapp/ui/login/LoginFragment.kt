@@ -17,7 +17,6 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -34,12 +33,10 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObjects
 import kotlinx.android.synthetic.main.fragment_login.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 
 
@@ -141,7 +138,6 @@ class LoginFragment : Fragment() {
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
-        getDataFromServer()
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName
         requireView().findNavController().navigate(R.id.startMainApplication)
@@ -150,30 +146,6 @@ class LoginFragment : Fragment() {
             "$welcome $displayName",
             Toast.LENGTH_LONG
         ).show()
-    }
-    private fun getDataFromServer() {
-        val db = FirebaseFirestore.getInstance()
-        val user = FirebaseAuth.getInstance().currentUser!!
-        db.collection("users").document(user.uid)
-            .collection("services").get()
-            .addOnSuccessListener {
-                val result = it.toObjects<Service>()
-                val localDB = PasswordRoomDatabase.getDatabase(requireContext())
-                //TODO change the got data from hare (cannot get all data every time)
-                    lifecycleScope.launch {
-                        withContext(Dispatchers.IO) {
-                            localDB.localCredentialsDAO().insertServiceCredentials(result)
-                            with (requireContext().getSharedPreferences("mainPreferences", Context.MODE_PRIVATE).edit()){
-                                putBoolean("encrypted", true)
-                                commit()
-                            }
-                            val updateWorkRequest = OneTimeWorkRequestBuilder<DBWorkerDecryption>()
-                                .build()
-                            WorkManager.getInstance(requireContext()).enqueue(updateWorkRequest)
-                        }
-                }
-            }
-
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {

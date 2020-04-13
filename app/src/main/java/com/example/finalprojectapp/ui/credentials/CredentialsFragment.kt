@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.adapters.MyAdapter
-import com.example.finalprojectapp.data.viewModels.CredentialsViewModel
 import com.example.finalprojectapp.utils.InjectorUtils
 import kotlinx.android.synthetic.main.fragment_cre.*
 import kotlinx.android.synthetic.main.fragment_cre.view.*

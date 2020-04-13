@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
  */
         val settings = FirebaseFirestoreSettings.Builder()
             .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
-            .setPersistenceEnabled(true)
+            .setPersistenceEnabled(false)
             .build()
         val firestore = FirebaseFirestore.getInstance()
         firestore.firestoreSettings = settings

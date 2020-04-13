@@ -1,4 +1,4 @@
-package com.example.finalprojectapp.data.viewModels
+package com.example.finalprojectapp.ui.credentials
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -10,6 +10,8 @@ class CredentialsViewModelFactory (
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return CredentialsViewModel(repository) as T
+            return CredentialsViewModel(
+                repository
+            ) as T
         }
 }
