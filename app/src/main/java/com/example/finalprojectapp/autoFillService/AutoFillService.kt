@@ -8,12 +8,10 @@ import android.app.assist.AssistStructure
 import android.content.Context
 import android.os.CancellationSignal
 import android.service.autofill.*
-import android.util.Log
 import android.view.autofill.AutofillValue
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import androidx.security.crypto.MasterKeys
-import com.example.finalprojectapp.crypto.CredentialEncrypt
+import com.example.finalprojectapp.crypto.RemoteEncrypt
 import com.example.finalprojectapp.crypto.DataHashGenerate
 import com.example.finalprojectapp.crypto.EncryptLocalData
 import com.example.finalprojectapp.data.model.Credentials
@@ -23,10 +21,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.lang.System.load
-import java.security.KeyStore
-import java.util.*
-import javax.crypto.Cipher
 
 
 class AutoFillService : AutofillService() , LifecycleOwner {
@@ -122,7 +116,7 @@ class AutoFillService : AutofillService() , LifecycleOwner {
 
         val db = FirebaseFirestore.getInstance()
         val user = FirebaseAuth.getInstance().currentUser!!
-        val encrypted = CredentialEncrypt("password")
+        val encrypted = RemoteEncrypt("password")
         db.collection("users").document(user.uid)
             .collection("services").document(service.name)
             .set(service.copy(credentials = encrypted.encryptAll(service.credentials)))

@@ -9,7 +9,7 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 
-class CredentialEncrypt(private val password:String) {
+class RemoteEncrypt(private val password:String) {
 
     private val cipher: Cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
     private var keySpec: PBEKeySpec? = null
