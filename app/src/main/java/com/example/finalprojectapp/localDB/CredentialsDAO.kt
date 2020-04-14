@@ -23,7 +23,7 @@ interface CredentialsDAO {
     )
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertService(service: Service): Long
+    suspend fun insertServicePrivate(service: Service): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(password: Credentials): Long
@@ -84,20 +84,26 @@ interface CredentialsDAO {
     @Delete
     fun deleteService(serviceName: Service)
 
-    suspend fun insertSingleServiceCredentials(credentials: Service) {
+    suspend fun insertSingleServiceCredentials(service: Service) {
         withContext(Dispatchers.IO) {
-            searchServiceCredentialsPrivate(credentials.name)?.let {ser->
+            var notFoundSame = true
+            searchServiceCredentialsPrivate(service.name)?.let { ser ->
+                if (ser.service.hashData == service.hashData) {
+                    notFoundSame = false
+                    return@let
+                }
                 deleteService(Service(ser))
                 Service(ser).credentials?.forEach {
                     deleteCredentials(it)
                 }
             }
-
-        val result = insertService(credentials)
-        credentials.credentials?.forEach { cre ->
-            insert(cre.copy(serviceId = result))
+            if (notFoundSame) {
+                val result = insertServicePrivate(service)
+                service.credentials?.forEach { cre ->
+                    insert(cre.copy(serviceId = result))
+                }
+            }
         }
-    }
     }
 
 

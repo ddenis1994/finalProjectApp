@@ -13,7 +13,7 @@ class TestDataHashGenerate {
 
     @Test
     fun `test with normal params`(){
-        val testData=Service("testService",null,null,
+        val testData=Service("testService","",null,null,
             listOf(Credentials(listOf("testHint1"),"testData")))
         val result=testClass.generateSHA256(testData)
         assertNotNull(result)
@@ -21,7 +21,7 @@ class TestDataHashGenerate {
 
     @Test
     fun `test 2 different input`(){
-        val testData1=Service("testService",null,null,
+        val testData1=Service("testService","",null,null,
             listOf(Credentials(listOf("testHint1"),"testData")))
         val testData2=testData1.copy(credentials = listOf(testData1.credentials?.get(0)?.copy(data = "testData2")!!))
         val result1=testClass.generateSHA256(testData1)
@@ -31,7 +31,7 @@ class TestDataHashGenerate {
 
     @Test
     fun `test with null params`() {
-        val testData=Service("testService",null,null,
+        val testData=Service("testService","",null,null,
             listOf(Credentials(listOf("testHint1"),"testData")))
         val result=testClass.generateSHA256(testData)
         assertNotNull(result)
@@ -39,7 +39,7 @@ class TestDataHashGenerate {
 
     @Test
     fun `test with 2 same services`() {
-        val testData1=Service("testService",null,null,
+        val testData1=Service("testService","",null,null,
             listOf(Credentials(listOf("testHint1"),"testData")))
         val testData2=testData1.copy()
         val result1=testClass.generateSHA256(testData1)

@@ -6,9 +6,10 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.ServerTimestamp
 
-@Entity(tableName = "service",indices = [Index(value = ["name"],unique = true)])
+@Entity(tableName = "service",indices = [Index(value = ["name","hashData"],unique = true)])
 data class Service (
     var name:String,
+    var hashData:String,
     @Ignore
     @ServerTimestamp
     val time: Timestamp?,
@@ -21,12 +22,14 @@ data class Service (
 ){
     constructor() : this(
         "",
+        "",
         null,
         null,
         null
     )
     constructor(temp: CredentialsDAO.LocalServices):this(
         temp.service.name,
+        "",
         null,
         null,
         temp.credentials,

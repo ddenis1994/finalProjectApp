@@ -70,7 +70,6 @@ class MainMenuFragment : Fragment() {
                                         )
                                 }
                             }
-
                         }
                     }
                     with(requireContext().getSharedPreferences("mainPreferences", Context.MODE_PRIVATE).edit()) {
@@ -80,10 +79,6 @@ class MainMenuFragment : Fragment() {
                     val updateWorkRequest = OneTimeWorkRequestBuilder<DBWorkerDecryption>()
                         .build()
                     WorkManager.getInstance(requireContext()).enqueue(updateWorkRequest)
-
-
-
-
                     with(
                         requireContext().getSharedPreferences(
                             "mainPreferences",

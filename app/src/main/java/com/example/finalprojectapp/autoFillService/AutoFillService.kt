@@ -11,11 +11,22 @@ import android.service.autofill.*
 import android.util.Log
 import android.view.autofill.AutofillValue
 import androidx.lifecycle.*
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import com.example.finalprojectapp.workers.SaveDataOrganizeWorker
-import com.google.gson.Gson
+import androidx.lifecycle.Observer
+import androidx.security.crypto.MasterKeys
+import com.example.finalprojectapp.crypto.CredentialEncrypt
+import com.example.finalprojectapp.crypto.DataHashGenerate
+import com.example.finalprojectapp.crypto.EncryptLocalData
+import com.example.finalprojectapp.data.model.Credentials
+import com.example.finalprojectapp.data.model.Service
+import com.example.finalprojectapp.localDB.PasswordRoomDatabase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.lang.System.load
+import java.security.KeyStore
+import java.util.*
+import javax.crypto.Cipher
 
 
 class AutoFillService : AutofillService() , LifecycleOwner {
@@ -27,7 +38,7 @@ class AutoFillService : AutofillService() , LifecycleOwner {
         val context: List<FillContext> = request.fillContexts
         val structure: AssistStructure = context[context.size - 1].structure
 
-        val myParser= ClientParser(structure,applicationContext as Context,lifecycleScope)
+        val myParser= ClientParser(structure, applicationContext as Context)
 
         myParser.parseForFill()
 
@@ -70,24 +81,52 @@ class AutoFillService : AutofillService() , LifecycleOwner {
 
         @SuppressLint("RestrictedApi")
         override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
-            Log.i("autoFillService", "started auto fill service save process")
             val context = request.fillContexts
             val structure = context[context.size - 1].structure
 
-            val parser=ClientParser(structure,applicationContext as Context,lifecycleScope)
+            val parser=ClientParser(structure, applicationContext as Context)
             parser.parseForSave()
-
-            val gson=Gson().toJson(parser.autoFillDataForSaveList)
-            val dataToPass= Data.Builder()
-                    .put("data",gson)
-                    .put("serviceRequest",parser.packageClientName())
-                    .build()
-            val updateWorkRequest= OneTimeWorkRequestBuilder<SaveDataOrganizeWorker>()
-                    .setInputData(dataToPass)
-                    .build()
-            WorkManager.getInstance(applicationContext).enqueue(updateWorkRequest)
+            GlobalScope.launch {
+                addDataToLocal(parser.autoFillDataForSaveList,parser.packageClientName())
+            }
             callback.onSuccess()
         }
+
+    private suspend fun addDataToLocal(autoFillDataForSaveList: MutableList<AutoFillNodeData>,request:String) {
+        val localDB=PasswordRoomDatabase.getDatabase(applicationContext)
+        val listOfCredentials= mutableListOf<Credentials>()
+        autoFillDataForSaveList.forEach {
+            it.textValue?.let { it1 ->
+                Credentials(it.autofillHints?.toList()!!,
+                    it1
+                )
+            }?.let { it2 -> listOfCredentials.add(it2) }
+        }
+        if (listOfCredentials.isNotEmpty()) {
+            val service = Service(request, "", null, null, listOfCredentials)
+            val finalService=service.copy(hashData = DataHashGenerate().generateSHA256(service))
+
+            val localCredentials= mutableListOf<Credentials>()
+            finalService.credentials?.forEach {
+                val temp=EncryptLocalData().encrypt(it.data)
+                localCredentials.add(it.copy(data = temp.first,iv = temp.second))
+            }
+            localDB.localCredentialsDAO()
+                .insertSingleServiceCredentials(finalService.copy(credentials = localCredentials))
+
+            addDataToRemote(finalService)
+        }
+    }
+
+    private fun addDataToRemote(service: Service) {
+
+        val db = FirebaseFirestore.getInstance()
+        val user = FirebaseAuth.getInstance().currentUser!!
+        val encrypted = CredentialEncrypt("password")
+        db.collection("users").document(user.uid)
+            .collection("services").document(service.name)
+            .set(service.copy(credentials = encrypted.encryptAll(service.credentials)))
+    }
 
     override fun getLifecycle(): Lifecycle {
         return lifecycleRegistry

@@ -2,6 +2,7 @@ package com.example.finalprojectapp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.finalprojectapp.crypto.EncryptLocalData
 import com.google.firebase.firestore.FirebaseFirestore
 
 import com.google.firebase.firestore.FirebaseFirestoreSettings
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
 
 
  */
+
         val settings = FirebaseFirestoreSettings.Builder()
             .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
             .setPersistenceEnabled(true)

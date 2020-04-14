@@ -1,20 +1,14 @@
 package com.example.finalprojectapp.autoFillService
 import android.app.assist.AssistStructure
 import android.content.Context
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.MutableLiveData
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.localDB.PasswordRoomDatabase
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-
-class ClientParser (
-    private val requestClient:AssistStructure,
-    private val context:Context,
-    private val coroutineScope: LifecycleCoroutineScope
+class ClientParser(
+    private val requestClient: AssistStructure,
+    private val context: Context
 ){
 
     private val requestClientPackage:String = requestClient.activityComponent.packageName
