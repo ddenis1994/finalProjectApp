@@ -2,13 +2,12 @@ package com.example.finalprojectapp.crypto
 
 import com.example.finalprojectapp.data.model.Credentials
 import java.security.SecureRandom
-import java.util.Base64
+import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
-import kotlin.collections.HashMap
 
 class CredentialEncrypt(private val password:String) {
 
@@ -43,58 +42,7 @@ class CredentialEncrypt(private val password:String) {
         }
         return encryptedData
     }
-    fun decryptAll(data: List<Credentials>?): MutableList<Credentials> {
-        val decryptedData: MutableList<Credentials> = mutableListOf()
-        if (data.isNullOrEmpty())
-            return decryptedData
-        val decoder = Base64.getDecoder()
-        data.forEach { decryptedMap ->
-            if (decryptedMap.iv.isNullOrEmpty() or decryptedMap.salt.isNullOrEmpty()) {
-                decryptedData.add(
-                    Credentials(
-                        0,
-                        0,
-                        decryptedMap.hint,
-                        cipher.doFinal().toString(Charsets.UTF_8),
-                        null,
-                        null
-                    )
-                )
-            } else {
-                keySpec = PBEKeySpec(
-                    password.toCharArray(),
-                    decoder.decode(decryptedMap.salt.toString()),
-                    65536,
-                    256
-                )
-                secretBytes = keyFactory.generateSecret(keySpec).encoded
-                key = SecretKeySpec(secretBytes, "AES")
-                cipher.init(
-                    Cipher.DECRYPT_MODE,
-                    key,
-                    IvParameterSpec(decoder.decode(decryptedMap.iv.toString()))
-                )
 
-                val temp=cipher.doFinal(
-                    decoder.decode(
-                    decryptedMap.data.toByteArray(Charsets.UTF_8)
-                )
-                ).toString(Charsets.UTF_8)
-                decryptedData.add(
-                    Credentials(
-                        0,
-                        0,
-                        decryptedMap.hint,
-                        temp,
-                        null,
-                        null
-                    )
-
-                )
-            }
-        }
-        return decryptedData
-    }
     fun decrypt(data: Credentials?): Credentials {
         val decoder = Base64.getDecoder()
         keySpec = PBEKeySpec(

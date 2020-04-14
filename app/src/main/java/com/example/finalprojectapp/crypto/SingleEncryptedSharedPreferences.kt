@@ -1,4 +1,4 @@
-package com.example.finalstudy.crypto
+package com.example.finalprojectapp.crypto
 
 import android.content.Context
 import android.content.SharedPreferences

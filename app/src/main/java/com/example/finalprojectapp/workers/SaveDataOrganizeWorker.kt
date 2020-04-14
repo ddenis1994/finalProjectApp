@@ -42,7 +42,7 @@ class SaveDataOrganizeWorker(context: Context,
         val encrypted = CredentialEncrypt("password")
         credentialsData.forEach {
             newCredentials.add(
-                Credentials(0,0,it.autofillHints!!.toList(), it.textValue!!, null, null)
+                Credentials(it.autofillHints!!.toList(),it.textValue!!)
             )
         }
         val data = Service(
