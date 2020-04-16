@@ -9,11 +9,11 @@ import android.content.Context
 import android.os.CancellationSignal
 import android.service.autofill.*
 import android.view.autofill.AutofillValue
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
-import com.example.finalprojectapp.crypto.RemoteEncrypt
-import com.example.finalprojectapp.crypto.DataHashGenerate
-import com.example.finalprojectapp.crypto.EncryptLocalData
+import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.localDB.PasswordRoomDatabase
@@ -98,28 +98,29 @@ class AutoFillService : AutofillService() , LifecycleOwner {
         }
         if (listOfCredentials.isNotEmpty()) {
             val service = Service(request, "", null, null, listOfCredentials)
-            val finalService=service.copy(hashData = DataHashGenerate().generateSHA256(service))
+            val cryptography=Cryptography(applicationContext)
+            cryptography.setService(service)
 
-            val localCredentials= mutableListOf<Credentials>()
-            finalService.credentials?.forEach {
-                val temp=EncryptLocalData().encrypt(it.data)
-                localCredentials.add(it.copy(data = temp.first,iv = temp.second))
+            cryptography.localEncrypt()?.let {
+                localDB.localCredentialsDAO()
+                    .insertSingleServiceCredentials(it)
             }
-            localDB.localCredentialsDAO()
-                .insertSingleServiceCredentials(finalService.copy(credentials = localCredentials))
 
-            addDataToRemote(finalService)
+
+
+            cryptography.setService(service)
+            cryptography.remoteEncryption()?.let { addDataToRemote(it) }
         }
     }
 
     private fun addDataToRemote(service: Service) {
-
-        val db = FirebaseFirestore.getInstance()
-        val user = FirebaseAuth.getInstance().currentUser!!
-        val encrypted = RemoteEncrypt("password")
-        db.collection("users").document(user.uid)
-            .collection("services").document(service.name)
-            .set(service.copy(credentials = encrypted.encryptAll(service.credentials)))
+        if(service.hashData!="") {
+            val db = FirebaseFirestore.getInstance()
+            val user = FirebaseAuth.getInstance().currentUser!!
+            db.collection("users").document(user.uid)
+                .collection("services").document(service.name)
+                .set(service)
+        }
     }
 
     override fun getLifecycle(): Lifecycle {

@@ -3,17 +3,23 @@ package com.example.finalprojectapp.workers
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.finalprojectapp.crypto.RemoteEncrypt
+import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.localDB.PasswordRoomDatabase
 
 class DBWorkerDecryption(appContext: Context, workerParams: WorkerParameters)
     : CoroutineWorker(appContext, workerParams) {
     override suspend  fun doWork(): Result  {
         val localDB= PasswordRoomDatabase.getDatabase(applicationContext)
-        val decryption =RemoteEncrypt("password")
         val test = localDB.localCredentialsDAO().getAllEncryptedCredentials()
+        val cryptography=Cryptography(applicationContext)
+
         test.forEach {
-            localDB.localCredentialsDAO().updateCredentials(decryption.decrypt(it))
+            val temp=cryptography.remoteDecryptSingle(it)
+            val localTemp=cryptography.localEncryptSingle(temp)
+            localTemp?.let { it1 ->
+                localDB.localCredentialsDAO().updateCredentials(it1)
+            }
+
         }
 
         with (applicationContext.getSharedPreferences("mainPreferences",Context.MODE_PRIVATE).edit()) {

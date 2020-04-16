@@ -40,7 +40,7 @@ interface CredentialsDAO {
     @Query("select * from passwords")
     fun selectAllPasswords(): LiveData<List<Credentials>>
 
-    @Query("select * from passwords Where iv IS NOT NULL")
+    @Query("select * from passwords Where salt IS NOT NULL")
     suspend fun getAllEncryptedCredentials(): List<Credentials>
 
     @Transaction

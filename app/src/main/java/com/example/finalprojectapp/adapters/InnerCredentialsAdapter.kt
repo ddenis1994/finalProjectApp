@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalprojectapp.crypto.RemoteEncrypt
+import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.databinding.Credentials1Binding
 import kotlinx.coroutines.GlobalScope
@@ -48,8 +48,8 @@ class InnerCredentialsAdapter(private val children : List<Credentials>):
 
 
         private fun decrepitCredentials(cre: Credentials): Credentials {
-            val encrypted = RemoteEncrypt("password")
-            return encrypted.decrypt(cre)
+            val cryptography=Cryptography(null)
+            return cryptography.decryptLocalSingleCredentials(cre)!!
         }
 
         fun bind(data: Credentials) {
