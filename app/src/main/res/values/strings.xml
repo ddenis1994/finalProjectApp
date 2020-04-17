@@ -13,11 +13,12 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-
+    <string name="settings_enable_header">Enable/Disable</string>
     <string name="default_web_client_id">445654267827-ohr6njqepigkpqjv2c0obmspdpjbjh2d.apps.googleusercontent.com</string>
     <string name="loading_data">Loading data</string>
     <string name="settings">Settings</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="set_default_autofill_service">Set default Autofill service</string>
 </resources>
