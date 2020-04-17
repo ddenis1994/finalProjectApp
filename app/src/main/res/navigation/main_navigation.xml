@@ -34,4 +34,5 @@
             android:id="@+id/action_navigation_notifications_to_navigation_home"
             app:destination="@id/navigation_password" />
     </fragment>
+
 </navigation>

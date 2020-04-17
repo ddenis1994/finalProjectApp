@@ -18,4 +18,13 @@
         android:id="@+id/mainMenuFragment2"
         android:name="com.example.finalprojectapp.ui.MainMenuFragment"
         android:label="MainMenuFragment" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.example.finalprojectapp.ui.settings.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+    <action
+        android:id="@+id/action_global_settingsFragment"
+        app:destination="@id/navigation_settings" />
 </navigation>

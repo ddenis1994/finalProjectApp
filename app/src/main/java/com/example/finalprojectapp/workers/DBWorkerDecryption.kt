@@ -14,8 +14,7 @@ class DBWorkerDecryption(appContext: Context, workerParams: WorkerParameters)
         val cryptography=Cryptography(applicationContext)
 
         test.forEach {
-            val temp=cryptography.remoteDecryptSingle(it)
-            val localTemp=cryptography.localEncryptSingle(temp)
+            val localTemp=cryptography.localEncryptSingle(cryptography.remoteDecryptSingle(it))
             localTemp?.let { it1 ->
                 localDB.localCredentialsDAO().updateCredentials(it1)
             }

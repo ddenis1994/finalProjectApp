@@ -2,18 +2,20 @@ package com.example.finalprojectapp.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.text.TextUtils.replace
+import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.localDB.PasswordRoomDatabase
+import com.example.finalprojectapp.ui.settings.SettingsFragment
 import com.example.finalprojectapp.workers.DBWorkerDecryption
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -34,6 +36,16 @@ class MainMenuFragment : Fragment() {
         super.onCreate(savedInstanceState)
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.show()
+        (activity as AppCompatActivity).supportActionBar?.title="PASCEMANGER"
+    }
 
     override fun onStart() {
         super.onStart()
@@ -41,8 +53,6 @@ class MainMenuFragment : Fragment() {
         val navController: NavController = requireActivity().findNavController(R.id.nav_host_fragment2)
         setOnUpdate()
         navView.setupWithNavController(navController)
-
-
     }
 
     private fun setOnUpdate() {
@@ -89,9 +99,21 @@ class MainMenuFragment : Fragment() {
                         apply()
                     }
                 }
+    }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.action_bar_menu, menu)
+        this.findNavController()
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.navigation_settings-> {
+                findNavController().navigate(R.id.action_global_settingsFragment)
+            }
+        }
 
-
+        return super.onOptionsItemSelected(item)
     }
 }

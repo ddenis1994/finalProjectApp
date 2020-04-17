@@ -92,7 +92,7 @@ class Cryptography(context:Context?) {
     }
 
     fun remoteDecryptSingle(data: Credentials?): Credentials? {
-        if(data!=null && sanityCheckRemote()) {
+        if(data!=null) {
             val keyFactory: SecretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
             val cipher: Cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
             val decoder = Base64.getDecoder()

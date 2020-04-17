@@ -40,7 +40,6 @@ class CredentialsFragment : Fragment() {
                 adapter=viewAdapter
             }
         })
-
         return root
     }
 

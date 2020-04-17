@@ -1,6 +1,8 @@
 package com.example.finalprojectapp
 
 import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -33,8 +35,12 @@ class MainActivity : AppCompatActivity() {
             .build()
         val firestore = FirebaseFirestore.getInstance()
         firestore.firestoreSettings = settings
+        supportActionBar?.hide()
+        //actionBar?.hide()
+
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
+
 }
