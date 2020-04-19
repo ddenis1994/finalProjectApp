@@ -8,10 +8,11 @@ import androidx.room.TypeConverters
 import com.example.finalprojectapp.credentialsDB.model.Credentials
 import com.example.finalprojectapp.credentialsDB.model.DataSet
 import com.example.finalprojectapp.credentialsDB.model.Service
+import com.example.finalprojectapp.credentialsDB.model.relationship.DataSetCredentialsManyToMany
 import com.example.finalprojectapp.localDB.Converters
 
 
-@Database(entities = [Service::class, Credentials::class,DataSet::class], version = 1, exportSchema = false)
+@Database(entities = [Service::class, Credentials::class,DataSet::class, DataSetCredentialsManyToMany::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class CredentialsDataBase: RoomDatabase() {
 

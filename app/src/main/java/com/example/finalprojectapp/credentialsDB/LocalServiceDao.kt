@@ -4,6 +4,7 @@ import androidx.room.*
 import com.example.finalprojectapp.credentialsDB.model.Credentials
 import com.example.finalprojectapp.credentialsDB.model.DataSet
 import com.example.finalprojectapp.credentialsDB.model.relationship.DataSetAndCredentials
+import com.example.finalprojectapp.credentialsDB.model.relationship.DataSetCredentialsManyToMany
 import com.example.finalprojectapp.crypto.Cryptography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,12 +18,18 @@ interface LocalServiceDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun privateInsertCredentials(credentials: Credentials):Long
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun privateInsertCredentials(dataSetCredentialsManyToMany: DataSetCredentialsManyToMany):Long
+
 
     @Query("SELECT * FROM credentials_")
     suspend fun privateGetAllCredentials(): List<Credentials>
 
     @Query("SELECT * FROM credentials_ Where dataSetId = :dataSet ")
     suspend fun privateGetCredentialsByDataSet(dataSet: Long): List<Credentials>
+
+    @Query("SELECT * FROM credentials_ Where innerHashValue = :dataSet ")
+    suspend fun privateGetCredentialsByHashData(dataSet: String): Credentials
 
     suspend fun publicGetCredentialsByDataSet(dataSet: Long): List<Credentials>{
         val list= mutableListOf<Credentials>()
@@ -43,7 +50,11 @@ interface LocalServiceDao {
                 val md = MessageDigest.getInstance("SHA-256")
                 result= Base64.getEncoder().encodeToString(md.digest(message))
             }
-            return@withContext privateInsertCredentials(cryptography.localEncryptCredentials(credentials.copy(innerHashValue = result))!!)
+            var resultInsert=privateInsertCredentials(cryptography.localEncryptCredentials(credentials.copy(innerHashValue = result!!))!!)
+            if (resultInsert==-1L){
+                resultInsert=privateGetCredentialsByHashData(result).credentialsId
+            }
+            return@withContext resultInsert
         }
     }
 
@@ -79,7 +90,9 @@ interface LocalServiceDao {
             }
             val creList= mutableListOf<Long>()
             dataSet.credentials?.forEach {
-                creList.add(publicInsertCredentials(it.copy(dataSetId = result)))
+                val insertResult=publicInsertCredentials(it.copy(dataSetId = result))
+                privateInsertCredentials(DataSetCredentialsManyToMany(dataSetId=result,credentialsId = insertResult))
+                creList.add(insertResult)
             }
             return@withContext Pair(result,creList)
         }
@@ -90,6 +103,16 @@ interface LocalServiceDao {
     suspend fun privateGetAllDataSet(): List<DataSetAndCredentials>
 
     @Transaction
+    @Query("SELECT * FROM dataSetCredentialsManyToMany ")
+    suspend fun privateGetAllDataSetCredentialsManyToMany(): List<DataSetCredentialsManyToMany>
+
+    @Transaction
     @Query("SELECT * FROM dataSet_ Where :hashData = hashData")
     suspend fun privateGetDataSet(hashData:String): DataSetAndCredentials
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun privateInsertCredentials2(credentials: DataSet):Long
+
+
 }
