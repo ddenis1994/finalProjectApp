@@ -60,7 +60,7 @@ interface LocalServiceDao {
     suspend fun privateInsertDataSet(dataSet: DataSet):Long
 
 
-    suspend fun publicInsertDataSet(dataSet: DataSet):Long{
+    suspend fun publicInsertDataSet(dataSet: DataSet):Pair<Long,List<Long>>{
         return withContext(Dispatchers.IO){
             var hashData=dataSet.hashData
             if (hashData==null){
@@ -76,13 +76,12 @@ interface LocalServiceDao {
             var result=privateInsertDataSet(dataSet.copy(hashData = hashData))
             if (result==-1L){
                 result=DataSet(privateGetDataSet(hashData!!)).dataSetId
-
-
             }
+            val creList= mutableListOf<Long>()
             dataSet.credentials?.forEach {
-                publicInsertCredentials(it.copy(dataSetId = result))
+                creList.add(publicInsertCredentials(it.copy(dataSetId = result)))
             }
-            return@withContext result
+            return@withContext Pair(result,creList)
         }
     }
 

@@ -131,9 +131,8 @@ class DataBaseUnitTest {
         @Test
         fun insertDataSet()= runBlocking {
             val result=serverDAO.publicInsertDataSet(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "12"))))
-            serverDAO.publicInsertDataSet(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "2"))))
+            val result2=serverDAO.publicInsertDataSet(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "2"))))
             val allData=serverDAO.privateGetAllDataSet()
-            val allData2=serverDAO.privateGetDataSet(allData[0].dataSet.hashData!!)
             assertEquals(0, result)
             assertEquals(1, allData.size)
         }
