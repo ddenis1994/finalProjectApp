@@ -4,7 +4,6 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.example.finalprojectapp.credentialsDB.model.relationship.DataSetAndCredentials
 import com.google.firebase.firestore.Exclude
 
 @Entity(tableName = "dataSet_",indices = [Index(value = ["hashData"],unique = true)])
@@ -20,13 +19,6 @@ data class DataSet (
 ){
     constructor() : this(
         null
-    )
-    constructor(temp: DataSetAndCredentials):this(
-        temp.credentials,
-        temp.dataSet.hashData,
-        temp.dataSet.dataSetId,
-        temp.dataSet.serviceId
-
     )
 
 }

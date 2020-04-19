@@ -3,8 +3,9 @@ package com.example.finalprojectapp.credentialsDB
 import androidx.room.*
 import com.example.finalprojectapp.credentialsDB.model.Credentials
 import com.example.finalprojectapp.credentialsDB.model.DataSet
-import com.example.finalprojectapp.credentialsDB.model.relationship.DataSetAndCredentials
+import com.example.finalprojectapp.credentialsDB.model.Service
 import com.example.finalprojectapp.credentialsDB.model.relationship.DataSetCredentialsManyToMany
+import com.example.finalprojectapp.credentialsDB.model.relationship.ServiceToDataSet
 import com.example.finalprojectapp.crypto.Cryptography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -30,6 +31,9 @@ interface LocalServiceDao {
 
     @Query("SELECT * FROM credentials_ Where innerHashValue = :dataSet ")
     suspend fun privateGetCredentialsByHashData(dataSet: String): Credentials
+
+    @Query("SELECT * FROM credentials_ Where credentialsId = :dataSet ")
+    suspend fun privateGetCredentialsID(dataSet: Long): Credentials
 
     suspend fun publicGetCredentialsByDataSet(dataSet: Long): List<Credentials>{
         val list= mutableListOf<Credentials>()
@@ -70,6 +74,37 @@ interface LocalServiceDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun privateInsertDataSet(dataSet: DataSet):Long
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun privateInsertService(dataSet: Service):Long
+
+    suspend fun publicInsertService(service: Service):Pair<Long,List<Pair<Long,List<Long>>>>{
+        var result=privateInsertService(service)
+        if (result==-1L){
+            result=privateGetServiceByName(service.name)!!.service.serviceId
+        }
+        val list= mutableListOf<Pair<Long,List<Long>>>()
+        service.dataSets?.forEach {
+            list.add(publicInsertDataSet(it.copy(serviceId = result)))
+        }
+        return Pair(result,list)
+    }
+
+    suspend fun publicGetServiceByName(string: String):Service{
+        val service= privateGetServiceByName(string) ?: return Service()
+
+        val list= mutableListOf<DataSet>()
+        service.dataSets.forEach {
+            list.add(getDataSetByID(it.dataSetId))
+        }
+        return service.service.copy(dataSets = list)
+    }
+
+    @Query("SELECT * FROM service_  Where :name like name")
+    suspend fun privateGetServiceByName(name:String): ServiceToDataSet?
+
+
+
+
 
     suspend fun publicInsertDataSet(dataSet: DataSet):Pair<Long,List<Long>>{
         return withContext(Dispatchers.IO){
@@ -86,7 +121,7 @@ interface LocalServiceDao {
             }
             var result=privateInsertDataSet(dataSet.copy(hashData = hashData))
             if (result==-1L){
-                result=DataSet(privateGetDataSet(hashData!!)).dataSetId
+                result=privateGetDataSet(hashData!!).dataSetId
             }
             val creList= mutableListOf<Long>()
             dataSet.credentials?.forEach {
@@ -98,21 +133,44 @@ interface LocalServiceDao {
         }
     }
 
-    @Transaction
-    @Query("SELECT * FROM dataSet_ ")
-    suspend fun privateGetAllDataSet(): List<DataSetAndCredentials>
+    //function to get all data by hash value for the dataSet
+    suspend fun getDataSetByHash(hash:String):DataSet{
 
-    @Transaction
-    @Query("SELECT * FROM dataSetCredentialsManyToMany ")
-    suspend fun privateGetAllDataSetCredentialsManyToMany(): List<DataSetCredentialsManyToMany>
+        val dataSet=privateGetDataSetByHash(hash)
+        val allData=privateGetDataSetToCredentials(dataSet.dataSetId)
+        val listCredentials= mutableListOf<Credentials>()
+        allData.forEach {
+            listCredentials.add(privateGetCredentialsID(it.credentialsId))
+        }
+        return dataSet.copy(credentials = listCredentials)
+    }
+
+    //function to get all data by id value for the dataSet
+    suspend fun getDataSetByID(id:Long):DataSet{
+
+        val dataSet=privateGetDataSetByDataSetID(id)
+        val allData=privateGetDataSetToCredentials(dataSet.dataSetId)
+        val listCredentials= mutableListOf<Credentials>()
+        allData.forEach {
+            listCredentials.add(privateGetCredentialsID(it.credentialsId))
+        }
+        return dataSet.copy(credentials = listCredentials)
+    }
+
+    @Query("SELECT * FROM dataSet_ Where :hashData = hashData")
+    suspend fun privateGetDataSetByHash(hashData:String): DataSet
+
+    @Query("SELECT * FROM dataSet_ Where :hashData = dataSetId")
+    suspend fun privateGetDataSetByDataSetID(hashData:Long): DataSet
+
+    @Query("SELECT * FROM dataSetCredentialsManyToMany Where dataSetId =:num ")
+    suspend fun privateGetDataSetToCredentials(num:Long): List<DataSetCredentialsManyToMany>
 
     @Transaction
     @Query("SELECT * FROM dataSet_ Where :hashData = hashData")
-    suspend fun privateGetDataSet(hashData:String): DataSetAndCredentials
+    suspend fun privateGetDataSet(hashData:String): DataSet
 
-    @Transaction
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun privateInsertCredentials2(credentials: DataSet):Long
+
 
 
 }

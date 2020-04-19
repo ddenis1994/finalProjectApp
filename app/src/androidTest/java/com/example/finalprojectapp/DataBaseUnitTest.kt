@@ -7,6 +7,7 @@ import com.example.finalprojectapp.credentialsDB.LocalServiceDao
 import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
 import com.example.finalprojectapp.credentialsDB.model.Credentials
 import com.example.finalprojectapp.credentialsDB.model.DataSet
+import com.example.finalprojectapp.credentialsDB.model.Service
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
@@ -130,10 +131,12 @@ class DataBaseUnitTest {
 
         @Test
         fun insertDataSet()= runBlocking {
-            val result=serverDAO.publicInsertDataSet(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "12"))))
-            val result2=serverDAO.publicInsertDataSet(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "2"))))
-            val h=serverDAO.privateGetAllDataSetCredentialsManyToMany()
-            assertEquals(0, result)
+
+            val result2=serverDAO.publicInsertService(Service().copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "8"))))))
+            val t=serverDAO.publicInsertService(Service().copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "2"),credentials.copy(data = "18"))))))
+            serverDAO.publicInsertService(Service().copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "3"))))))
+            val u=serverDAO.publicGetServiceByName("why")
+            assertEquals(true, false)
         }
     }
 
