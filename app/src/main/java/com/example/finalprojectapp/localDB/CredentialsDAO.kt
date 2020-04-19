@@ -48,18 +48,21 @@ interface CredentialsDAO {
     fun getAllServiceCredentialsPrivate(): LiveData<List<LocalServices>>
 
     fun getAllServiceCredentialsPublic(): LiveData<List<Service>> {
-            val result = getAllServiceCredentialsPrivate()
+        val result = getAllServiceCredentialsPrivate()
 
-            val changeDetection=MutableLiveData<List<Service>>()
-            val test=Observer<List<LocalServices>>{
-                val list = mutableListOf<Service>()
+        val changeDetection = MutableLiveData<List<Service>>()
+        val test = Observer<List<LocalServices>> {
+            val list = mutableListOf<Service>()
+            /*
                 it.forEach {service->
                     list.add(Service(service))
                 }
-                changeDetection.postValue(list.toList())
 
-            }
-            result.observeForever (test)
+                 */
+            changeDetection.postValue(list.toList())
+
+        }
+        result.observeForever(test)
         return changeDetection
 
     }
@@ -75,12 +78,13 @@ interface CredentialsDAO {
                 val result = searchServiceCredentialsPrivate(service)
                 if (result == null)
                     emit(null)
-                else
-                    emit(Service(result))
+                //else
+                emit(Service())
             }
         }
 
     }
+
     @Delete
     fun deleteService(serviceName: Service)
 
@@ -92,34 +96,38 @@ interface CredentialsDAO {
                     notFoundSame = false
                     return@let
                 }
+                /*
                 deleteService(Service(ser))
                 Service(ser).credentials?.forEach {
                     deleteCredentials(it)
                 }
             }
-            if (notFoundSame) {
-                val result = insertServicePrivate(service)
-                service.credentials?.forEach { cre ->
-                    insert(cre.copy(serviceId = result))
+
+                 */
+                if (notFoundSame) {
+                    val result = insertServicePrivate(service)
+                    service.credentials?.forEach { cre ->
+                        insert(cre.copy(serviceId = result))
+                    }
                 }
             }
         }
-    }
 
 
-    suspend fun deleteFullService(credentials: Service){
+        suspend fun deleteFullService(credentials: Service) {
             withContext(Dispatchers.IO) {
                 val result = searchServiceCredentialsPrivate(credentials.name)?.let {
-                    Service(it)
+                    Service()
                 }
                 if (result != null) {
                     deleteService(result)
                     result.credentials?.forEach {
                         deleteCredentials(it)
                     }
+                }
             }
         }
+
+
     }
-
-
 }

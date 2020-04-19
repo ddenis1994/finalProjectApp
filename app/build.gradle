@@ -3,16 +3,20 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
-apply plugin: 'de.mannodermaus.android-junit5'
 apply plugin: 'kotlinx-serialization'
+apply plugin: "de.mannodermaus.android-junit5"
+
+
+
 
 android {
+
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
     dataBinding {
-        //noinspection DataBindingWithoutKapt
         enabled = true
     }
+
 
     defaultConfig {
         applicationId "com.example.finalprojectapp"
@@ -21,10 +25,16 @@ android {
         versionCode 1
         versionName "1.0"
 
-        // 1) Make sure to use the AndroidJUnitRunner, of a subclass of it. This requires a dependency on androidx.test:runner, too!
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        // 2) Connect JUnit 5 to the runner
         testInstrumentationRunnerArgument "runnerBuilder", "de.mannodermaus.junit5.AndroidJUnit5Builder"
+
+
+    }
+
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+        }
     }
 
     buildTypes {
@@ -48,6 +58,7 @@ android {
     packagingOptions {
         exclude "META-INF/LICENSE*"
     }
+
 
 
 }
@@ -79,9 +90,6 @@ dependencies {
     implementation "androidx.navigation:navigation-ui:$nev"
     implementation "androidx.navigation:navigation-fragment-ktx:$nev"
     implementation "androidx.navigation:navigation-ui-ktx:$nev"
-    //testImplementation 'junit:junit:4.12'
-    //androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    //androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.google.firebase:firebase-analytics:17.3.0'
     implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
     implementation 'com.google.firebase:firebase-auth:19.3.0'
@@ -99,31 +107,42 @@ dependencies {
     implementation "androidx.security:security-crypto:1.0.0-beta01"
     //work manger
     implementation "androidx.work:work-runtime-ktx:$work_version"
-    androidTestImplementation "androidx.work:work-testing:$work_version"
-
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-
-    debugImplementation "androidx.fragment:fragment-testing:$fragment_version"
-
-    //junit 5
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.0"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.0"
-    testImplementation "org.junit.jupiter:junit-jupiter-params:5.3.2"
-
-    androidTestImplementation "androidx.test:runner:1.2.0"
-    androidTestImplementation "org.junit.jupiter:junit-jupiter-api:5.6.0"
-
-    // 6) The instrumentation test companion libraries
-    androidTestImplementation "de.mannodermaus.junit5:android-test-core:1.2.0"
-    androidTestRuntimeOnly "de.mannodermaus.junit5:android-test-runner:1.2.0"
-
-
-    //mockk
-    testImplementation "io.mockk:mockk:1.9.3"
-    androidTestImplementation "io.mockk:mockk-android:1.9.3"
-
     //live data
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
 
+
+// Core library
+    androidTestImplementation 'androidx.test:core:1.2.0'
+// AndroidJUnitRunner and JUnit Rules
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+//// Espresso dependencies
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
+
+    testImplementation 'junit:junit:4.13'
+    // Optional -- Robolectric environment
+    testImplementation 'androidx.test:core:1.2.0'
+    // Optional -- Mockito framework
+    testImplementation 'org.mockito:mockito-core:2.25.0'
+
+    // (Required) Writing and executing Unit Tests on the JUnit Platform
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.1"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.1"
+
+    // (Optional) If you need "Parameterized Tests"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:5.6.1"
+
+    // (Optional) If you also have JUnit 4-based tests
+
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.6.1"
+
+    androidTestImplementation "org.junit.jupiter:junit-jupiter-api:5.6.1"
+    androidTestImplementation "de.mannodermaus.junit5:android-instrumentation-test:0.2.2"
+
+    androidTestRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.1"
+    androidTestRuntimeOnly "org.junit.platform:junit-platform-runner:1.6.1"
+    androidTestRuntimeOnly "de.mannodermaus.junit5:android-instrumentation-test-runner:0.2.2"
 
 }

@@ -67,10 +67,13 @@ class MainMenuFragment : Fragment() {
                     for (dc in querySnapshot!!.documentChanges) {
                         when (dc.type) {
                             DocumentChange.Type.REMOVED -> {
+                                /*
                                 lifecycleScope.launch {
                                     localDB.localCredentialsDAO()
                                         .deleteFullService(dc.document.toObject())
                                 }
+
+                                 */
                             }
                             else ->{
                                 lifecycleScope.launch {

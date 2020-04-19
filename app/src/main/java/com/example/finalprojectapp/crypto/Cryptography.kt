@@ -17,6 +17,7 @@ import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
+import com.example.finalprojectapp.credentialsDB.model.Credentials as creV2
 
 class Cryptography(context:Context?) {
     private var service:Service?=null
@@ -153,6 +154,18 @@ class Cryptography(context:Context?) {
         return null
     }
 
+    fun localEncryptCredentials(credentials: creV2?):creV2? {
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, getKey())
+        if (credentials != null) {
+            return credentials.copy(
+                data = Base64.getEncoder().encodeToString(cipher.doFinal(credentials.data.toByteArray())),
+                iv = Base64.getEncoder().encodeToString(cipher.iv)
+            )
+        }
+        return null
+    }
+
 
     fun localDecrypt():Service?{
         if(sanityCheck()) {
@@ -170,6 +183,24 @@ class Cryptography(context:Context?) {
             val temp= service!!.copy(credentials = mutableListCredentials)
             service=null
             return temp
+        }
+        return null
+    }
+
+    fun localDecryptCredentials(credentials: creV2?):creV2? {
+        if (credentials != null) {
+            if (credentials.iv == null)
+                return credentials
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            val spec = GCMParameterSpec(128, Base64.getDecoder().decode(credentials.iv))
+            cipher.init(Cipher.DECRYPT_MODE, getKey(), spec)
+            return credentials.copy(
+                iv = null, data = cipher.doFinal(
+                    Base64.getDecoder().decode(
+                        credentials.data
+                    )
+                ).toString(Charsets.UTF_8)
+            )
         }
         return null
     }
@@ -219,6 +250,7 @@ class Cryptography(context:Context?) {
         }
         return ""
     }
+    
     private fun sanityCheck(): Boolean {
         if (service==null) {
             return false
