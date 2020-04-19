@@ -16,9 +16,7 @@ data class Credentials (
     val salt:String?=null,
     @PrimaryKey(autoGenerate = true)
     @Exclude
-    var credentialsId: Long=0,
-    @Exclude
-    var dataSetId:Long?=0
+    var credentialsId: Long=0
 ){
     constructor() : this(
         mutableListOf<String>(),

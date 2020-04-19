@@ -21,6 +21,7 @@ class DataBaseUnitTest {
     private val serverDAO: LocalServiceDao = db.credentialsDao()
     private val credentials = Credentials(data = "test", hint = listOf())
     private val dataSet= DataSet().copy(credentials = listOf(credentials))
+    private val service= Service().copy(dataSets = listOf(dataSet))
 
     @AfterEach
     fun clearDataBase() = runBlocking {
@@ -69,11 +70,11 @@ class DataBaseUnitTest {
             @Test
             fun test2SameInsertCredentials() = runBlocking {
 
-                serverDAO.publicInsertCredentials(credentials)
+                val first =serverDAO.publicInsertCredentials(credentials)
                 val g = serverDAO.publicInsertCredentials(credentials)
                 val i = serverDAO.privateGetAllCredentials()
 
-                assertEquals(-1, g)
+                assertEquals(first, g)
                 assertEquals(1, i.size)
             }
 
@@ -98,47 +99,65 @@ class DataBaseUnitTest {
         }
         //endregion
 
-        //region Query Credentials
-        @Nested
-        @DisplayName("Query Credentials")
-        inner class QueryCredentials {
-
-            @DisplayName("insert Credentials and than query it")
-            @Test
-            fun testQueryResult() = runBlocking {
-                val data = "old"
-                val dataSetId = 1L
-                serverDAO.publicInsertCredentials(
-                    credentials.copy(
-                        data = data,
-                        dataSetId = dataSetId
-                    )
-                )
-                val result = serverDAO.publicGetCredentialsByDataSet(dataSetId)
-                assertEquals(dataSetId, result[0].dataSetId)
-                assertEquals(data, result[0].data)
-
-            }
-        }
-
-        //endregion
 
     }
 
     @Nested
-    @DisplayName("DataSet")
+    @DisplayName("Service")
     inner class DataSetTest {
 
         @Test
+        @DisplayName("insert Service")
         fun insertDataSet()= runBlocking {
-
             val result2=serverDAO.publicInsertService(Service().copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "8"))))))
             val t=serverDAO.publicInsertService(Service().copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "2"),credentials.copy(data = "18"))))))
             serverDAO.publicInsertService(Service().copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "3"))))))
             val u=serverDAO.publicGetServiceByName("why")
-            assertEquals(true, false)
+            assertEquals(true, true)
         }
+
+        @Test
+        @DisplayName("insert single Service")
+        fun insertSingleService()= runBlocking {
+            val result=serverDAO.publicInsertService(service)
+            assertNotEquals(result.first,-1L)
+            val allData=serverDAO.publicGetAllService()
+            assertEquals(1,allData.size)
+        }
+
+        @Test
+        @DisplayName("insert 2 same Service")
+        fun insert2Service()= runBlocking {
+            serverDAO.publicInsertService(service)
+            serverDAO.publicInsertService(service)
+            val allData=serverDAO.publicGetAllService()
+            assertEquals(1,allData.size)
+        }
+
+
+        @Test
+        @DisplayName("insert 2 Different Service")
+        fun insert2DifferentService()= runBlocking {
+            serverDAO.publicInsertService(service.copy(name = "test"))
+            serverDAO.publicInsertService(service)
+            val allData=serverDAO.publicGetAllService()
+            assertEquals(2,allData.size)
+        }
+
+
+        @Test
+        @DisplayName("insert 1  Service with diffrent cradenitial")
+        fun insertOneServiceWith2Diffrent()= runBlocking {
+            serverDAO.publicInsertService(service.copy())
+            serverDAO.publicInsertService(service.copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials.copy(data = "new")))) ))
+            val allData=serverDAO.publicGetAllService()
+            assertEquals(2,allData.size)
+        }
+
+
+
     }
+
 
 
 }

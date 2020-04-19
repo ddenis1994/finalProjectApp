@@ -26,8 +26,6 @@ interface LocalServiceDao {
     @Query("SELECT * FROM credentials_")
     suspend fun privateGetAllCredentials(): List<Credentials>
 
-    @Query("SELECT * FROM credentials_ Where dataSetId = :dataSet ")
-    suspend fun privateGetCredentialsByDataSet(dataSet: Long): List<Credentials>
 
     @Query("SELECT * FROM credentials_ Where innerHashValue = :dataSet ")
     suspend fun privateGetCredentialsByHashData(dataSet: String): Credentials
@@ -35,28 +33,28 @@ interface LocalServiceDao {
     @Query("SELECT * FROM credentials_ Where credentialsId = :dataSet ")
     suspend fun privateGetCredentialsID(dataSet: Long): Credentials
 
-    suspend fun publicGetCredentialsByDataSet(dataSet: Long): List<Credentials>{
-        val list= mutableListOf<Credentials>()
+
+    suspend fun publicGetCredentialsID(dataSet: Long): Credentials{
+        val result=privateGetCredentialsID(dataSet)
         val cryptography=Cryptography(null)
-        privateGetCredentialsByDataSet(dataSet).forEach {
-            list.add(cryptography.localDecryptCredentials(it)!!)
-        }
-        return list
+        return cryptography.localDecryptCredentials(result)!!
     }
+
+
 
 
     suspend fun publicInsertCredentials(credentials: Credentials):Long{
         return withContext(Dispatchers.IO){
             val cryptography=Cryptography(null)
-            var result= credentials.innerHashValue
-            if (result==null){
+            var hashData= credentials.innerHashValue
+            if (hashData==null){
                 val message: ByteArray = (credentials.data+credentials.hint).toByteArray()
                 val md = MessageDigest.getInstance("SHA-256")
-                result= Base64.getEncoder().encodeToString(md.digest(message))
+                hashData= Base64.getEncoder().encodeToString(md.digest(message))
             }
-            var resultInsert=privateInsertCredentials(cryptography.localEncryptCredentials(credentials.copy(innerHashValue = result!!))!!)
+            var resultInsert=privateInsertCredentials(cryptography.localEncryptCredentials(credentials.copy(innerHashValue = hashData!!))!!)
             if (resultInsert==-1L){
-                resultInsert=privateGetCredentialsByHashData(result).credentialsId
+                resultInsert=privateGetCredentialsByHashData(hashData).credentialsId
             }
             return@withContext resultInsert
         }
@@ -99,6 +97,23 @@ interface LocalServiceDao {
         return service.service.copy(dataSets = list)
     }
 
+    @Query("SELECT * FROM service_ ")
+    suspend fun privateGetAllService(): List<ServiceToDataSet>
+
+    suspend fun publicGetAllService():List<Service>{
+        val service= privateGetAllService()
+        val servicesList= mutableListOf<Service>()
+        service.forEach {ser->
+            val list= mutableListOf<DataSet>()
+            ser.dataSets.forEach {
+                list.add(getDataSetByID(it.dataSetId))
+            }
+            servicesList.add(ser.service.copy(dataSets = list))
+
+        }
+        return servicesList
+    }
+
     @Query("SELECT * FROM service_  Where :name like name")
     suspend fun privateGetServiceByName(name:String): ServiceToDataSet?
 
@@ -125,7 +140,7 @@ interface LocalServiceDao {
             }
             val creList= mutableListOf<Long>()
             dataSet.credentials?.forEach {
-                val insertResult=publicInsertCredentials(it.copy(dataSetId = result))
+                val insertResult=publicInsertCredentials(it)
                 privateInsertCredentials(DataSetCredentialsManyToMany(dataSetId=result,credentialsId = insertResult))
                 creList.add(insertResult)
             }
@@ -140,7 +155,7 @@ interface LocalServiceDao {
         val allData=privateGetDataSetToCredentials(dataSet.dataSetId)
         val listCredentials= mutableListOf<Credentials>()
         allData.forEach {
-            listCredentials.add(privateGetCredentialsID(it.credentialsId))
+            listCredentials.add(publicGetCredentialsID(it.credentialsId))
         }
         return dataSet.copy(credentials = listCredentials)
     }
@@ -152,7 +167,7 @@ interface LocalServiceDao {
         val allData=privateGetDataSetToCredentials(dataSet.dataSetId)
         val listCredentials= mutableListOf<Credentials>()
         allData.forEach {
-            listCredentials.add(privateGetCredentialsID(it.credentialsId))
+            listCredentials.add(publicGetCredentialsID(it.credentialsId))
         }
         return dataSet.copy(credentials = listCredentials)
     }
