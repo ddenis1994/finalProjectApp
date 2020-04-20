@@ -19,6 +19,7 @@ data class Service (
     @Ignore
     val userId: String?,
     @Ignore
+    @Exclude
     var dataSets: List<DataSet>?,
     @Exclude
     @PrimaryKey(autoGenerate = true) var serviceId: Long=0

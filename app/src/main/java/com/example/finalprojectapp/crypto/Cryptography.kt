@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import com.example.finalprojectapp.credentialsDB.model.DataSet
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.Service
 import java.security.Key
@@ -21,6 +22,7 @@ import com.example.finalprojectapp.credentialsDB.model.Credentials as creV2
 
 class Cryptography(context:Context?) {
     private var service:Service?=null
+    private var service2:DataSet?=null
     private val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
     private val password:String="password"
     private var  instance:SharedPreferences?=null
@@ -38,15 +40,14 @@ class Cryptography(context:Context?) {
     }
 
 
-    fun remoteEncryption(): Service? {
-        if(sanityCheckRemote()) {
-            if (service!!.credentials.isNullOrEmpty())
-                return null
-            val encryptedData= mutableListOf<Credentials>()
+    fun remoteEncryption(service2:DataSet?): DataSet {
+            if (service2!!.credentials.isNullOrEmpty())
+                return DataSet()
+            val encryptedData= mutableListOf<creV2>()
             val encoder = Base64.getEncoder()
             val cipher: Cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
             val keyFactory: SecretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-            service!!.credentials!!.forEach {
+            service2.credentials!!.forEach {
                 val salt = ByteArray(16)
                 SecureRandom().nextBytes(salt)
                 val iv = ByteArray(16)
@@ -63,12 +64,11 @@ class Cryptography(context:Context?) {
                 )
             }
             if (encryptedData.isEmpty())
-                return null
-            val temp=service!!.copy(credentials = encryptedData,hashData = generateSHA256())
+                return DataSet()
+            val temp= service2.copy(credentials = encryptedData)
             service=null
             return temp
-        }
-        return null
+
     }
 
     private fun sanityCheckRemote(): Boolean {
@@ -236,7 +236,7 @@ class Cryptography(context:Context?) {
             this.service=service
     }
     private fun generateSHA256(): String {
-        if(sanityCheck()) {
+
             var rawData = String()
             service!!.credentials.let {
                 it?.forEach { cre ->
@@ -247,8 +247,7 @@ class Cryptography(context:Context?) {
             val message: ByteArray = rawData.toByteArray()
             val md = MessageDigest.getInstance("SHA-256")
             return Base64.getEncoder().encodeToString(md.digest(message))
-        }
-        return ""
+
     }
     
     private fun sanityCheck(): Boolean {
