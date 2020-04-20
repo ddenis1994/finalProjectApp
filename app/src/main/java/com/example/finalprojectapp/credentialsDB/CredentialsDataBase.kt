@@ -23,7 +23,7 @@ abstract class CredentialsDataBase: RoomDatabase() {
         private var INSTANCE: CredentialsDataBase? = null
 
     fun getDatabase(context: Context): CredentialsDataBase {
-        val tempInstance = CredentialsDataBase.INSTANCE
+        val tempInstance = INSTANCE
         if (tempInstance != null) {
             return tempInstance
         }
@@ -31,7 +31,7 @@ abstract class CredentialsDataBase: RoomDatabase() {
             val instance = Room.databaseBuilder(
                 context.applicationContext,
                 CredentialsDataBase::class.java,
-                "word_database"
+                "password_Database"
             )
                 .addCallback(
                     object : RoomDatabase.Callback() {
@@ -39,7 +39,7 @@ abstract class CredentialsDataBase: RoomDatabase() {
                 )
                 .fallbackToDestructiveMigration()
                 .build()
-            CredentialsDataBase.INSTANCE = instance
+            INSTANCE = instance
             return instance
         }
     }
