@@ -1,69 +1,36 @@
 package com.example.finalprojectapp.autoFillService
+
 import android.app.assist.AssistStructure
-import android.content.Context
-import androidx.lifecycle.MutableLiveData
-import com.example.finalprojectapp.data.model.Service
-import com.example.finalprojectapp.localDB.PasswordRoomDatabase
+import android.app.assist.AssistStructure.ViewNode
+import com.google.common.base.Preconditions
+import com.google.common.collect.ImmutableList
 
+class ClientParser(structures:List<AssistStructure>) {
+    private val  mStructures: List<AssistStructure>
+    init {
+        Preconditions.checkNotNull(structures)
+        this.mStructures = structures
+    }
 
-class ClientParser(
-    private val requestClient: AssistStructure,
-    private val context: Context
-){
+    constructor(structure:AssistStructure ) : this(ImmutableList.of(structure))
 
-    private val requestClientPackage:String = requestClient.activityComponent.packageName
-    private val nodesCount=requestClient.windowNodeCount
-
-
-    val autoFillFields = AutofillFieldMetadataCollection()
-
-    val autoFillDataForSaveList= mutableListOf<AutoFillNodeData>()
-
-    private fun getCredentials() =
-        PasswordRoomDatabase.
-        getDatabase(context).
-        localCredentialsDAO().
-        searchServiceCredentialsPublic(requestClientPackage)
-
-        var  result=MutableLiveData<Service?>()
-
-        fun packageClientName(): String {
-            return requestClientPackage
-        }
-
-
-        fun parseForSave(){
-            parse(false)
-        }
-
-        fun parseForFill() {
-            parse(true)
-        }
-
-
-        private fun parse(forFill: Boolean) {
-            if(forFill) {
-                result = getCredentials() as MutableLiveData<Service?>
+    fun parse(processor: (ViewNode) -> Unit) {
+        for (structure in mStructures) {
+            val nodes = structure.windowNodeCount
+            for (i in 0 until nodes) {
+                val viewNode = structure.getWindowNodeAt(i).rootViewNode
+                traverseRoot(viewNode, processor)
             }
-            for (i in 0 until this.nodesCount)
-                parseNodeWindows(forFill, requestClient.getWindowNodeAt(i).rootViewNode)
         }
-        private fun parseNodeWindows(forFill: Boolean,node: AssistStructure.ViewNode) {
-            node.autofillHints?.let { autoFillHints ->
-                if (autoFillHints.isNotEmpty()) {
-                    if (forFill) {
-                        autoFillFields.add(AutofillFieldMetadata(node))
-                    } else {
-                        val result=AutoFillNodeData(node)
-                        autoFillDataForSaveList.add(result)
-                    }
-                }
+    }
+    private fun traverseRoot(viewNode: ViewNode, processor: (ViewNode) -> Unit) {
+        processor(viewNode)
+        val childrenSize = viewNode.childCount
+        if (childrenSize > 0) {
+            for (i in 0 until childrenSize) {
+                traverseRoot(viewNode.getChildAt(i), processor)
             }
-            if(node.childCount>0)
-                for(i in 0 until node.childCount) parseNodeWindows(forFill,node.getChildAt(i))
-
         }
     }
 
-
-
+}

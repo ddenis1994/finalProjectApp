@@ -32,23 +32,9 @@ class AutofillFieldMetadata(view: ViewNode) {
     val autofillHints = view.autofillHints!!.filter(AutofillHelper::isValidHint).toTypedArray()
     val autofillId: AutofillId = view.autofillId!!
     val autofillType: Int = view.autofillType
-    val autofillOptions: Array<CharSequence>? = view.autofillOptions
-    val isFocused: Boolean = view.isFocused
 
     init {
         updateSaveTypeFromHints()
-    }
-
-    /**
-     * When the [ViewNode] is a list that the user needs to choose a string from (i.e. a spinner),
-     * this is called to return the index of a specific item in the list.
-     */
-    fun getAutofillOptionIndex(value: CharSequence): Int {
-        if (autofillOptions != null) {
-            return autofillOptions.indexOf(value)
-        } else {
-            return -1
-        }
     }
 
     private fun updateSaveTypeFromHints() {

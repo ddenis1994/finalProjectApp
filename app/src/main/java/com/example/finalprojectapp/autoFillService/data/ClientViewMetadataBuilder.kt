@@ -3,9 +3,9 @@ package com.example.finalprojectapp.autoFillService.data
 import android.app.assist.AssistStructure.ViewNode
 import com.example.finalprojectapp.autoFillService.AutoFillNodeData
 import com.example.finalprojectapp.autoFillService.AutofillFieldMetadata
-import com.example.finalprojectapp.autoFillService.ParserV2
+import com.example.finalprojectapp.autoFillService.ClientParser
 
-class ClientViewMetadataBuilder(private val mClientParser: ParserV2) {
+class ClientViewMetadataBuilder(private val mClientParser: ClientParser) {
 
     fun buildClientViewMetadata(): MutableList<AutofillFieldMetadata> {
         val allHints = mutableListOf<AutofillFieldMetadata>()

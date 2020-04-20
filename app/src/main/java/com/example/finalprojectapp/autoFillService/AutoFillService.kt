@@ -42,7 +42,7 @@ class AutoFillService : AutofillService() {
         val context: List<FillContext> = request.fillContexts
         val structure: AssistStructure = context[context.size - 1].structure
 
-        val newParserV2=ParserV2(structure)
+        val newParserV2=ClientParser(structure)
         clientViewMetadata=ClientViewMetadataBuilder(newParserV2).buildClientViewMetadata()
         dataSetAdapter= DataSetAdapter(
                 localServiceDAO,
@@ -66,7 +66,7 @@ class AutoFillService : AutofillService() {
         override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
             val context = request.fillContexts
             val structure = context[context.size - 1].structure
-            val newParserV2=ParserV2(structure)
+            val newParserV2=ClientParser(structure)
             clientViewSaveData =ClientViewMetadataBuilder(newParserV2).buildClientSaveMetadata()
             dataSetAdapter= DataSetAdapter(
                 localServiceDAO,
