@@ -90,8 +90,8 @@ interface LocalServiceDao {
         return Pair(result,list)
     }
 
-    suspend fun publicGetServiceByName(string: String):Service{
-        val service= privateGetServiceByName(string) ?: return Service()
+    suspend fun publicGetServiceByName(string: String):Service?{
+        val service= privateGetServiceByName(string) ?: return null
 
         val list= mutableListOf<DataSet>()
         service.dataSets.forEach {

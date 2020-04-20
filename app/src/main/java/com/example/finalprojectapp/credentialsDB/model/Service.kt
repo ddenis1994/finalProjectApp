@@ -23,6 +23,13 @@ data class Service (
     @Exclude
     @PrimaryKey(autoGenerate = true) var serviceId: Long=0
 ){
+    constructor(name: String,dataSets: List<DataSet>?) : this(
+        name,
+        null,
+        null,
+        dataSets
+    )
+
     constructor() : this(
         "",
         null,

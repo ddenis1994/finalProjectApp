@@ -2,37 +2,67 @@
 
 package com.example.finalprojectapp.autoFillService
 
-import android.R
 import android.annotation.SuppressLint
 import android.app.assist.AssistStructure
-import android.content.Context
 import android.os.CancellationSignal
 import android.service.autofill.*
-import android.view.autofill.AutofillValue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.Observer
-import com.example.finalprojectapp.crypto.Cryptography
-import com.example.finalprojectapp.data.model.Credentials
-import com.example.finalprojectapp.data.model.Service
-import com.example.finalprojectapp.localDB.PasswordRoomDatabase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.example.finalprojectapp.autoFillService.adapters.DataSetAdapter
+import com.example.finalprojectapp.autoFillService.adapters.ResponseAdapter
+import com.example.finalprojectapp.autoFillService.data.ClientViewMetadataBuilder
+import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
+import com.example.finalprojectapp.credentialsDB.LocalServiceDao
+import com.example.finalprojectapp.credentialsDB.model.Service
+import kotlinx.coroutines.*
 
 
 class AutoFillService : AutofillService() , LifecycleOwner {
 
     private lateinit var lifecycleRegistry: LifecycleRegistry
+    private lateinit var localServiceDAO: LocalServiceDao
+    private lateinit var coroutineScope: CoroutineScope
+    private lateinit var clientViewMetadata: List<AutofillFieldMetadata>
+    private lateinit var dataSetAdapter: DataSetAdapter
+    private lateinit var responseAdapter: ResponseAdapter
+    private lateinit var clientViewSaveData: MutableList<AutoFillNodeData>
+
+
+    override fun onCreate() {
+        super.onCreate()
+
+        coroutineScope=CoroutineScope(Job())
+        localServiceDAO =CredentialsDataBase.getDatabase(this).credentialsDao()
+
+    }
 
     override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal,
                                callback: FillCallback) {
         val context: List<FillContext> = request.fillContexts
         val structure: AssistStructure = context[context.size - 1].structure
 
+        val newParserV2=ParserV2(structure)
+        clientViewMetadata=ClientViewMetadataBuilder(newParserV2).buildClientViewMetadata()
+        dataSetAdapter= DataSetAdapter(
+                localServiceDAO,
+                structure.activityComponent.packageName,
+                coroutineScope)
+        responseAdapter= ResponseAdapter(
+            this,
+            dataSetAdapter,
+            clientViewMetadata,
+            callback,
+            cancellationSignal
+        )
+
+        coroutineScope.launch {
+            responseAdapter.buildResponse()
+        }
+
+/*
         val myParser= ClientParser(structure, applicationContext as Context)
+
 
         myParser.parseForFill()
 
@@ -71,21 +101,36 @@ class AutoFillService : AutofillService() , LifecycleOwner {
                 callback.onFailure("cannot sort this out")
         })
 
+ */
+
         }
 
         @SuppressLint("RestrictedApi")
         override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
             val context = request.fillContexts
             val structure = context[context.size - 1].structure
-
-            val parser=ClientParser(structure, applicationContext as Context)
-            parser.parseForSave()
+            val newParserV2=ParserV2(structure)
+            clientViewSaveData =ClientViewMetadataBuilder(newParserV2).buildClientSaveMetadata()
+            dataSetAdapter= DataSetAdapter(
+                localServiceDAO,
+                structure.activityComponent.packageName,
+                coroutineScope)
+            val service=dataSetAdapter.generatesServiceClass(clientViewSaveData)
             GlobalScope.launch {
-                addDataToLocal(parser.autoFillDataForSaveList,parser.packageClientName())
+                addDataToLocal(service,callback)
             }
+        }
+    private suspend fun addDataToLocal(
+        service: Service,
+        callback: SaveCallback){
+        withContext(Dispatchers.IO){
+            val result=localServiceDAO.publicInsertService(service)
             callback.onSuccess()
         }
 
+
+    }
+/*
     private suspend fun addDataToLocal(autoFillDataForSaveList: MutableList<AutoFillNodeData>,request:String) {
         val localDB=PasswordRoomDatabase.getDatabase(applicationContext)
         val listOfCredentials= mutableListOf<Credentials>()
@@ -123,6 +168,8 @@ class AutoFillService : AutofillService() , LifecycleOwner {
         }
     }
 
+
+ */
     override fun getLifecycle(): Lifecycle {
         return lifecycleRegistry
     }
