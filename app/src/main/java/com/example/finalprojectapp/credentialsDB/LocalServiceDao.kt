@@ -7,8 +7,11 @@ import com.example.finalprojectapp.credentialsDB.model.Service
 import com.example.finalprojectapp.credentialsDB.model.relationship.DataSetCredentialsManyToMany
 import com.example.finalprojectapp.credentialsDB.model.relationship.ServiceToDataSet
 import com.example.finalprojectapp.crypto.Cryptography
+import com.example.finalprojectapp.localDB.Converters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import java.security.MessageDigest
 import java.util.*
 
@@ -118,6 +121,33 @@ interface LocalServiceDao {
     suspend fun privateGetServiceByName(name:String): ServiceToDataSet?
 
 
+    @Query("SELECT r.dataSetId FROM service_ s, dataSetCredentialsManyToMany r,dataSet_ d,credentials_ c Where :serviceName like s.name AND d.serviceId = s.serviceId AND c.credentialsId==:credentialsID AND d.dataSetId = r.dataSetId And r.credentialsId = c.credentialsId")
+    suspend fun privateGetUnionServiceNameAndCredentialsHash(serviceName:String,credentialsID: Long): Long?
+
+    @Query("SELECT r.DataSetCredentialsManyToManyID FROM  dataSetCredentialsManyToMany r , credentials_ c   Where :dataSetID = r.dataSetId AND r.credentialsId = c.credentialsId And c.hint Like :hints")
+    suspend fun privateGetUnionDataSetAndCredentialsHash(dataSetID:Long,hints: String): Long?
+
+    suspend fun publicGetUnionServiceNameAndCredentialsHash(service:Service, oldCredentials: Credentials, newCredentials:Credentials): Int?{
+        val credentialsInner=publicInsertCredentials(oldCredentials)
+        val dataSet=privateGetUnionServiceNameAndCredentialsHash(service.name,credentialsInner)
+        val json = Json(JsonConfiguration.Stable)
+        val data = newCredentials.hint.let {
+            Converters.Data(it)
+        }
+        val hint=json.stringify(Converters.Data.serializer(), data)
+        val manyId= dataSet?.let {
+            privateGetUnionDataSetAndCredentialsHash(it,hint)
+        }
+        val newCre=publicInsertCredentials(newCredentials)
+        return dataSet?.let { manyId?.let { it1 -> DataSetCredentialsManyToMany(it,newCre, it1) } }?.let { privateUpdateNewCre(it) }
+    }
+
+
+    @Update
+    fun privateUpdateNewCre(vararg newManyToMany: DataSetCredentialsManyToMany):Int
+
+
+
 
 
 
@@ -184,8 +214,4 @@ interface LocalServiceDao {
     @Transaction
     @Query("SELECT * FROM dataSet_ Where :hashData = hashData")
     suspend fun privateGetDataSet(hashData:String): DataSet
-
-
-
-
 }

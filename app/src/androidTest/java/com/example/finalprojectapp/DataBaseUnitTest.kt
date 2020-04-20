@@ -109,11 +109,11 @@ class DataBaseUnitTest {
         @Test
         @DisplayName("insert Service")
         fun insertDataSet()= runBlocking {
-            val result2=serverDAO.publicInsertService(Service().copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "8"))))))
-            val t=serverDAO.publicInsertService(Service().copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "2"),credentials.copy(data = "18"))))))
+           serverDAO.publicInsertService(Service().copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "8"))))))
+            serverDAO.publicInsertService(Service().copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "2"),credentials.copy(data = "18"))))))
             serverDAO.publicInsertService(Service().copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "3"))))))
-            val u=serverDAO.publicGetServiceByName("why")
-            assertEquals(true, true)
+            val allData=serverDAO.publicGetAllService()
+            assertEquals(2, allData.size)
         }
 
         @Test
@@ -151,7 +151,25 @@ class DataBaseUnitTest {
             serverDAO.publicInsertService(service.copy())
             serverDAO.publicInsertService(service.copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials.copy(data = "new")))) ))
             val allData=serverDAO.publicGetAllService()
+            assertEquals(1,allData.size)
+            assertEquals(2,allData[0].dataSets!!.size)
+        }
+
+
+        @Test
+        @DisplayName("update one data set with one service")
+        fun updateOneDataSetServiceWith2Diffrent()= runBlocking {
+            val serviceName="service"
+            val username="username"
+            val oldCredentials=credentials.copy(data = "old",hint = listOf("password"))
+            val service2=service.copy(name = serviceName,dataSets = listOf(dataSet.copy(credentials = listOf(oldCredentials,credentials.copy(data = username)))))
+            val newCredentials=oldCredentials.copy(data = "new")
+            serverDAO.publicInsertService(service2)
+            serverDAO.publicInsertService(service2.copy(name = "test"))
+            val t=serverDAO.publicGetUnionServiceNameAndCredentialsHash(service2,oldCredentials,newCredentials)
+            val allData=serverDAO.publicGetAllService()
             assertEquals(2,allData.size)
+            assertEquals(1,t)
         }
 
 
