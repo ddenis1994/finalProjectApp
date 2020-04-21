@@ -12,7 +12,7 @@ import kotlinx.coroutines.async
 
 class DataSetAdapter(
     private val localServiceDAO: LocalServiceDao,
-    private val packageName: String,
+    val packageName: String,
     private val coroutineScope: CoroutineScope
 ) {
 
