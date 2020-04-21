@@ -25,7 +25,6 @@ class ResponseAdapter(
         val responseBuilder = FillResponse.Builder()
         val service = dataSetAdapter.getDataAsync().await()
         if (service != null) {
-            //found data
             val hashLocal = mutableMapOf<String, Credentials>()
             service.dataSets?.forEach {
                 val dataSet = Dataset.Builder()
@@ -34,8 +33,11 @@ class ResponseAdapter(
                 }
                 clientViewMetadata.forEach {meta->
                     val presentation = RemoteViews(service.name, R.layout.simple_list_item_1)
+                    //TODO fix the data
+                    if(meta.isFocused)
+                        presentation.setTextViewText(R.id.text1, hashLocal["username"]?.data)
                     meta.autofillHints.map { hint ->
-                        presentation.setTextViewText(R.id.text1, hint)
+
                         dataSet.setValue(
                                 meta.autofillId,
                                 AutofillValue.forText(hashLocal[hint]?.data),

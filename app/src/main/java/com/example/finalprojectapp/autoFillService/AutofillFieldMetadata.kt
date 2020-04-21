@@ -32,6 +32,7 @@ class AutofillFieldMetadata(view: ViewNode) {
     val autofillHints = view.autofillHints!!.filter(AutofillHelper::isValidHint).toTypedArray()
     val autofillId: AutofillId = view.autofillId!!
     val autofillType: Int = view.autofillType
+    val isFocused: Boolean = view.isFocused
 
     init {
         updateSaveTypeFromHints()
