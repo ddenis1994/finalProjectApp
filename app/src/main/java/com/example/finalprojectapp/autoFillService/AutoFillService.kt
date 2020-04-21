@@ -10,7 +10,7 @@ import com.example.finalprojectapp.autoFillService.adapters.ResponseAdapter
 import com.example.finalprojectapp.autoFillService.data.ClientViewMetadataBuilder
 import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
 import com.example.finalprojectapp.credentialsDB.LocalServiceDao
-import com.example.finalprojectapp.credentialsDB.model.Service
+import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.crypto.Cryptography
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore

@@ -4,9 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.example.finalprojectapp.credentialsDB.model.DataSet
 import com.example.finalprojectapp.data.model.Credentials
-import com.example.finalprojectapp.data.model.Service
+import com.example.finalprojectapp.data.model.DataSet
 import java.security.Key
 import java.security.KeyStore
 import java.security.MessageDigest
@@ -18,11 +17,10 @@ import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
-import com.example.finalprojectapp.credentialsDB.model.Credentials as creV2
 
 class Cryptography(context:Context?) {
-    private var service:Service?=null
-    private var service2:DataSet?=null
+
+    private var service: DataSet?=null
     private val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
     private val password:String="password"
     private var  instance:SharedPreferences?=null
@@ -40,10 +38,10 @@ class Cryptography(context:Context?) {
     }
 
 
-    fun remoteEncryption(service2:DataSet?): DataSet {
+    fun remoteEncryption(service2: DataSet?): DataSet {
             if (service2!!.credentials.isNullOrEmpty())
                 return DataSet()
-            val encryptedData= mutableListOf<creV2>()
+            val encryptedData= mutableListOf<Credentials>()
             val encoder = Base64.getEncoder()
             val cipher: Cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
             val keyFactory: SecretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
@@ -75,7 +73,7 @@ class Cryptography(context:Context?) {
         return sanityCheck() and (instance!=null)
     }
 
-    fun remoteDecrypt(): Service?{
+    fun remoteDecrypt(): DataSet?{
         if(sanityCheckRemote()){
             if (service!!.credentials.isNullOrEmpty())
                 return null
@@ -121,7 +119,7 @@ class Cryptography(context:Context?) {
         return null
     }
 
-    fun localEncrypt():Service?{
+    fun localEncrypt(): DataSet?{
         if(sanityCheck()) {
             val newCre=mutableListOf<Credentials>()
             service!!.credentials?.forEach {
@@ -142,7 +140,7 @@ class Cryptography(context:Context?) {
         return null
     }
 
-    fun localEncryptSingle(credentials: Credentials?):Credentials? {
+    fun localEncryptSingle(credentials: Credentials?): Credentials? {
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.ENCRYPT_MODE, getKey())
         if (credentials != null) {
@@ -154,7 +152,7 @@ class Cryptography(context:Context?) {
         return null
     }
 
-    fun localEncryptCredentials(credentials: creV2?):creV2? {
+    fun localEncryptCredentials(credentials: Credentials?): Credentials? {
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.ENCRYPT_MODE, getKey())
         if (credentials != null) {
@@ -167,7 +165,7 @@ class Cryptography(context:Context?) {
     }
 
 
-    fun localDecrypt():Service?{
+    fun localDecrypt(): DataSet?{
         if(sanityCheck()) {
             val mutableListCredentials=mutableListOf<Credentials>()
             service!!.credentials?.forEach {cre->
@@ -187,7 +185,7 @@ class Cryptography(context:Context?) {
         return null
     }
 
-    fun localDecryptCredentials(credentials: creV2?):creV2? {
+    fun localDecryptCredentials(credentials: Credentials?): Credentials? {
         if (credentials != null) {
             if (credentials.iv == null)
                 return credentials
@@ -205,7 +203,7 @@ class Cryptography(context:Context?) {
         return null
     }
 
-    fun decryptLocalSingleCredentials(credentials: Credentials?):Credentials?{
+    fun decryptLocalSingleCredentials(credentials: Credentials?): Credentials?{
         if (credentials!=null) {
             if (credentials.iv==null)
                 return credentials
@@ -231,7 +229,7 @@ class Cryptography(context:Context?) {
         return ks.getKey(masterKeyAlias,null)
     }
 
-    fun setService(service: Service?): Unit {
+    fun setService(service: DataSet?): Unit {
         if (service!=null)
             this.service=service
     }

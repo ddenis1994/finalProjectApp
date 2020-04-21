@@ -1,13 +1,12 @@
 package com.example.finalprojectapp.credentialsDB
 
 import androidx.room.*
-import com.example.finalprojectapp.credentialsDB.model.Credentials
-import com.example.finalprojectapp.credentialsDB.model.DataSet
-import com.example.finalprojectapp.credentialsDB.model.Service
-import com.example.finalprojectapp.credentialsDB.model.relationship.DataSetCredentialsManyToMany
-import com.example.finalprojectapp.credentialsDB.model.relationship.ServiceToDataSet
+import com.example.finalprojectapp.data.model.Credentials
+import com.example.finalprojectapp.data.model.DataSet
+import com.example.finalprojectapp.data.model.Service
+import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
+import com.example.finalprojectapp.data.model.relationship.ServiceToDataSet
 import com.example.finalprojectapp.crypto.Cryptography
-import com.example.finalprojectapp.localDB.Converters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -37,7 +36,7 @@ interface LocalServiceDao {
     suspend fun privateGetCredentialsID(dataSet: Long): Credentials
 
 
-    suspend fun publicGetCredentialsID(dataSet: Long): Credentials{
+    suspend fun publicGetCredentialsID(dataSet: Long): Credentials {
         val result=privateGetCredentialsID(dataSet)
         val cryptography=Cryptography(null)
         return cryptography.localDecryptCredentials(result)!!
@@ -90,7 +89,7 @@ interface LocalServiceDao {
         return Pair(result,list)
     }
 
-    suspend fun publicGetServiceByName(string: String):Service?{
+    suspend fun publicGetServiceByName(string: String): Service?{
         val service= privateGetServiceByName(string) ?: return null
 
         val list= mutableListOf<DataSet>()
@@ -127,7 +126,7 @@ interface LocalServiceDao {
     @Query("SELECT r.DataSetCredentialsManyToManyID FROM  dataSetCredentialsManyToMany r , credentials_ c   Where :dataSetID = r.dataSetId AND r.credentialsId = c.credentialsId And c.hint Like :hints")
     suspend fun privateGetUnionDataSetAndCredentialsHash(dataSetID:Long,hints: String): Long?
 
-    suspend fun publicGetUnionServiceNameAndCredentialsHash(service:Service, oldCredentials: Credentials, newCredentials:Credentials): Int?{
+    suspend fun publicGetUnionServiceNameAndCredentialsHash(service: Service, oldCredentials: Credentials, newCredentials: Credentials): Int?{
         val credentialsInner=publicInsertCredentials(oldCredentials)
         val dataSet=privateGetUnionServiceNameAndCredentialsHash(service.name,credentialsInner)
         val json = Json(JsonConfiguration.Stable)
@@ -179,7 +178,7 @@ interface LocalServiceDao {
     }
 
     //function to get all data by hash value for the dataSet
-    suspend fun getDataSetByHash(hash:String):DataSet{
+    suspend fun getDataSetByHash(hash:String): DataSet {
 
         val dataSet=privateGetDataSetByHash(hash)
         val allData=privateGetDataSetToCredentials(dataSet.dataSetId)
@@ -191,7 +190,7 @@ interface LocalServiceDao {
     }
 
     //function to get all data by id value for the dataSet
-    suspend fun getDataSetByID(id:Long):DataSet{
+    suspend fun getDataSetByID(id:Long): DataSet {
 
         val dataSet=privateGetDataSetByDataSetID(id)
         val allData=privateGetDataSetToCredentials(dataSet.dataSetId)

@@ -3,11 +3,11 @@ package com.example.finalprojectapp.credentialsDB
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.room.*
-import com.example.finalprojectapp.credentialsDB.model.Credentials
-import com.example.finalprojectapp.credentialsDB.model.DataSet
-import com.example.finalprojectapp.credentialsDB.model.Service
-import com.example.finalprojectapp.credentialsDB.model.relationship.DataSetCredentialsManyToMany
-import com.example.finalprojectapp.credentialsDB.model.relationship.ServiceToDataSet
+import com.example.finalprojectapp.data.model.Credentials
+import com.example.finalprojectapp.data.model.DataSet
+import com.example.finalprojectapp.data.model.Service
+import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
+import com.example.finalprojectapp.data.model.relationship.ServiceToDataSet
 import com.example.finalprojectapp.crypto.Cryptography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -32,7 +32,7 @@ interface LocalApplicationDAO {
     @Query("SELECT * FROM service_ ")
     suspend fun privateGetAllService(): List<ServiceToDataSet>
 
-    suspend fun publicGetCredentialsID(dataSet: Long): Credentials{
+    suspend fun publicGetCredentialsID(dataSet: Long): Credentials {
         val result=privateGetCredentialsID(dataSet)
         val cryptography=Cryptography(null)
         return cryptography.localDecryptCredentials(result)!!
@@ -67,7 +67,7 @@ interface LocalApplicationDAO {
         }
     }
 
-    suspend fun privateGetServiceByName(string: String):Service?{
+    suspend fun privateGetServiceByName(string: String): Service?{
         val service = privateGetServiceByNameQuery(string) ?: return null
         val list = mutableListOf<DataSet>()
         service.dataSets.forEach {
@@ -76,7 +76,7 @@ interface LocalApplicationDAO {
         return service.service.copy(dataSets = list)
     }
 
-    suspend fun getDataSetByID(id:Long):DataSet{
+    suspend fun getDataSetByID(id:Long): DataSet {
         val dataSet=privateGetDataSetByDataSetID(id)
         val allData=privateGetDataSetToCredentials(dataSet.dataSetId)
         val listCredentials= mutableListOf<Credentials>()

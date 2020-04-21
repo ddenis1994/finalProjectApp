@@ -1,4 +1,4 @@
-package com.example.finalprojectapp.localDB
+package com.example.finalprojectapp.credentialsDB
 
 import androidx.room.TypeConverter
 import kotlinx.serialization.*

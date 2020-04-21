@@ -3,7 +3,7 @@ package com.example.finalprojectapp.ui.credentials
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.finalprojectapp.credentialsDB.MainRepository
-import com.example.finalprojectapp.credentialsDB.model.Service
+import com.example.finalprojectapp.data.model.Service
 
 
 class CredentialsViewModel internal constructor(

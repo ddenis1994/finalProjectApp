@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalprojectapp.credentialsDB.model.Credentials
+import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.databinding.Credentials1Binding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -48,6 +48,7 @@ class InnerCredentialsAdapter(private val children : List<Credentials>):
 
         private fun decrepitCredentials(cre: Credentials): Credentials {
             return cre
+            //TODO add second factor
             //val cryptography=Cryptography(null)
             //return cryptography.decryptLocalSingleCredentials(cre)!!
         }

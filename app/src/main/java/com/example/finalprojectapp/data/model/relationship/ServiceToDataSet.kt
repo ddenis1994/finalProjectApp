@@ -1,9 +1,9 @@
-package com.example.finalprojectapp.credentialsDB.model.relationship
+package com.example.finalprojectapp.data.model.relationship
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.example.finalprojectapp.credentialsDB.model.DataSet
-import com.example.finalprojectapp.credentialsDB.model.Service
+import com.example.finalprojectapp.data.model.DataSet
+import com.example.finalprojectapp.data.model.Service
 
 
 data class ServiceToDataSet (

@@ -8,25 +8,32 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.ServerTimestamp
 
-@Entity(tableName = "service",indices = [Index(value = ["name","hashData"],unique = true)])
+@Entity(tableName = "service_",indices = [Index(value = ["name"],unique = true)])
 data class Service (
     var name:String,
-    var hashData:String,
     @Ignore
     @ServerTimestamp
     val time: Timestamp?,
     @Ignore
     val userId: String?,
     @Ignore
-    var credentials: List<Credentials>?,
+    @Exclude
+    var dataSets: List<DataSet>?,
     @Exclude
     @PrimaryKey(autoGenerate = true) var serviceId: Long=0
 ){
+    constructor(name: String,dataSets: List<DataSet>?) : this(
+        name,
+        null,
+        null,
+        dataSets
+    )
+
     constructor() : this(
-        "",
         "",
         null,
         null,
         null
     )
+
 }

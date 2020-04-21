@@ -10,7 +10,7 @@ import android.service.autofill.SaveInfo
 import android.view.autofill.AutofillValue
 import android.widget.RemoteViews
 import com.example.finalprojectapp.autoFillService.AutofillFieldMetadata
-import com.example.finalprojectapp.credentialsDB.model.Credentials
+import com.example.finalprojectapp.data.model.Credentials
 
 class ResponseAdapter(
     private val context: Context,

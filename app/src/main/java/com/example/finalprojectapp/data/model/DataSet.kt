@@ -1,4 +1,4 @@
-package com.example.finalprojectapp.credentialsDB.model
+package com.example.finalprojectapp.data.model
 
 import androidx.room.Entity
 import androidx.room.Ignore

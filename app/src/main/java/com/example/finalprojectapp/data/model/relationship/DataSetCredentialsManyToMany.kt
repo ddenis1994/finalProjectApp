@@ -1,4 +1,4 @@
-package com.example.finalprojectapp.credentialsDB.model.relationship
+package com.example.finalprojectapp.data.model.relationship
 
 import androidx.room.Entity
 import androidx.room.Index

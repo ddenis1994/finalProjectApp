@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalprojectapp.credentialsDB.model.Credentials
-import com.example.finalprojectapp.credentialsDB.model.Service
+import com.example.finalprojectapp.data.model.Credentials
+import com.example.finalprojectapp.data.model.Service
 
 
 import com.example.finalprojectapp.databinding.ListServicePasswordBinding

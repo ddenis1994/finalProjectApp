@@ -5,9 +5,9 @@ import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.finalprojectapp.credentialsDB.LocalServiceDao
 import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
-import com.example.finalprojectapp.credentialsDB.model.Credentials
-import com.example.finalprojectapp.credentialsDB.model.DataSet
-import com.example.finalprojectapp.credentialsDB.model.Service
+import com.example.finalprojectapp.data.model.Credentials
+import com.example.finalprojectapp.data.model.DataSet
+import com.example.finalprojectapp.data.model.Service
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
@@ -19,7 +19,10 @@ class DataBaseUnitTest {
         context, CredentialsDataBase::class.java
     ).build()
     private val serverDAO: LocalServiceDao = db.serviceDao()
-    private val credentials = Credentials(data = "test", hint = listOf())
+    private val credentials = Credentials(
+        data = "test",
+        hint = listOf()
+    )
     private val dataSet= DataSet().copy(credentials = listOf(credentials))
     private val service= Service().copy(dataSets = listOf(dataSet))
 
@@ -109,9 +112,15 @@ class DataBaseUnitTest {
         @Test
         @DisplayName("insert Service")
         fun insertDataSet()= runBlocking {
-           serverDAO.publicInsertService(Service().copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "8"))))))
-            serverDAO.publicInsertService(Service().copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "2"),credentials.copy(data = "18"))))))
-            serverDAO.publicInsertService(Service().copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "3"))))))
+           serverDAO.publicInsertService(
+               Service()
+                   .copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "8"))))))
+            serverDAO.publicInsertService(
+                Service()
+                    .copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "2"),credentials.copy(data = "18"))))))
+            serverDAO.publicInsertService(
+                Service()
+                    .copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "3"))))))
             val allData=serverDAO.publicGetAllService()
             assertEquals(2, allData.size)
         }

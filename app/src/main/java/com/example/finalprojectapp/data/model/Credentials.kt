@@ -1,27 +1,25 @@
 package com.example.finalprojectapp.data.model
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.firebase.firestore.Exclude
 
-@Entity(tableName = "passwords",indices = [Index(value = ["serviceId","hint","data"],unique = true)])
+@Entity(tableName = "credentials_",indices = [Index(value = ["innerHashValue"],unique = true)])
 data class Credentials (
-    val hint:List<String>,
-    val data:String,
-    val iv:String?=null,
+    var hint:List<String>,
+    var data:String,
+    var innerHashValue:String?=null,
+    var iv:String?=null,
+    @Ignore
     val salt:String?=null,
     @PrimaryKey(autoGenerate = true)
     @Exclude
-    val credentialsId: Long?=0,
-    @Exclude
-    val serviceId:Long?=0
+    var credentialsId: Long=0
 ){
     constructor() : this(
         mutableListOf<String>(),
-        "",
-        null,
-        null
+        ""
     )
-
 }
