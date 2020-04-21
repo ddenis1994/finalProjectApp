@@ -34,9 +34,7 @@ class DataSetAdapter(
                     credentialsList.add(
                         Credentials(
                             it.autofillHints?.toList()!!,
-                            it.dataValue!!.toString()
-                        )
-                    )
+                            it.dataValue!!.toString()))
             }
         }
 

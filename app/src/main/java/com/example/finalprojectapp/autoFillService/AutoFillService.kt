@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.example.finalprojectapp.autoFillService
 
 import android.app.assist.AssistStructure
@@ -31,7 +29,6 @@ class AutoFillService : AutofillService() {
 
     override fun onCreate() {
         super.onCreate()
-
         coroutineScope=CoroutineScope(Job())
         localServiceDAO =CredentialsDataBase.getDatabase(this.applicationContext).serviceDao()
 
@@ -55,12 +52,9 @@ class AutoFillService : AutofillService() {
             callback,
             cancellationSignal
         )
-
         coroutineScope.launch {
             responseAdapter.buildResponse()
         }
-
-
         }
 
         override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
@@ -85,11 +79,7 @@ class AutoFillService : AutofillService() {
             addDataToRemote(service)
             callback.onSuccess()
         }
-
-
     }
-
-
         private fun addDataToRemote(service: Service) {
             val db = FirebaseFirestore.getInstance()
             val user = FirebaseAuth.getInstance().currentUser!!
@@ -98,11 +88,11 @@ class AutoFillService : AutofillService() {
                 .set(service.copy(dataSets = null))
                 .addOnSuccessListener {
                     val cry=Cryptography(this)
-                    service.dataSets?.forEach {dataset->
-                        var rawData = dataset.hashData
+                    service.dataSets?.forEach {dataSet->
+                        var rawData = dataSet.hashData
                         if (rawData.isNullOrEmpty()) {
                             rawData = String()
-                            dataset.credentials.let {
+                            dataSet.credentials.let {
                                 it?.forEach { cre ->
                                     rawData += cre.data
                                     rawData += cre.hint
@@ -112,7 +102,7 @@ class AutoFillService : AutofillService() {
                             val md = MessageDigest.getInstance("SHA-256")
                             rawData= Base64.getEncoder().encodeToString(md.digest(message))
                         }
-                        val toUpload=cry.remoteEncryption(dataset.copy(hashData = rawData))
+                        val toUpload=cry.remoteEncryption(dataSet.copy(hashData = rawData))
                         db.collection("users").document(user.uid)
                             .collection("services").document(service.name)
                             .collection("dataSets").document(toUpload.hashData!!)

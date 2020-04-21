@@ -1,6 +1,7 @@
 package com.example.finalprojectapp.ui.settings
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -14,6 +15,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.example.finalprojectapp.R
+import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import kotlinx.android.synthetic.main.fragment_settings.view.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -32,6 +34,7 @@ class SettingsFragment : Fragment() {
     private var param2: String? = null
     private lateinit var mAutofillManager:AutofillManager
     private val REQUEST_CODE_SET_DEFAULT = 1
+    private lateinit var setting:SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +42,8 @@ class SettingsFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        mAutofillManager = getSystemService(this.requireActivity().applicationContext, AutofillManager::class.java)!!
-
+        mAutofillManager = getSystemService(requireContext(), AutofillManager::class.java)!!
+        setting=SingleEncryptedSharedPreferences().getSharedPreference(this.requireContext())
     }
 
     override fun onCreateView(
@@ -59,9 +62,21 @@ class SettingsFragment : Fragment() {
                 )
             }
         )
+
+        setupSettingsSwitch(
+            root.settingsSetSecondFactorAuthenticationContainer,
+            R.id.settingsSetSecondFactorAuthentication,
+            R.id.settingsSetSecondFactorAuthenticationSwitch,
+            setting.getBoolean("SecondFactorAuthentication",false),
+            CompoundButton.OnCheckedChangeListener { compoundButton: CompoundButton?, serviceSet: Boolean ->
+                setting.edit().putBoolean("SecondFactorAuthentication",serviceSet).apply()
+            }
+        )
+
         // Inflate the layout for this fragment
         return root
     }
+
 
     companion object {
         /**
@@ -121,4 +136,5 @@ class SettingsFragment : Fragment() {
         if (mAutofillManager.hasEnabledAutofillServices())
             mAutofillManager.disableAutofillServices()
     }
+
 }

@@ -43,6 +43,36 @@
                 android:minHeight="48dp"
                 android:layout_marginStart="16dp"/>
         </LinearLayout>
+
+        <TextView
+            style="@style/Settings.Header"
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/_2_factor_authentication"
+            />
+        <LinearLayout
+            android:id="@+id/settingsSetSecondFactorAuthenticationContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Settings.Container"
+            >
+            <TextView
+                android:id="@+id/settingsSetSecondFactorAuthentication"
+                style="@style/Settings.Label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/activate_second_factor_authentication" />
+            <Switch
+                android:id="@+id/settingsSetSecondFactorAuthenticationSwitch"
+                style="@style/Settings.Switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:layout_marginStart="16dp"/>
+
+        </LinearLayout>
     </LinearLayout>
 
 

@@ -7,12 +7,14 @@ import com.example.finalprojectapp.autoFillService.ClientParser
 
 class ClientViewMetadataBuilder(private val mClientParser: ClientParser) {
 
+    //this parser is used only to discover auto fill ids and hints
     fun buildClientViewMetadata(): MutableList<AutofillFieldMetadata> {
         val allHints = mutableListOf<AutofillFieldMetadata>()
         mClientParser.parse { node:ViewNode -> parseNodeForFill(node,allHints)}
         return allHints
     }
 
+    //this parser is used for parse data for saving
     fun buildClientSaveMetadata(): MutableList<AutoFillNodeData> {
         val allHints = mutableListOf<AutoFillNodeData>()
         mClientParser.parse { node:ViewNode -> parseNodeForSave(node,allHints)}
@@ -29,7 +31,6 @@ class ClientViewMetadataBuilder(private val mClientParser: ClientParser) {
         }
     }
 
-
     private fun parseNodeForFill(
         root: ViewNode,
         list: MutableList<AutofillFieldMetadata>
@@ -39,8 +40,6 @@ class ClientViewMetadataBuilder(private val mClientParser: ClientParser) {
             list.add(AutofillFieldMetadata(root))
         }
     }
-
-
 
 }
 
