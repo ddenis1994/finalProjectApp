@@ -1,5 +1,6 @@
 package com.example.finalprojectapp.autoFillService.adapters
 
+import android.view.View
 import com.example.finalprojectapp.autoFillService.AutoFillNodeData
 import com.example.finalprojectapp.credentialsDB.LocalServiceDao
 import com.example.finalprojectapp.data.model.Credentials
@@ -27,10 +28,7 @@ class DataSetAdapter(
             if (!it.autofillHints.isNullOrEmpty()) {
                 if (it.textValue != null)
                     credentialsList.add(
-                        Credentials(
-                            it.autofillHints?.toList()!!,
-                            it.textValue!!
-                        )
+                        Credentials(it.autofillHints?.toList()!!, it.textValue!!)
                     )
                 if (it.dataValue != null)
                     credentialsList.add(
@@ -44,13 +42,33 @@ class DataSetAdapter(
 
         val dataSet= listOf(
             DataSet(
-                credentials = credentialsList
+                credentials = credentialsList,dataSetName = chooseNameDataSet(clientViewSaveData)
             )
         )
         return Service(
             name = packageName,
             dataSets = dataSet
         )
+    }
+
+    private fun chooseNameDataSet(dataSet: List<AutoFillNodeData>): String {
+        val hashLocal = mutableMapOf<String, String>()
+        dataSet.forEach {
+            it.autofillHints?.map { hint-> it.textValue?.let { it1 -> hashLocal.put(hint, it1) } }
+            it.autofillHints?.map { hint-> it.dataValue?.let { it1 -> hashLocal.put(hint, it1.toString()) } }
+        }
+        return priority(hashLocal)
+    }
+
+    private fun priority(hashLocal: MutableMap<String, String>): String {
+        return when {
+            hashLocal[View.AUTOFILL_HINT_USERNAME]!=null -> hashLocal[View.AUTOFILL_HINT_USERNAME]!!
+            hashLocal[View.AUTOFILL_HINT_EMAIL_ADDRESS]!=null -> hashLocal[View.AUTOFILL_HINT_EMAIL_ADDRESS]!!
+            hashLocal[View.AUTOFILL_HINT_NAME]!=null -> hashLocal[View.AUTOFILL_HINT_NAME]!!
+            hashLocal[View.AUTOFILL_HINT_PHONE]!=null -> hashLocal[View.AUTOFILL_HINT_PHONE]!!
+            hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE]!=null -> hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE]!!
+            else -> "SecretDataSet"
+        }
     }
 
 }

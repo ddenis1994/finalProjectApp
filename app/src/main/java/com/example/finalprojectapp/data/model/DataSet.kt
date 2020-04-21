@@ -11,6 +11,7 @@ data class DataSet (
     @Ignore
     var credentials: List<Credentials>?=null,
     var hashData:String?=null,
+    var dataSetName:String="",
     @PrimaryKey(autoGenerate = true)
     @Exclude
     var dataSetId: Long=0,

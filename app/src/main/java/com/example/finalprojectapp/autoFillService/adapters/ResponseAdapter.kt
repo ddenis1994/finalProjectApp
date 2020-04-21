@@ -11,6 +11,7 @@ import android.view.autofill.AutofillValue
 import android.widget.RemoteViews
 import com.example.finalprojectapp.autoFillService.AutofillFieldMetadata
 import com.example.finalprojectapp.data.model.Credentials
+import com.example.finalprojectapp.data.model.Service
 
 class ResponseAdapter(
     private val context: Context,
@@ -33,11 +34,8 @@ class ResponseAdapter(
                 }
                 clientViewMetadata.forEach {meta->
                     val presentation = RemoteViews(service.name, R.layout.simple_list_item_1)
-                    //TODO fix the data
-                    if(meta.isFocused)
-                        presentation.setTextViewText(R.id.text1, hashLocal["username"]?.data)
+                    presentation.setTextViewText(R.id.text1,it.dataSetName )
                     meta.autofillHints.map { hint ->
-
                         dataSet.setValue(
                                 meta.autofillId,
                                 AutofillValue.forText(hashLocal[hint]?.data),
@@ -57,4 +55,31 @@ class ResponseAdapter(
 
         callback.onSuccess(responseBuilder.build())
     }
+/*
+    suspend fun withLocalData(service:Service):Dataset {
+        val hashLocal = mutableMapOf<String, Credentials>()
+        service.dataSets?.forEach {
+            val dataSet = Dataset.Builder()
+            it.credentials?.forEach { cre ->
+                cre.hint.map { hint -> hashLocal.put(hint, cre) }
+            }
+            clientViewMetadata.forEach { meta ->
+                val presentation = RemoteViews(service.name, R.layout.simple_list_item_1)
+                if (meta.isFocused)
+                    presentation.setTextViewText(R.id.text1, hashLocal["username"]?.data)
+                meta.autofillHints.map { hint ->
+
+                    dataSet.setValue(
+                        meta.autofillId,
+                        AutofillValue.forText(hashLocal[hint]?.data),
+                        presentation
+                    )
+                }
+            }
+            return dataSet.build()
+        }
+
+    }
+
+ */
 }
