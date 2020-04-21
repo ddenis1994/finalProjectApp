@@ -33,7 +33,7 @@ class AutoFillService : AutofillService() {
         super.onCreate()
 
         coroutineScope=CoroutineScope(Job())
-        localServiceDAO =CredentialsDataBase.getDatabase(this.applicationContext).credentialsDao()
+        localServiceDAO =CredentialsDataBase.getDatabase(this.applicationContext).serviceDao()
 
     }
 

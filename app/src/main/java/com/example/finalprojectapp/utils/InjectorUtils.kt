@@ -18,9 +18,10 @@ package com.example.finalprojectapp.utils
 
 import android.content.Context
 import androidx.fragment.app.Fragment
+import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
+import com.example.finalprojectapp.credentialsDB.MainRepository
 import com.example.finalprojectapp.ui.credentials.CredentialsViewModelFactory
-import com.example.finalprojectapp.localDB.MainRepository
-import com.example.finalprojectapp.localDB.PasswordRoomDatabase
+
 
 
 /**
@@ -30,7 +31,7 @@ object InjectorUtils {
 
     private fun getMainRepository(context: Context): MainRepository {
         return MainRepository.getInstance(
-            PasswordRoomDatabase.getDatabase(context.applicationContext).localCredentialsDAO()
+            CredentialsDataBase.getDatabase(context.applicationContext).applicationDAO()
         )
     }
 
@@ -38,8 +39,6 @@ object InjectorUtils {
         fragment: Fragment
     ): CredentialsViewModelFactory {
         val repository = getMainRepository(fragment.requireContext())
-        return CredentialsViewModelFactory(
-            repository
-        )
+        return CredentialsViewModelFactory(repository)
     }
 }

@@ -1,7 +1,6 @@
 package com.example.finalprojectapp.ui.login
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -18,13 +17,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.data.Result
-import com.example.finalprojectapp.data.model.*
-import com.example.finalprojectapp.localDB.PasswordRoomDatabase
-import com.example.finalprojectapp.workers.DBWorkerDecryption
+import com.example.finalprojectapp.data.model.LoggedInUser
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -33,9 +28,6 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObjects
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import java.io.IOException
 

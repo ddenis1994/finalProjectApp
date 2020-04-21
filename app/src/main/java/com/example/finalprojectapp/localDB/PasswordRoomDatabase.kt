@@ -13,7 +13,7 @@ import com.example.finalprojectapp.data.model.Service
 abstract class PasswordRoomDatabase: RoomDatabase() {
 
     abstract fun localCredentialsDAO(): CredentialsDAO
-    abstract fun serviceDAO(): ServiceDAO
+
     companion object {
         @Volatile
         private var INSTANCE: PasswordRoomDatabase? = null

@@ -18,7 +18,7 @@ class DataBaseUnitTest {
     private val db = Room.inMemoryDatabaseBuilder(
         context, CredentialsDataBase::class.java
     ).build()
-    private val serverDAO: LocalServiceDao = db.credentialsDao()
+    private val serverDAO: LocalServiceDao = db.serviceDao()
     private val credentials = Credentials(data = "test", hint = listOf())
     private val dataSet= DataSet().copy(credentials = listOf(credentials))
     private val service= Service().copy(dataSets = listOf(dataSet))

@@ -6,7 +6,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalprojectapp.data.model.Service
+import com.example.finalprojectapp.credentialsDB.model.Credentials
+import com.example.finalprojectapp.credentialsDB.model.Service
+
 
 import com.example.finalprojectapp.databinding.ListServicePasswordBinding
 
@@ -38,8 +40,7 @@ class MyAdapter(private val myDataSet: List<Service>) :
                 val temp=item.name
                     .replace("."," ", false)
                     .split(" ")
-                cardData=item
-                //cardData=item.copy(name = temp[temp.size-1].capitalize())
+                cardData=item.copy(name = temp[temp.size-1].capitalize())
 
             }
         }
@@ -60,7 +61,15 @@ class MyAdapter(private val myDataSet: List<Service>) :
         val data = myDataSet[position]
         holder.bind(data)
         holder.recyclerView.apply {
-            adapter=InnerCredentialsAdapter(data.credentials!!)
+            val list=mutableListOf<Credentials>()
+            data.dataSets?.forEach {
+                it.credentials?.forEach {
+                    list.add(it)
+                }
+
+            }
+            adapter=InnerCredentialsAdapter(list)
+            //adapter=InnerCredentialsAdapter(data.credentials!!)
             layoutManager=
                 LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)
 

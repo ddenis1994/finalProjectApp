@@ -4,8 +4,6 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.example.finalprojectapp.data.model.Credentials
-import com.example.finalprojectapp.localDB.CredentialsDAO
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.ServerTimestamp

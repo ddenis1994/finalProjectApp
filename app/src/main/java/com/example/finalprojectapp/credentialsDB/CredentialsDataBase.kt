@@ -16,7 +16,8 @@ import com.example.finalprojectapp.localDB.Converters
 @TypeConverters(Converters::class)
 abstract class CredentialsDataBase: RoomDatabase() {
 
-    abstract fun credentialsDao(): LocalServiceDao
+    abstract fun serviceDao(): LocalServiceDao
+    abstract fun applicationDAO():LocalApplicationDAO
 
     companion object {
         @Volatile

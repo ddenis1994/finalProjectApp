@@ -1,15 +1,10 @@
 package com.example.finalprojectapp.ui.credentials
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.finalprojectapp.data.model.Service
-import com.example.finalprojectapp.localDB.MainRepository
-import com.example.finalprojectapp.localDB.PasswordRoomDatabase
+import com.example.finalprojectapp.credentialsDB.MainRepository
+import com.example.finalprojectapp.credentialsDB.model.Service
 
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObjects
 
 class CredentialsViewModel internal constructor(
     mainRepository: MainRepository
