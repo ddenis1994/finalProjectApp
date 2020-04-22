@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import com.example.finalprojectapp.crypto.Cryptography
+import com.example.finalprojectapp.data.model.Credentials
+import com.example.finalprojectapp.data.model.DataSet
 import com.google.firebase.firestore.FirebaseFirestore
 
 import com.google.firebase.firestore.FirebaseFirestoreSettings
@@ -28,6 +31,11 @@ class MainActivity : AppCompatActivity() {
 
 
  */
+        //val cry=Cryptography(this)
+        //val o=DataSet(credentials = listOf(Credentials().copy(data = "test")))
+        //val h=cry.remoteEncryption(o)
+
+       // val i=cry.remoteDecryptSingle(h!!.credentials!![0])
 
         val settings = FirebaseFirestoreSettings.Builder()
             .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)

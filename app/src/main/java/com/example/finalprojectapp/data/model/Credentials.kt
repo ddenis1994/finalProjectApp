@@ -12,7 +12,6 @@ data class Credentials (
     var data:String,
     var innerHashValue:String?=null,
     var iv:String?=null,
-    @Ignore
     val salt:String?=null,
     @PrimaryKey(autoGenerate = true)
     @Exclude

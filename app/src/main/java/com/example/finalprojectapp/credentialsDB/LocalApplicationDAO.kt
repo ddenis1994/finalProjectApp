@@ -32,6 +32,10 @@ interface LocalApplicationDAO {
     @Query("SELECT * FROM service_ ")
     suspend fun privateGetAllService(): List<ServiceToDataSet>
 
+    @Transaction
+    @Query("SELECT * FROM service_  Where :name like name")
+    suspend fun privateGetServiceByNameInner(name:String): ServiceToDataSet?
+
     suspend fun publicGetCredentialsID(dataSet: Long): Credentials {
         val result=privateGetCredentialsID(dataSet)
         val cryptography=Cryptography(null)
@@ -130,7 +134,7 @@ interface LocalApplicationDAO {
     @Delete
     fun privateDeleteService(vararg service: Service)
 
-
+    @Transaction
     @Query("SELECT * FROM service_  Where :name like name")
     suspend fun privateGetServiceByNameQuery(name:String): ServiceToDataSet?
 
@@ -141,23 +145,25 @@ interface LocalApplicationDAO {
     @Query("SELECT * FROM dataSet_  Where :hashData like hashData")
     suspend fun privateFindByHashData(hashData: String): DataSet
 
+    @Query("SELECT * FROM dataSet_  Where :hashData like hashData And serviceId = :service")
+    suspend fun privateFindByHashDataAndServiceId(hashData: String,service: Long): DataSet?
 
-    suspend fun publicInsertDataSet(dataSet: DataSet):Pair<Long,List<Long>>{
+
+    suspend fun publicInsertDataSet(
+        dataSet: DataSet,
+        serviceName: String
+    ):Pair<Long,List<Long>>?{
         return withContext(Dispatchers.IO){
-            var hashData=dataSet.hashData
-            if (hashData==null){
-                hashData= String()
-                dataSet.credentials?.forEach {cre->
-                    hashData += cre.data
-                    hashData += cre.hint
-                }
-                val message: ByteArray = hashData.toByteArray()
-                val md = MessageDigest.getInstance("SHA-256")
-                hashData= Base64.getEncoder().encodeToString(md.digest(message))
+            val hashData: String? = dataSet.hashData ?: return@withContext null
+            val service=privateGetServiceByName(serviceName) ?: return@withContext null
+
+            if(privateFindByHashDataAndServiceId(hashData!!,service.serviceId)!=null) {
+                return@withContext null
             }
-            var result=privateInsertDataSet(dataSet.copy(hashData = hashData))
+
+            var result=privateInsertDataSet(dataSet.copy(hashData = hashData,serviceId = service.serviceId))
             if (result==-1L){
-                result=privateFindByHashData(hashData!!).dataSetId
+                result=privateFindByHashData(hashData).dataSetId
             }
             val creList= mutableListOf<Long>()
             dataSet.credentials?.forEach {
@@ -182,7 +188,11 @@ interface LocalApplicationDAO {
                 val md = MessageDigest.getInstance("SHA-256")
                 hashData= Base64.getEncoder().encodeToString(md.digest(message))
             }
-            var resultInsert=privateInsertCredentials(cryptography.localEncryptCredentials(credentials.copy(innerHashValue = hashData!!))!!)
+
+            var resultInsert = if(credentials.salt!=null)
+                privateInsertCredentials(credentials.copy(innerHashValue = hashData!!))
+            else
+                privateInsertCredentials(cryptography.localEncryptCredentials(credentials.copy(innerHashValue = hashData!!))!!)
             if (resultInsert==-1L){
                 resultInsert=privateGetCredentialsByHashData(hashData).credentialsId
             }
@@ -191,4 +201,30 @@ interface LocalApplicationDAO {
     }
     @Query("SELECT * FROM credentials_ Where innerHashValue = :dataSet ")
     suspend fun privateGetCredentialsByHashData(dataSet: String): Credentials
+
+
+    fun publicInsertService(toObject: Service):LiveData<Pair<Long,List<Pair<Long,List<Long>>>>> {
+        return liveData {
+            withContext(Dispatchers.IO) {
+                emit(privateInsertServiceInner(toObject))
+            }
+        }
+    }
+
+    suspend fun privateInsertServiceInner(service: Service):Pair<Long,List<Pair<Long,List<Long>>>>{
+        var result=privateInsertService(service)
+        if (result==-1L){
+            result= privateGetServiceByName(service.name)!!.serviceId
+        }
+        val list= mutableListOf<Pair<Long,List<Long>>>()
+        service.dataSets?.forEach {
+            publicInsertDataSet(it.copy(serviceId = result),service.name)?.let { it1 -> list.add(it1) }
+        }
+        return Pair(result,list)
+    }
+
+
+
+
+
 }

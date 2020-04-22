@@ -6,6 +6,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
+import okio.Utf8
 import java.security.Key
 import java.security.KeyStore
 import java.security.MessageDigest
@@ -38,14 +39,15 @@ class Cryptography(context:Context?) {
     }
 
 
-    fun remoteEncryption(service2: DataSet?): DataSet {
-            if (service2!!.credentials.isNullOrEmpty())
-                return DataSet()
+    fun remoteEncryption(service: DataSet?): DataSet? {
+
+            if (service!!.credentials.isNullOrEmpty())
+                return null
             val encryptedData= mutableListOf<Credentials>()
             val encoder = Base64.getEncoder()
             val cipher: Cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
             val keyFactory: SecretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-            service2.credentials!!.forEach {
+            service.credentials!!.forEach {
                 val salt = ByteArray(16)
                 SecureRandom().nextBytes(salt)
                 val iv = ByteArray(16)
@@ -58,16 +60,48 @@ class Cryptography(context:Context?) {
                     it.copy(
                         data = encoder.encodeToString(cipher.doFinal(it.data.toByteArray(Charsets.UTF_8))),
                         iv =encoder.encodeToString(iv),
-                        salt =  encoder.encodeToString(salt))
-                )
+                        salt =  encoder.encodeToString(salt)
+                ))
             }
             if (encryptedData.isEmpty())
-                return DataSet()
-            val temp= service2.copy(credentials = encryptedData)
-            service=null
-            return temp
-
+                return null
+            return service.copy(credentials = encryptedData,hashData = generateSHA256(service))
     }
+
+
+
+
+
+    fun remoteDecryptSingle(data: Credentials?): Credentials? {
+        if(data!=null) {
+            val keyFactory: SecretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+            val cipher: Cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+
+            val keySpec = PBEKeySpec(
+                password.toCharArray(),
+                Base64.getDecoder().decode(data.salt),
+                65536,
+                256
+            )
+            val secretBytes: ByteArray = keyFactory.generateSecret(keySpec).encoded
+            val key = SecretKeySpec(secretBytes, "AES")
+
+            val ivSpec=IvParameterSpec(Base64.getDecoder().decode(data.iv))
+            cipher.init(
+                Cipher.DECRYPT_MODE,
+                key,
+                ivSpec
+            )
+            val tempData=cipher.doFinal(Base64.getDecoder().decode(data.data.toByteArray(Charsets.UTF_8))).toString(Charsets.UTF_8)
+            return data.copy(
+                data = tempData,
+                iv = null,
+                salt = null
+            )
+        }
+        return null
+    }
+
 
     private fun sanityCheckRemote(): Boolean {
         return sanityCheck() and (instance!=null)
@@ -90,55 +124,8 @@ class Cryptography(context:Context?) {
         return null
     }
 
-    fun remoteDecryptSingle(data: Credentials?): Credentials? {
-        if(data!=null) {
-            val keyFactory: SecretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-            val cipher: Cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
-            val decoder = Base64.getDecoder()
-            val keySpec = PBEKeySpec(
-                password.toCharArray(),
-                decoder.decode(data.salt.toString()),
-                65536,
-                256
-            )
-            val secretBytes: ByteArray = keyFactory.generateSecret(keySpec).encoded
-            val key = SecretKeySpec(secretBytes, "AES")
-            val ivSpec=IvParameterSpec(Base64.getDecoder().decode(data.iv))
-            cipher.init(
-                Cipher.DECRYPT_MODE,
-                key,
-                ivSpec
-            )
-            val tempData=cipher.doFinal(decoder.decode(data.data.toByteArray(Charsets.UTF_8))).toString(Charsets.UTF_8)
-            return data.copy(
-                data = tempData,
-                iv = null,
-                salt = null
-            )
-        }
-        return null
-    }
 
-    fun localEncrypt(): DataSet?{
-        if(sanityCheck()) {
-            val newCre=mutableListOf<Credentials>()
-            service!!.credentials?.forEach {
-                val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-                cipher.init(Cipher.ENCRYPT_MODE, getKey())
-                localEncryptSingle(it)?.let { it1 ->
-                    newCre.add(
-                        it1
-                    )
-                }
-            }
-            if (newCre.isEmpty())
-                return null
-            val temp= service!!.copy(credentials = newCre,hashData = generateSHA256())
-            service=null
-            return temp
-        }
-        return null
-    }
+
 
     fun localEncryptSingle(credentials: Credentials?): Credentials? {
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
@@ -229,11 +216,8 @@ class Cryptography(context:Context?) {
         return ks.getKey(masterKeyAlias,null)
     }
 
-    fun setService(service: DataSet?): Unit {
-        if (service!=null)
-            this.service=service
-    }
-    private fun generateSHA256(): String {
+
+    private fun generateSHA256(service: DataSet?): String {
 
             var rawData = String()
             service!!.credentials.let {

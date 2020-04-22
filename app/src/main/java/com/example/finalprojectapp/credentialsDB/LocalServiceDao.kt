@@ -1,12 +1,12 @@
 package com.example.finalprojectapp.credentialsDB
 
 import androidx.room.*
+import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
 import com.example.finalprojectapp.data.model.relationship.ServiceToDataSet
-import com.example.finalprojectapp.crypto.Cryptography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -99,6 +99,7 @@ interface LocalServiceDao {
         return service.service.copy(dataSets = list)
     }
 
+    @Transaction
     @Query("SELECT * FROM service_ ")
     suspend fun privateGetAllService(): List<ServiceToDataSet>
 
@@ -116,6 +117,7 @@ interface LocalServiceDao {
         return servicesList
     }
 
+    @Transaction
     @Query("SELECT * FROM service_  Where :name like name")
     suspend fun privateGetServiceByName(name:String): ServiceToDataSet?
 
@@ -213,4 +215,10 @@ interface LocalServiceDao {
     @Transaction
     @Query("SELECT * FROM dataSet_ Where :hashData = hashData")
     suspend fun privateGetDataSet(hashData:String): DataSet
+
+    @Query("SELECT * FROM credentials_ Where salt not null ")
+    suspend fun getAllEncryptedCredentials(): List<Credentials>
+
+    @Update
+    fun updateCredentials(it1: Credentials) :Int
 }

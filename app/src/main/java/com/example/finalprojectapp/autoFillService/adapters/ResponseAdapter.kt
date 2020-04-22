@@ -1,7 +1,6 @@
 package com.example.finalprojectapp.autoFillService.adapters
 
 import android.R
-import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -14,20 +13,14 @@ import android.service.autofill.FillResponse
 import android.service.autofill.SaveInfo
 import android.view.View
 import android.view.autofill.AutofillId
-import android.view.autofill.AutofillManager
 import android.view.autofill.AutofillValue
 import android.widget.RemoteViews
-import android.widget.Toast
-import androidx.biometric.BiometricPrompt
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import com.example.finalprojectapp.AuthActivity
 import com.example.finalprojectapp.autoFillService.AutofillFieldMetadata
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import java.security.SecureRandom
-import java.util.concurrent.Executor
 
 class ResponseAdapter(
     private val context: Context,

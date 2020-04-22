@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -75,8 +76,14 @@ class MainMenuFragment : Fragment() {
                         val serviceName=dc.document.toObject<Service>().name
                         when (dc.type) {
                             DocumentChange.Type.REMOVED -> localDB.applicationDAO().deleteFullService(serviceName)
-                            else -> listenerForService(serviceName)
+                            DocumentChange.Type.ADDED -> {
+                                val h=localDB.applicationDAO().publicInsertService(dc.document.toObject())
+                                h.observe(viewLifecycleOwner, Observer {
+                                    listenerForService(serviceName)
+                                })
 
+                            }
+                            DocumentChange.Type.MODIFIED -> listenerForService(serviceName)
                         }
                     }
 
@@ -84,18 +91,7 @@ class MainMenuFragment : Fragment() {
                         putBoolean("encrypted", true)
                         apply()
                     }
-                    val updateWorkRequest = OneTimeWorkRequestBuilder<DBWorkerDecryption>()
-                        .build()
-                    WorkManager.getInstance(requireContext()).enqueue(updateWorkRequest)
-                    with(
-                        requireContext().getSharedPreferences(
-                            "mainPreferences",
-                            Context.MODE_PRIVATE
-                        ).edit()
-                    ) {
-                        putBoolean("encrypted", true)
-                        apply()
-                    }
+
                 }
     }
 
@@ -113,8 +109,7 @@ class MainMenuFragment : Fragment() {
                             lifecycleScope.launch {
                                 withContext(Dispatchers.IO){
                                     val localDataSet= dataSet.hashData?.let {
-                                        localDB.applicationDAO()
-                                            .privateFindByHashData(it)
+                                        localDB.applicationDAO().privateFindByHashData(it)
                                     }
                                     if (localDataSet != null) {
                                         localDB.applicationDAO()
@@ -126,13 +121,29 @@ class MainMenuFragment : Fragment() {
                         }
                         else -> {
                             lifecycleScope.launch {
-                                localDB.applicationDAO().publicInsertDataSet(dataSet)
+                                localDB.applicationDAO().publicInsertDataSet(dataSet,name)
+                                startLocalDecryption()
                             }
                         }
                     }
                 }
             }
 
+    }
+
+    private fun startLocalDecryption() {
+        val updateWorkRequest = OneTimeWorkRequestBuilder<DBWorkerDecryption>()
+            .build()
+        WorkManager.getInstance(requireContext()).enqueue(updateWorkRequest)
+        with(
+            requireContext().getSharedPreferences(
+                "mainPreferences",
+                Context.MODE_PRIVATE
+            ).edit()
+        ) {
+            putBoolean("encrypted", true)
+            apply()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

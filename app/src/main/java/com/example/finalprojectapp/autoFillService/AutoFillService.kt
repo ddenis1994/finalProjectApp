@@ -76,11 +76,15 @@ class AutoFillService : AutofillService() {
         callback: SaveCallback){
         withContext(Dispatchers.IO){
             localServiceDAO.publicInsertService(service)
-            addDataToRemote(service)
-            callback.onSuccess()
+           addDataToRemote(service,callback)
+
+
         }
     }
-        private fun addDataToRemote(service: Service) {
+        private fun addDataToRemote(
+            service: Service,
+            callback: SaveCallback
+        ) {
             val db = FirebaseFirestore.getInstance()
             val user = FirebaseAuth.getInstance().currentUser!!
             db.collection("users").document(user.uid)
@@ -102,11 +106,14 @@ class AutoFillService : AutofillService() {
                             val md = MessageDigest.getInstance("SHA-256")
                             rawData= Base64.getEncoder().encodeToString(md.digest(message))
                         }
-                        val toUpload=cry.remoteEncryption(dataSet.copy(hashData = rawData))
+                        val toUpload=cry.remoteEncryption(dataSet.copy(hashData = rawData))!!
                         db.collection("users").document(user.uid)
-                            .collection("services").document(service.name)
-                            .collection("dataSets").document(toUpload.hashData!!)
-                            .set(toUpload)
+                                .collection("services").document(service.name)
+                                .collection("dataSets").document(toUpload.hashData!!)
+                                .set(toUpload)
+                            .addOnSuccessListener {
+                                callback.onSuccess()
+                            }
                     }
                 }
         }
