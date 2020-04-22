@@ -46,7 +46,7 @@ class AutoFillService : AutofillService() {
                 structure.activityComponent.packageName,
                 coroutineScope)
         responseAdapter= ResponseAdapter(
-            this,
+            this.applicationContext,
             dataSetAdapter,
             clientViewMetadata,
             callback,

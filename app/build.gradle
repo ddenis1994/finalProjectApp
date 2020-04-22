@@ -7,8 +7,6 @@ apply plugin: 'kotlinx-serialization'
 apply plugin: "de.mannodermaus.android-junit5"
 
 
-
-
 android {
 
     compileSdkVersion 29
@@ -60,7 +58,6 @@ android {
     }
 
 
-
 }
 
 
@@ -110,6 +107,9 @@ dependencies {
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     //live data
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
+
+    //biometric
+    implementation 'androidx.biometric:biometric:1.0.1'
 
 
 // Core library
