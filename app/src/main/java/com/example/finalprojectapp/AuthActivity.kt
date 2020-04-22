@@ -19,15 +19,11 @@ class AuthActivity : AppCompatActivity() {
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
-    private lateinit var db:CredentialsDataBase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val structure: FillResponse? = intent.getParcelableExtra("response")
-
-        db= CredentialsDataBase.getDatabase(this)
-
 
         biometricManager = BiometricManager.from(this)
         executor = ContextCompat.getMainExecutor(this)
@@ -50,7 +46,6 @@ class AuthActivity : AppCompatActivity() {
                         putExtra(EXTRA_AUTHENTICATION_RESULT, structure)
                     }
                     setResult(Activity.RESULT_OK, replyIntent)
-
                     Toast.makeText(applicationContext,
                         "Authentication succeeded!", Toast.LENGTH_SHORT)
                         .show()
