@@ -35,7 +35,7 @@ class CredentialsFragment : Fragment() {
         credentialsViewModel.allPasswords.observe(viewLifecycleOwner, Observer {
             root.progressBarForLoading.visibility=View.GONE
             root.textViewForLoading.visibility=View.GONE
-            viewAdapter = MyAdapter(it)
+            viewAdapter = MyAdapter(it,credentialsViewModel,viewLifecycleOwner)
             recyclerView.apply {
                 adapter=viewAdapter
             }

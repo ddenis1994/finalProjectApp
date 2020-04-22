@@ -3,14 +3,16 @@ package com.example.finalprojectapp.ui.credentials
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.finalprojectapp.credentialsDB.MainRepository
-import com.example.finalprojectapp.data.model.Service
+import com.example.finalprojectapp.data.ViewServiceData
 
 
 class CredentialsViewModel internal constructor(
-    mainRepository: MainRepository
+    val mainRepository: MainRepository
     ) : ViewModel() {
 
     private val _allPasswords = mainRepository.getAllData()
-    val allPasswords: LiveData<List<Service>> = _allPasswords
+    val allPasswords: LiveData<List<ViewServiceData>> = _allPasswords
+
+    fun getCrede(dataSetId:Long)=mainRepository.getCredentialByDataSetID(dataSetId)
 
 }

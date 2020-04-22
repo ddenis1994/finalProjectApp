@@ -6,12 +6,14 @@ class MainRepository private constructor(
 )  {
 
     fun getAllData() =
-        credentialsDao.publicGetAllService()
+        credentialsDao.publicGetAllServiceName()
 
     fun getService(name:String) =
         credentialsDao.publicGetServiceByNameLive(name)
 
     fun deleteFullService(name: String)=credentialsDao.deleteFullService(name)
+
+    fun getCredentialByDataSetID(dataSetId: Long)=credentialsDao.publicGetAllCredentialsByDataSetID(dataSetId)
 
     companion object {
         // For Singleton instantiation

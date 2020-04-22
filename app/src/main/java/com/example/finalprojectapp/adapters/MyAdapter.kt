@@ -4,15 +4,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finalprojectapp.data.ViewServiceData
 import com.example.finalprojectapp.data.model.Credentials
-import com.example.finalprojectapp.data.model.Service
 
 
 import com.example.finalprojectapp.databinding.ListServicePasswordBinding
+import com.example.finalprojectapp.ui.credentials.CredentialsViewModel
 
-class MyAdapter(private val myDataSet: List<Service>) :
+class MyAdapter(
+    private val myDataSet: List<ViewServiceData>,
+    private val credentialsViewModel: CredentialsViewModel,
+    private val viewLifecycleOwner: LifecycleOwner
+) :
     RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
 
 
@@ -34,13 +41,13 @@ class MyAdapter(private val myDataSet: List<Service>) :
                 }
             }
         }
-        fun bind(item: Service) {
+        fun bind(item: ViewServiceData) {
             binding.apply {
                 //make right value for string to fill
-                val temp=item.name
-                    .replace("."," ", false)
-                    .split(" ")
-                cardData=item.copy(name = temp[temp.size-1].capitalize())
+                val temp= item.serviceName
+                    ?.replace("."," ", false)
+                    ?.split(" ")
+                cardData=item.copy(serviceName = temp?.get(temp.size-1)?.capitalize())
 
             }
         }
@@ -60,20 +67,20 @@ class MyAdapter(private val myDataSet: List<Service>) :
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val data = myDataSet[position]
         holder.bind(data)
-        holder.recyclerView.apply {
-            val list=mutableListOf<Credentials>()
-            data.dataSets?.forEach {
-                it.credentials?.forEach {
-                    list.add(it)
-                }
+
+        val localdata=data.dataSetId?.let { credentialsViewModel.getCrede(it) }
+
+        localdata?.observe(viewLifecycleOwner, Observer {
+            holder.recyclerView.apply {
+                adapter=InnerCredentialsAdapter(it)
+                //adapter=InnerCredentialsAdapter(data.credentials!!)
+                layoutManager=
+                    LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)
 
             }
-            adapter=InnerCredentialsAdapter(list)
-            //adapter=InnerCredentialsAdapter(data.credentials!!)
-            layoutManager=
-                LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)
+        })
 
-        }
+
     }
 
 

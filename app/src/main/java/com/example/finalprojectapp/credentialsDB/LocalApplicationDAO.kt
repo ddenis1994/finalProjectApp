@@ -9,6 +9,8 @@ import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
 import com.example.finalprojectapp.data.model.relationship.ServiceToDataSet
 import com.example.finalprojectapp.crypto.Cryptography
+import com.example.finalprojectapp.data.ViewServiceData
+import com.example.finalprojectapp.data.model.ViewCredentialData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
@@ -225,6 +227,11 @@ interface LocalApplicationDAO {
 
 
 
+    @Query("Select s.name,d.dataSetName,d.dataSetId from service_ s,dataSet_ d where s.serviceId=d.serviceId")
+    fun publicGetAllServiceName():LiveData<List<ViewServiceData>>
+
+    @Query("Select c.iv,c.data,c.hint from dataSetCredentialsManyToMany r,credentials_ c where r.dataSetId=:dataSetId and r.credentialsId = c.credentialsId")
+    fun publicGetAllCredentialsByDataSetID(dataSetId:Long):LiveData<List<ViewCredentialData>>
 
 
 }
