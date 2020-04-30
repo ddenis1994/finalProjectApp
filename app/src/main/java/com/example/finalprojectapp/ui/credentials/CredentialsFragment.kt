@@ -10,7 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.R
-import com.example.finalprojectapp.adapters.MyAdapter
+import com.example.finalprojectapp.adapters.ServiceAdapter
 import com.example.finalprojectapp.utils.InjectorUtils
 import kotlinx.android.synthetic.main.fragment_cre.*
 import kotlinx.android.synthetic.main.fragment_cre.view.*
@@ -35,7 +35,7 @@ class CredentialsFragment : Fragment() {
         credentialsViewModel.allPasswords.observe(viewLifecycleOwner, Observer {
             root.progressBarForLoading.visibility=View.GONE
             root.textViewForLoading.visibility=View.GONE
-            viewAdapter = MyAdapter(it,credentialsViewModel,viewLifecycleOwner)
+            viewAdapter = ServiceAdapter(it,credentialsViewModel,viewLifecycleOwner)
             recyclerView.apply {
                 adapter=viewAdapter
             }
@@ -46,7 +46,7 @@ class CredentialsFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         viewManager = LinearLayoutManager(context)
-        recyclerView = my_manu_top.apply {
+        recyclerView = list_recycle_view_services.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
 

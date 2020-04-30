@@ -12,16 +12,17 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.data.model.Credentials
-import com.example.finalprojectapp.data.model.ViewCredentialData
-import com.example.finalprojectapp.databinding.Credentials1Binding
+import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
+import com.example.finalprojectapp.databinding.LayoutSingleCredentialsBinding
+
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class InnerCredentialsAdapter(private val children : List<ViewCredentialData>):
-    RecyclerView.Adapter<InnerCredentialsAdapter.ViewHolder>(){
+class CredentialsAdapter(private val children : List<LayoutCredentialView>):
+    RecyclerView.Adapter<CredentialsAdapter.ViewHolder>(){
     private val visibility= MutableLiveData<Boolean>()
 
-    class ViewHolder(private val binding: Credentials1Binding)
+    class ViewHolder(private val binding: LayoutSingleCredentialsBinding)
         : RecyclerView.ViewHolder(binding.root) {
         init {
 
@@ -60,25 +61,24 @@ class InnerCredentialsAdapter(private val children : List<ViewCredentialData>):
 
 
 
-        fun bind(data: ViewCredentialData) {
+        fun bind(data: LayoutCredentialView) {
             binding.credentialsData = data
         }
 
         fun setVisbality(visibility: MutableLiveData<Boolean>) {
-            visibility.observeForever(Observer {
+            visibility.observeForever {
                 if (it){
                     binding.credentialLayout2.visibility= View.VISIBLE
-                }
-                else{
+                } else{
                     binding.credentialLayout2.visibility= View.INVISIBLE
                 }
-            })
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            Credentials1Binding.inflate(
+            LayoutSingleCredentialsBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false)

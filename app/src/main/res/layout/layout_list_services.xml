@@ -4,7 +4,7 @@
     <data>
         <variable
             name="cardData"
-            type="com.example.finalprojectapp.data.ViewServiceData" />
+            type="com.example.finalprojectapp.data.model.adpters.LayoutServiceView" />
         <variable
             name="moreDataListener"
             type="android.view.View.OnClickListener"/>
@@ -35,7 +35,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="10dp"
                 android:onClick="@{displayData}"
-                app:layout_constraintBottom_toTopOf="@+id/my_second_layout"
+
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +67,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/my_second_layout"
+                android:id="@+id/data_set_recycler_View"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"

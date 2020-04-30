@@ -8,22 +8,23 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalprojectapp.data.ViewServiceData
+import com.example.finalprojectapp.data.model.adpters.LayoutServiceView
+import com.example.finalprojectapp.databinding.LayoutListServicesBinding
 
 
-import com.example.finalprojectapp.databinding.ListServicePasswordBinding
 import com.example.finalprojectapp.ui.credentials.CredentialsViewModel
 
-class MyAdapter(
-    private val myDataSet: List<ViewServiceData>,
+class ServiceAdapter(
+    private val myDataSet: List<LayoutServiceView>,
     private val credentialsViewModel: CredentialsViewModel,
     private val viewLifecycleOwner: LifecycleOwner
 ) :
-    RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
+    RecyclerView.Adapter<ServiceAdapter.MyViewHolder>() {
 
-    class MyViewHolder(private val binding: ListServicePasswordBinding)
+
+    class MyViewHolder(private val binding: LayoutListServicesBinding)
         : RecyclerView.ViewHolder(binding.root){
-        val recyclerView : RecyclerView = binding.mySecondLayout
+        val recyclerView : RecyclerView = binding.dataSetRecyclerView
         init {
             binding.setMoreDataListener {
                 // TODO
@@ -31,7 +32,7 @@ class MyAdapter(
                 Toast.makeText(it.context, "more Info", Toast.LENGTH_SHORT).show()
             }
             binding.setDisplayData {
-                binding.mySecondLayout.let {
+                binding.dataSetRecyclerView.let {
                     if (it.visibility== View.GONE)
                         it.visibility= View.VISIBLE
                     else
@@ -39,7 +40,7 @@ class MyAdapter(
                 }
             }
         }
-        fun bind(item: ViewServiceData) {
+        fun bind(item: LayoutServiceView) {
             binding.apply {
                 //make right value for string to fill
                 val temp= item.serviceName
@@ -53,7 +54,7 @@ class MyAdapter(
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        return MyViewHolder(ListServicePasswordBinding.inflate(
+        return MyViewHolder(LayoutListServicesBinding.inflate(
             LayoutInflater.from(parent.context),parent,false
         ))
     }
@@ -65,10 +66,10 @@ class MyAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val data = myDataSet[position]
         holder.bind(data)
-        val localData=data.dataSetId?.let { credentialsViewModel.getCrede(it) }
+        val localData=data.dataSetId?.let { credentialsViewModel.getDataSet(it) }
         localData?.observe(viewLifecycleOwner, Observer {
             holder.recyclerView.apply {
-                adapter=InnerCredentialsAdapter(it)
+                adapter=DataSetAdapter(it,credentialsViewModel,viewLifecycleOwner)
                 layoutManager=
                     LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)
             }

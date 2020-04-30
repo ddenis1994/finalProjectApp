@@ -9,8 +9,9 @@ import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
 import com.example.finalprojectapp.data.model.relationship.ServiceToDataSet
 import com.example.finalprojectapp.crypto.Cryptography
-import com.example.finalprojectapp.data.ViewServiceData
-import com.example.finalprojectapp.data.model.ViewCredentialData
+import com.example.finalprojectapp.data.model.adpters.LayoutServiceView
+import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
+import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
@@ -228,10 +229,14 @@ interface LocalApplicationDAO {
 
 
     @Query("Select s.name,d.dataSetName,d.dataSetId from service_ s,dataSet_ d where s.serviceId=d.serviceId")
-    fun publicGetAllServiceName():LiveData<List<ViewServiceData>>
+    fun publicGetAllServiceName():LiveData<List<LayoutServiceView>>
 
     @Query("Select c.iv,c.data,c.hint from dataSetCredentialsManyToMany r,credentials_ c where r.dataSetId=:dataSetId and r.credentialsId = c.credentialsId")
-    fun publicGetAllCredentialsByDataSetID(dataSetId:Long):LiveData<List<ViewCredentialData>>
+    fun publicGetAllCredentialsByDataSetID(dataSetId:Long):LiveData<List<LayoutCredentialView>>
+
+
+    @Query("Select d.dataSetName,d.dataSetId from dataSet_ d, dataSetCredentialsManyToMany r where d.serviceId=:serviceId and d.dataSetId=r.dataSetId ")
+    fun publicGetAllDataSetsByServiceId(serviceId:Long):LiveData<List<LayoutDataSetView>>
 
 
 }
