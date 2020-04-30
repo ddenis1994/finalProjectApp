@@ -9,7 +9,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.data.ViewServiceData
-import com.example.finalprojectapp.data.model.Credentials
 
 
 import com.example.finalprojectapp.databinding.ListServicePasswordBinding
@@ -21,7 +20,6 @@ class MyAdapter(
     private val viewLifecycleOwner: LifecycleOwner
 ) :
     RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
-
 
     class MyViewHolder(private val binding: ListServicePasswordBinding)
         : RecyclerView.ViewHolder(binding.root){
@@ -67,21 +65,13 @@ class MyAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val data = myDataSet[position]
         holder.bind(data)
-
-        val localdata=data.dataSetId?.let { credentialsViewModel.getCrede(it) }
-
-        localdata?.observe(viewLifecycleOwner, Observer {
+        val localData=data.dataSetId?.let { credentialsViewModel.getCrede(it) }
+        localData?.observe(viewLifecycleOwner, Observer {
             holder.recyclerView.apply {
                 adapter=InnerCredentialsAdapter(it)
-                //adapter=InnerCredentialsAdapter(data.credentials!!)
                 layoutManager=
                     LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)
-
             }
         })
-
-
     }
-
-
 }
