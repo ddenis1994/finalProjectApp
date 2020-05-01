@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class CredentialsAdapter(private val children : List<LayoutCredentialView>):
     RecyclerView.Adapter<CredentialsAdapter.ViewHolder>(){
-    private val visibility= MutableLiveData<Boolean>()
+
 
     class ViewHolder(private val binding: LayoutSingleCredentialsBinding)
         : RecyclerView.ViewHolder(binding.root) {
@@ -38,7 +38,8 @@ class CredentialsAdapter(private val children : List<LayoutCredentialView>):
                 val result = MutableLiveData<String>().apply {
                     observeForever {
                         binding.username2.text=it
-                        binding.revelCredentialsButton.visibility= View.INVISIBLE
+                        binding.revelCredentialsButton.visibility= View.GONE
+                        binding.copyCredentialsButton.visibility=View.VISIBLE
                     }
                 }
                 GlobalScope.launch {
@@ -65,15 +66,7 @@ class CredentialsAdapter(private val children : List<LayoutCredentialView>):
             binding.credentialsData = data
         }
 
-        fun setVisbality(visibility: MutableLiveData<Boolean>) {
-            visibility.observeForever {
-                if (it){
-                    binding.credentialLayout2.visibility= View.VISIBLE
-                } else{
-                    binding.credentialLayout2.visibility= View.INVISIBLE
-                }
-            }
-        }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -92,7 +85,6 @@ class CredentialsAdapter(private val children : List<LayoutCredentialView>):
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = children[position]
         holder.bind(data)
-        holder.setVisbality(visibility)
     }
 
 

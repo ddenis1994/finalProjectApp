@@ -23,4 +23,7 @@
     <string name="set_default_autofill_service">Set default Autofill service</string>
     <string name="activate_second_factor_authentication">activate Second Factor Authentication</string>
     <string name="_2_factor_authentication">2 Factor Authentication</string>
+    <string name="copy">Copy</string>
+    <string name="revel">Revel</string>
+    <string name="credentials_more_info">info</string>
 </resources>

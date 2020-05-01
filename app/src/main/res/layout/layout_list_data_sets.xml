@@ -4,37 +4,43 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
-            name="cardData"
+            name="dataSetCard"
             type="com.example.finalprojectapp.data.model.adpters.LayoutDataSetView" />
         <variable
             name="displayDataSet"
             type="android.view.View.OnClickListener"/>
 
     </data>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/passwordMenu"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/credentials_recycler_View"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:theme="@style/AppTheme"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/data_set_name"/>
+    <LinearLayout
+        style="@style/Credentials.dataSet"
+        >
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/passwordMenu"
+        style="@style/Credentials.dataSet.layout"
+        android:onClick="@{displayDataSet}"
+        >
+        <TextView
         android:id="@+id/data_set_name"
-        android:layout_width="167dp"
-        android:layout_height="72dp"
-        android:text="@{cardData.dataSetName}"
+        style="@style/Credentials.Header"
+        android:text="@{dataSetCard.dataSetName}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/credentials_recycler_View"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/data_set_name" />
+        </LinearLayout>
+    </LinearLayout>
+
+
 
 </layout>

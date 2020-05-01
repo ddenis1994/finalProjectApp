@@ -228,14 +228,14 @@ interface LocalApplicationDAO {
 
 
 
-    @Query("Select s.name,d.dataSetName,d.dataSetId from service_ s,dataSet_ d where s.serviceId=d.serviceId")
+    @Query("Select s.name,s.serviceId from service_ s")
     fun publicGetAllServiceName():LiveData<List<LayoutServiceView>>
 
     @Query("Select c.iv,c.data,c.hint from dataSetCredentialsManyToMany r,credentials_ c where r.dataSetId=:dataSetId and r.credentialsId = c.credentialsId")
     fun publicGetAllCredentialsByDataSetID(dataSetId:Long):LiveData<List<LayoutCredentialView>>
 
 
-    @Query("Select d.dataSetName,d.dataSetId from dataSet_ d, dataSetCredentialsManyToMany r where d.serviceId=:serviceId and d.dataSetId=r.dataSetId ")
+    @Query("Select d.dataSetName,d.dataSetId from dataSet_ d where d.serviceId=:serviceId ")
     fun publicGetAllDataSetsByServiceId(serviceId:Long):LiveData<List<LayoutDataSetView>>
 
 

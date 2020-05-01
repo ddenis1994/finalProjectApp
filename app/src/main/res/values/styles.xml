@@ -34,6 +34,80 @@
         <item name="android:paddingStart">?android:listPreferredItemPaddingStart</item>
         <item name="android:paddingBottom">@dimen/spacing_normal</item>
         <item name="android:paddingTop">@dimen/spacing_large</item>
+
     </style>
+
+
+
+    <style name="Credentials.inner.layout" parent="@style/TextAppearance.AppCompat.Large">
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingEnd">@dimen/spacing_normal</item>
+        <item name="android:paddingStart">@dimen/spacing_normal</item>
+        <item name="android:paddingBottom">@dimen/spacing_normal</item>
+    </style>
+
+    <style name="Credentials.inner.layout.relative" parent="@style/TextAppearance.AppCompat.Large">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:paddingEnd">@dimen/spacing_normal</item>
+        <item name="android:background">@drawable/card_list_cre_shape</item>
+        <item name="android:layout_marginStart">@dimen/credential_inner_layout_margin_start</item>
+    </style>
+
+    <style name="Credentials.credentials" parent="@style/TextAppearance.AppCompat.Large">
+        <item name="android:paddingStart">@dimen/spacing_normal</item>
+        <item name="fontFamily">@font/rajdhani_medium</item>
+    </style>
+
+
+    <style name="Credentials.button" parent="@style/Credentials.credentials">
+        <item name="android:background">@drawable/credentials_button</item>
+        <item name="android:layout_width">@dimen/credential_inner_button_layout_width</item>
+        <item name="android:layout_height">@dimen/credential_inner_button_layout_height</item>
+        <item name="android:textSize">@dimen/credential_inner_button_text_size</item>
+    </style>
+
+    <style name="Credentials.inner.text" parent="@style/Credentials.credentials">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_width">@dimen/credential_inner_text_layout_width</item>
+        <item name="android:layout_height">@dimen/credential_inner_text_layout_height</item>
+    </style>
+
+    <!-- data set -->
+    <style name="Credentials.Header" parent="">
+        <item name="android:paddingStart">@dimen/spacing_large</item>
+        <item name="fontFamily">@font/rajdhani_medium</item>
+        <item name="android:textSize">@dimen/credential_dataSet_text_size</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Credentials.dataSet.layout" parent="Credentials.dataSet">
+        <item name="android:background">@drawable/card_list_cre_shape</item>
+    </style>
+
+    <style name="Credentials.dataSet" parent="">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingEnd">@dimen/spacing_normal</item>
+        <item name="android:paddingTop">@dimen/spacing_normal</item>
+        <item name="android:paddingStart">@dimen/spacing_normal</item>
+    </style>
+
+    <!-- service set -->
+    <style name="Credentials.service" parent="">
+        <item name="android:background">@drawable/card_list_cre_shape</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingEnd">@dimen/spacing_normal</item>
+        <item name="android:paddingTop">@dimen/spacing_normal</item>
+        <item name="android:paddingStart">@dimen/spacing_normal</item>
+    </style>
+
 
 </resources>

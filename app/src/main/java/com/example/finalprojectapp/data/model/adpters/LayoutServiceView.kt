@@ -4,6 +4,5 @@ import androidx.room.ColumnInfo
 
 data class LayoutServiceView (
     @ColumnInfo(name = "name") val serviceName: String?,
-    @ColumnInfo(name = "dataSetName") val dataSetName: String?,
-    @ColumnInfo(name = "dataSetId") val dataSetId: Long?
+    @ColumnInfo(name = "serviceId") val dataSetId: Long?
 )

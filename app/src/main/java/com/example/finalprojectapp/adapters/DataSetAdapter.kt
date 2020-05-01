@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
+
 import com.example.finalprojectapp.databinding.LayoutListDataSetsBinding
 import com.example.finalprojectapp.ui.credentials.CredentialsViewModel
 
@@ -21,7 +22,6 @@ class DataSetAdapter(
     class DataSetViewHolder(private val binding: LayoutListDataSetsBinding)
         : RecyclerView.ViewHolder(binding.root){
         val recyclerView : RecyclerView = binding.credentialsRecyclerView
-
         init {
             binding.setDisplayDataSet {
                 binding.credentialsRecyclerView.let {
@@ -34,7 +34,7 @@ class DataSetAdapter(
         }
         fun bind(item: LayoutDataSetView) {
             binding.apply {
-                cardData=item
+                dataSetCard=item
 
             }
         }
