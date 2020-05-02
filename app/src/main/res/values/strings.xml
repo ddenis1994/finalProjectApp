@@ -26,4 +26,5 @@
     <string name="copy">Copy</string>
     <string name="revel">Revel</string>
     <string name="credentials_more_info">info</string>
+    <string name="delete_data_set">Delete</string>
 </resources>
