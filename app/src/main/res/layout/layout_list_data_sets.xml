@@ -9,16 +9,17 @@
         <variable
             name="displayDataSet"
             type="android.view.View.OnClickListener"/>
+        <variable
+            name="deleteDataSet"
+            type="android.view.View.OnClickListener"/>
 
     </data>
 
-    <LinearLayout
-        style="@style/Credentials.dataSet"
-        >
+
 
     <LinearLayout
         android:id="@+id/passwordMenu"
-        style="@style/Credentials.dataSet.layout"
+        style="@style/Credentials.Container"
         android:onClick="@{displayDataSet}"
         >
         <TextView
@@ -33,13 +34,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/data_set_name" />
         </LinearLayout>
-    </LinearLayout>
+
 
 
 

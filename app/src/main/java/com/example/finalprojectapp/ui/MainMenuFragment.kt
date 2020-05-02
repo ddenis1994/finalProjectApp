@@ -66,7 +66,7 @@ class MainMenuFragment : Fragment() {
     }
 
     private fun setOnUpdate() {
-
+    if(context!=null)
         db.collection("users").document(user.uid)
             .collection("services")
             .addSnapshotListener(MetadataChanges.INCLUDE) { querySnapshot, firebaseFireStoreException ->

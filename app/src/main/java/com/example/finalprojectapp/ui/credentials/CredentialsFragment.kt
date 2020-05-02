@@ -1,6 +1,8 @@
 package com.example.finalprojectapp.ui.credentials
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,9 +17,9 @@ import com.example.finalprojectapp.utils.InjectorUtils
 import kotlinx.android.synthetic.main.fragment_cre.*
 import kotlinx.android.synthetic.main.fragment_cre.view.*
 
+
 class CredentialsFragment : Fragment() {
     private val credentialsViewModel: CredentialsViewModel by activityViewModels(){
-
         InjectorUtils.provideCredentialsViewModelFactory(this)
 
     }
@@ -35,7 +37,7 @@ class CredentialsFragment : Fragment() {
         credentialsViewModel.allPasswords.observe(viewLifecycleOwner, Observer {
             root.progressBarForLoading.visibility=View.GONE
             root.textViewForLoading.visibility=View.GONE
-            viewAdapter = ServiceAdapter(it,credentialsViewModel,viewLifecycleOwner)
+            viewAdapter = ServiceAdapter(it,credentialsViewModel,viewLifecycleOwner,this)
             recyclerView.apply {
                 adapter=viewAdapter
             }
@@ -51,5 +53,10 @@ class CredentialsFragment : Fragment() {
             layoutManager = viewManager
 
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        (viewAdapter as ServiceAdapter).onActivityResult(requestCode, resultCode, data)
+        Log.e("tet","TE")
     }
 }

@@ -1,5 +1,7 @@
 package com.example.finalprojectapp.adapters
 
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.data.model.adpters.LayoutServiceView
 import com.example.finalprojectapp.databinding.LayoutListServicesBinding
+import com.example.finalprojectapp.ui.credentials.CredentialsFragment
 
 
 import com.example.finalprojectapp.ui.credentials.CredentialsViewModel
@@ -17,9 +20,11 @@ import com.example.finalprojectapp.ui.credentials.CredentialsViewModel
 class ServiceAdapter(
     private val myDataSet: List<LayoutServiceView>,
     private val credentialsViewModel: CredentialsViewModel,
-    private val viewLifecycleOwner: LifecycleOwner
+    private val viewLifecycleOwner: LifecycleOwner,
+    private val mContext: CredentialsFragment
 ) :
     RecyclerView.Adapter<ServiceAdapter.MyViewHolder>() {
+    private lateinit var dataSetAdapter: DataSetAdapter
 
 
     class MyViewHolder(private val binding: LayoutListServicesBinding)
@@ -69,10 +74,14 @@ class ServiceAdapter(
         val localData=data.dataSetId?.let { credentialsViewModel.getDataSet(it) }
         localData?.observe(viewLifecycleOwner, Observer {
             holder.recyclerView.apply {
-                adapter=DataSetAdapter(it,credentialsViewModel,viewLifecycleOwner)
+                dataSetAdapter=DataSetAdapter(it,credentialsViewModel,viewLifecycleOwner,mContext)
+                adapter=dataSetAdapter
                 layoutManager=
                     LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)
             }
         })
+    }
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        dataSetAdapter.onActivityResult(requestCode, resultCode, data)
     }
 }

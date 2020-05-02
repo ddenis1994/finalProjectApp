@@ -13,16 +13,10 @@
             type="android.view.View.OnClickListener"/>
 
     </data>
-
-    <LinearLayout
-        style="@style/Credentials.service"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:animateLayoutChanges="true"
-            android:layout_height="wrap_content">
+            style="@style/Credentials.Container"
+            android:layout_marginStart="0dp"
+            android:animateLayoutChanges="true">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/services_layout"
@@ -66,7 +60,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </LinearLayout>
 </layout>
 
 

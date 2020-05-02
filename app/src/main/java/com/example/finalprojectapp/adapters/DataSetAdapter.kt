@@ -1,5 +1,6 @@
 package com.example.finalprojectapp.adapters
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,16 +9,19 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
-
 import com.example.finalprojectapp.databinding.LayoutListDataSetsBinding
+import com.example.finalprojectapp.ui.credentials.CredentialsFragment
 import com.example.finalprojectapp.ui.credentials.CredentialsViewModel
+
 
 class DataSetAdapter(
     private val dataSets: List<LayoutDataSetView>,
     private val credentialsViewModel: CredentialsViewModel,
-    private val viewLifecycleOwner: LifecycleOwner
+    private val viewLifecycleOwner: LifecycleOwner,
+    private val mContext: CredentialsFragment
 ) :
     RecyclerView.Adapter<DataSetAdapter.DataSetViewHolder>() {
+    private lateinit var credentialsAdapter: CredentialsAdapter
 
     class DataSetViewHolder(private val binding: LayoutListDataSetsBinding)
         : RecyclerView.ViewHolder(binding.root){
@@ -60,10 +64,16 @@ class DataSetAdapter(
         localData?.observe(viewLifecycleOwner, Observer {
 
             holder.recyclerView.apply {
-                adapter=CredentialsAdapter(it)
+                credentialsAdapter=CredentialsAdapter(it,viewLifecycleOwner,mContext)
+                adapter=credentialsAdapter
                 layoutManager=
                     LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)
             }
         })
     }
+
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        credentialsAdapter.onActivityResult(requestCode, resultCode, data)
+    }
+
 }

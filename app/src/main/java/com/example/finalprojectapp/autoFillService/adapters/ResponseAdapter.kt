@@ -179,23 +179,7 @@ class ResponseAdapter(
         return sb.toString()
     }
 
-    /**
-     * Evaluate a random password
-     * @param passwordToTest String with the password to test
-     * @return a number from 0 to 1, 0 is a very bad password and 1 is a perfect password
-     */
-    fun evaluatePassword(passwordToTest: String) : Float {
 
-        var factor = 0
-        val length = passwordToTest.length
-
-        if( passwordToTest.matches( Regex(".*[abcdefghijklmnopqrstuvwxyz].*") ) ) { factor += 2 }
-        if( passwordToTest.matches( Regex(".*[ABCDEFGHIJKLMNOPQRSTUVWXYZ].*") ) ){ factor += 2 }
-        if( passwordToTest.matches( Regex(".*[0123456789].*") ) ){ factor += 1 }
-        if( passwordToTest.matches( Regex(".*[@#=+!£\$%&?].*") ) ){ factor += 5 }
-
-        return (factor*length)/(10F*20F)
-    }
 
 
 }

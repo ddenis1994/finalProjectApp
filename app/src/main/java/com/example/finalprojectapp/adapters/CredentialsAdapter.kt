@@ -1,29 +1,76 @@
 package com.example.finalprojectapp.adapters
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
+import android.content.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import com.example.finalprojectapp.databinding.LayoutSingleCredentialsBinding
-
-import kotlinx.coroutines.GlobalScope
+import com.example.finalprojectapp.ui.credentials.CredentialsFragment
+import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executor
 
-class CredentialsAdapter(private val children : List<LayoutCredentialView>):
+
+class CredentialsAdapter(
+    private val children: List<LayoutCredentialView>,
+    private val viewLifecycleOwner: LifecycleOwner,
+    private val credentialsFragment: CredentialsFragment
+    ):
     RecyclerView.Adapter<CredentialsAdapter.ViewHolder>(){
 
 
-    class ViewHolder(private val binding: LayoutSingleCredentialsBinding)
+    class ViewHolder(private val binding: LayoutSingleCredentialsBinding,
+                     private val viewLifecycleOwner: LifecycleOwner,
+                     private val mContext: CredentialsFragment
+    )
         : RecyclerView.ViewHolder(binding.root) {
+        private lateinit var setting:SharedPreferences
+        //TODO fix the chack for the biometric manger
+        private val biometricManager: BiometricManager=BiometricManager.from(mContext.requireContext())
+        private val executor: Executor= ContextCompat.getMainExecutor(mContext.requireContext())
+        private val biometricPrompt: BiometricPrompt= BiometricPrompt(mContext, executor,
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationError(errorCode: Int,
+                                                   errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    Toast.makeText(mContext.requireContext(),
+                        "Authentication error: $errString", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                override fun onAuthenticationSucceeded(
+                    result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+
+                    startDecryption()
+                }
+
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+
+                    Toast.makeText(mContext.requireContext(), "Authentication failed",
+                        Toast.LENGTH_SHORT)
+                        .show()
+                }
+            })
+        private var promptInfo: BiometricPrompt.PromptInfo= BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Biometric login for my app")
+            .setSubtitle("Log in using your biometric credential")
+            .setNegativeButtonText("Use account password")
+            .build()
+
         init {
 
             binding.setCopyCredentials {
@@ -35,30 +82,39 @@ class CredentialsAdapter(private val children : List<LayoutCredentialView>):
                 }
             }
             binding.setRevelCredentials {
-                val result = MutableLiveData<String>().apply {
-                    observeForever {
-                        binding.username2.text=it
-                        binding.revelCredentialsButton.visibility= View.GONE
-                        binding.copyCredentialsButton.visibility=View.VISIBLE
+                setting=SingleEncryptedSharedPreferences().getSharedPreference(mContext.requireContext())
+                when(setting.getBoolean("SecondFactorAuthentication",false)){
+                    true ->{
+                        biometricPrompt.authenticate(promptInfo)
                     }
-                }
-                GlobalScope.launch {
-                    result.postValue(binding.credentialsData?.data?.let { it1 -> Credentials().copy(data = it1,iv= binding.credentialsData?.iv) }
-                        ?.let { it2 -> decrepitCredentials(it2).data })
-
+                    false ->{
+                        startDecryption()
+                    }
                 }
             }
 
         }
-
+        private fun startDecryption(){
+            val result2 = MutableLiveData<String>().apply {
+                observe(viewLifecycleOwner, Observer {
+                    binding.username2.text=it
+                    binding.revelCredentialsButton.visibility= View.GONE
+                    binding.copyCredentialsButton.visibility=View.VISIBLE
+                })
+            }
+            viewLifecycleOwner.lifecycleScope.launch {
+                result2.postValue(binding.credentialsData?.data?.let { it1 -> Credentials().copy(data = it1,iv= binding.credentialsData?.iv) }
+                    ?.let { it2 -> decrepitCredentials(it2).data })
+            }
+        }
 
         private fun decrepitCredentials(cre: Credentials): Credentials {
-
-            //TODO add second factor
-
             val cryptography= Cryptography(null)
             return cryptography.decryptLocalSingleCredentials(cre)!!
         }
+
+
+
 
 
 
@@ -74,7 +130,9 @@ class CredentialsAdapter(private val children : List<LayoutCredentialView>):
             LayoutSingleCredentialsBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false)
+                false),
+            viewLifecycleOwner,
+            credentialsFragment
         )
     }
 
@@ -83,8 +141,13 @@ class CredentialsAdapter(private val children : List<LayoutCredentialView>):
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
         val data = children[position]
         holder.bind(data)
+    }
+
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
     }
 
 

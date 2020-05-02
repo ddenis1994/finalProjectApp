@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
 import java.util.concurrent.Executor
 
 class AuthActivity : AppCompatActivity() {
@@ -22,6 +21,7 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_auth)
 
         val structure: FillResponse? = intent.getParcelableExtra("response")
 
@@ -83,11 +83,12 @@ class AuthActivity : AppCompatActivity() {
                 Log.e("MY_APP_TAG", "No biometric features available on this device.")
             BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
                 Log.e("MY_APP_TAG", "Biometric features are currently unavailable.")
+
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
                 Log.e("MY_APP_TAG", "The user hasn't associated " +
                         "any biometric credentials with their account.")
         }
-        setContentView(R.layout.activity_auth)
+
     }
 
 
