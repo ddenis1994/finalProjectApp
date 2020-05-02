@@ -11,7 +11,7 @@ class MainRepository private constructor(
     fun getService(name:String) =
         credentialsDao.publicGetServiceByNameLive(name)
 
-    fun deleteFullService(name: String)=credentialsDao.deleteFullService(name)
+    suspend fun deleteDataSet(dataSetId:Long)=credentialsDao.deleteDataSetById(dataSetId)
 
     fun getCredentialByDataSetID(dataSetId: Long)=credentialsDao.publicGetAllCredentialsByDataSetID(dataSetId)
 

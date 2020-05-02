@@ -238,5 +238,15 @@ interface LocalApplicationDAO {
     @Query("Select d.dataSetName,d.dataSetId from dataSet_ d where d.serviceId=:serviceId ")
     fun publicGetAllDataSetsByServiceId(serviceId:Long):LiveData<List<LayoutDataSetView>>
 
+    @Query("DELETE FROM dataSetCredentialsManyToMany  WHERE dataSetId=:dataSetId")
+    fun deleteFromRelationship(dataSetId: Long): Int
+
+    @Transaction
+    suspend fun deleteDataSetById(dataSetId: Long) {
+        deleteFromRemote()
+        deleteDataSet(DataSet().copy(dataSetId = dataSetId))
+        deleteFromRelationship(dataSetId)
+    }
+
 
 }

@@ -81,7 +81,5 @@ class ServiceAdapter(
             }
         })
     }
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        dataSetAdapter.onActivityResult(requestCode, resultCode, data)
-    }
+
 }

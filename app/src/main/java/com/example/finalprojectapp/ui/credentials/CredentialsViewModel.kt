@@ -7,7 +7,7 @@ import com.example.finalprojectapp.data.model.adpters.LayoutServiceView
 
 
 class CredentialsViewModel internal constructor(
-    val mainRepository: MainRepository
+    private val mainRepository: MainRepository
     ) : ViewModel() {
 
     private val _allPasswords = mainRepository.getAllData()
@@ -16,5 +16,7 @@ class CredentialsViewModel internal constructor(
     fun getCrede(dataSetId:Long)=mainRepository.getCredentialByDataSetID(dataSetId)
 
     fun getDataSet(dataSetId:Long)=mainRepository.getDataSetById(dataSetId)
+
+    suspend fun deleteDataSet(dataSetId:Long)=mainRepository.deleteDataSet(dataSetId)
 
 }

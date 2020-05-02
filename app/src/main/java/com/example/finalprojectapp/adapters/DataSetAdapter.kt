@@ -1,6 +1,9 @@
 package com.example.finalprojectapp.adapters
 
+import android.app.Activity
+import android.app.Instrumentation
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finalprojectapp.AuthActivity
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.databinding.LayoutListDataSetsBinding
 import com.example.finalprojectapp.ui.credentials.CredentialsFragment
@@ -23,9 +27,14 @@ class DataSetAdapter(
     RecyclerView.Adapter<DataSetAdapter.DataSetViewHolder>() {
     private lateinit var credentialsAdapter: CredentialsAdapter
 
-    class DataSetViewHolder(private val binding: LayoutListDataSetsBinding)
+    class DataSetViewHolder(
+        private val binding: LayoutListDataSetsBinding,
+        private val mContext: CredentialsFragment
+    )
         : RecyclerView.ViewHolder(binding.root){
         val recyclerView : RecyclerView = binding.credentialsRecyclerView
+        private val forDeleteCode=2
+
         init {
             binding.setDisplayDataSet {
                 binding.credentialsRecyclerView.let {
@@ -34,6 +43,13 @@ class DataSetAdapter(
                     else
                         it.visibility= View.GONE
                 }
+            }
+            binding.setDeleteDataSet{
+                val deleteAuthActivity=Intent(mContext.requireContext(),AuthActivity::class.java).apply {
+                    putExtra("dataSetId",binding.dataSetCard?.dataSetId?.toInt())
+                }
+
+                mContext.startActivityForResult(deleteAuthActivity,forDeleteCode)
             }
         }
         fun bind(item: LayoutDataSetView) {
@@ -45,10 +61,12 @@ class DataSetAdapter(
     }
 
 
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataSetViewHolder {
         return DataSetViewHolder(LayoutListDataSetsBinding.inflate(
             LayoutInflater.from(parent.context),parent,false
-        ))
+        ),mContext)
     }
 
     override fun getItemCount(): Int {
@@ -72,8 +90,6 @@ class DataSetAdapter(
         })
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        credentialsAdapter.onActivityResult(requestCode, resultCode, data)
-    }
+
 
 }

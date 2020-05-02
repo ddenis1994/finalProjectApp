@@ -146,9 +146,6 @@ class CredentialsAdapter(
         holder.bind(data)
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
-    }
 
 
 }
