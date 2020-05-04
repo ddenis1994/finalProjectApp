@@ -243,10 +243,13 @@ interface LocalApplicationDAO {
 
     @Transaction
     suspend fun deleteDataSetById(dataSetId: Long) {
-        deleteFromRemote()
         deleteDataSet(DataSet().copy(dataSetId = dataSetId))
         deleteFromRelationship(dataSetId)
     }
+
+
+    @Query("select s.name from dataSet_ d , service_ s where d.dataSetId=:dataSetId and s.serviceId = d.serviceId")
+    fun getServiceByDataSetId(dataSetId: Long):String?
 
 
 }

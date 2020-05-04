@@ -19,7 +19,7 @@ package com.example.finalprojectapp.utils
 import android.content.Context
 import androidx.fragment.app.Fragment
 import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
-import com.example.finalprojectapp.credentialsDB.MainRepository
+import com.example.finalprojectapp.data.LocalRepository
 import com.example.finalprojectapp.ui.credentials.CredentialsViewModelFactory
 
 
@@ -29,8 +29,8 @@ import com.example.finalprojectapp.ui.credentials.CredentialsViewModelFactory
  */
 object InjectorUtils {
 
-    private fun getMainRepository(context: Context): MainRepository {
-        return MainRepository.getInstance(
+    private fun getMainRepository(context: Context): LocalRepository {
+        return LocalRepository.getInstance(
             CredentialsDataBase.getDatabase(context.applicationContext).applicationDAO()
         )
     }
