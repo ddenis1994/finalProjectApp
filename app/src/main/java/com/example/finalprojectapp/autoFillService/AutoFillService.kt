@@ -5,17 +5,14 @@ import android.os.CancellationSignal
 import android.service.autofill.*
 import com.example.finalprojectapp.autoFillService.adapters.DataSetAdapter
 import com.example.finalprojectapp.autoFillService.adapters.ResponseAdapter
-import com.example.finalprojectapp.data.autoFilleService.ClientViewMetadataBuilder
 import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
 import com.example.finalprojectapp.credentialsDB.LocalServiceDao
-import com.example.finalprojectapp.data.model.Service
-import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.data.ServiceRepository
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.*
-import java.security.MessageDigest
-import java.util.*
+import com.example.finalprojectapp.data.autoFilleService.ClientViewMetadataBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 
 class AutoFillService : AutofillService() {
