@@ -12,6 +12,7 @@ import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.data.model.adpters.LayoutServiceView
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
+import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
@@ -250,6 +251,12 @@ interface LocalApplicationDAO {
 
     @Query("select s.name from dataSet_ d , service_ s where d.dataSetId=:dataSetId and s.serviceId = d.serviceId")
     fun getServiceByDataSetId(dataSetId: Long):String?
+
+    @Query("select count(*) from  service_ ")
+    fun publicGetNumOfServices():LiveData<Int>
+
+    @Query("select credentialsId, innerHashValue from  credentials_ ")
+    suspend fun publicGetAllHashCredentials():List<DashboardViewModel.HashAndId>
 
 
 }

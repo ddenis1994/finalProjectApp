@@ -1,22 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.dashboard.DashboardFragment">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        android:id="@+id/text_dashboard"
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="MyViewModel"
+            type="com.example.finalprojectapp.ui.dashboard.DashboardViewModel" />
+
+    </data>
+
+
+<LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+    android:onClick="@{()-> (MyViewModel.serviceCount >0) ? MyViewModel.showListServices() : null }"
+        android:orientation="vertical">
+        <TextView
+            style="@style/Credentials.Header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="My status"/>
+
+
+    <LinearLayout
+        style="@style/Credentials.Container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:orientation="horizontal">
+
+        <TextView
+        style="@style/Credentials.text"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="No of stored Services :" />
+
+        <TextView
+            style="@style/Credentials.text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="start"
+            android:visibility="@{MyViewModel.serviceCount==-1? View.GONE : View.VISIBLE}"
+            android:text="@{String.valueOf(MyViewModel.serviceCount)}" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:visibility="@{MyViewModel.serviceCount!=-1? View.GONE : View.VISIBLE}"
+            android:layout_height="wrap_content"
+            />
+
+
+    </LinearLayout>
+    <LinearLayout
+        style="@style/Credentials.Container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/Credentials.text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="start"
+            android:text="Security Risks : " />
+        <TextView
+            style="@style/Credentials.text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorBad"
+            android:visibility="@{MyViewModel.securityRisks==-1? View.GONE : View.VISIBLE}"
+            android:text="@{String.valueOf(MyViewModel.securityRisks)}"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar2"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:visibility="@{MyViewModel.securityRisks!=-1? View.GONE : View.VISIBLE}"
+            android:layout_height="wrap_content"
+            />
+
+    </LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:visibility="@{MyViewModel.securityRisks >0 ? View.GONE : View.VISIBLE }"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+
+
+    <LinearLayout
+    style="@style/Credentials.Container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        style="@style/Credentials.text"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="start"
+        android:text="Connection to remote : " />
+    <TextView
+        style="@style/Credentials.text"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="@color/colorPrimary"
+        android:text="@{String.valueOf(MyViewModel.connectionToRemote)}" />
+
+</LinearLayout>
+
+    <LinearLayout
+        style="@style/Credentials.Container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> MyViewModel.click()}"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/Credentials.text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="start"
+            android:text="Secret Password : " />
+
+        <TextView
+            style="@style/Credentials.text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="@{String.valueOf(MyViewModel.passwordStrange)}" />
+
+    </LinearLayout>
+
+</LinearLayout>
+</layout>

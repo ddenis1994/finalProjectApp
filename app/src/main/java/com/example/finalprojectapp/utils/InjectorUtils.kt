@@ -21,7 +21,7 @@ import androidx.fragment.app.Fragment
 import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
 import com.example.finalprojectapp.data.LocalRepository
 import com.example.finalprojectapp.ui.credentials.CredentialsViewModelFactory
-
+import com.example.finalprojectapp.ui.dashboard.DashboardViewModelFactory
 
 
 /**
@@ -40,5 +40,12 @@ object InjectorUtils {
     ): CredentialsViewModelFactory {
         val repository = getMainRepository(fragment.requireContext())
         return CredentialsViewModelFactory(repository)
+    }
+
+    fun provideDashboardViewModelFactory(
+        fragment: Fragment
+    ): DashboardViewModelFactory {
+        val repository = getMainRepository(fragment.requireContext())
+        return DashboardViewModelFactory(repository)
     }
 }

@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 
 
 class CredentialsFragment : Fragment() {
-    private val credentialsViewModel: CredentialsViewModel by activityViewModels(){
+    private val credentialsViewModel: CredentialsViewModel by activityViewModels {
         InjectorUtils.provideCredentialsViewModelFactory(this)
 
     }

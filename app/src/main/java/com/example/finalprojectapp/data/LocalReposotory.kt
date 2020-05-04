@@ -18,6 +18,9 @@ class LocalRepository private constructor(
     fun getAllData() =
         credentialsDao.publicGetAllServiceName()
 
+    fun getNumOfServices() =
+        credentialsDao.publicGetNumOfServices()
+
     fun getService(name:String) =
         credentialsDao.publicGetServiceByNameLive(name)
 
@@ -25,6 +28,9 @@ class LocalRepository private constructor(
         deleteFromRemote(dataSetId)
         credentialsDao.deleteDataSetById(dataSetId)
     }
+
+    suspend fun publicGetAllHashCredentials()=
+        credentialsDao.publicGetAllHashCredentials()
 
     private suspend fun deleteFromRemote(dataSetId: Long) {
         val serviceName=credentialsDao.getServiceByDataSetId(dataSetId)
