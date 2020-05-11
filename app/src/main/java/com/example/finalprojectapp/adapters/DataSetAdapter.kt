@@ -1,9 +1,6 @@
 package com.example.finalprojectapp.adapters
 
-import android.app.Activity
-import android.app.Instrumentation
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -80,7 +77,6 @@ class DataSetAdapter(
         holder.bind(data)
         val localData=data.dataSetId?.let { credentialsViewModel.getCrede(it) }
         localData?.observe(viewLifecycleOwner, Observer {
-
             holder.recyclerView.apply {
                 credentialsAdapter=CredentialsAdapter(it,viewLifecycleOwner,mContext)
                 adapter=credentialsAdapter

@@ -3,12 +3,10 @@ package com.example.finalprojectapp.ui.dashboard
 import android.util.Log
 import androidx.lifecycle.*
 import androidx.room.ColumnInfo
+import com.example.finalprojectapp.adapters.DashBoardRecyclerRepeatedPasswordAdapter
 import com.example.finalprojectapp.data.LocalRepository
 import com.example.finalprojectapp.data.model.DashBoardData
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class DashboardViewModel internal constructor(
     private val mainRepository: LocalRepository
@@ -27,24 +25,30 @@ class DashboardViewModel internal constructor(
     }
 
     fun addReactedPasswordListener(owner: LifecycleOwner) {
-        _data.addSource(chalkForRepeatedPassword(owner)) {
-            if(it)
-                _data.postValue(_data.value?.copy(securityRisks = _data.value!!.securityRisks+1))
-        }
+        _data.addSource(chalkForRepeatedPassword(owner)) { _data.postValue(it) }
     }
 
 
 
-    private fun chalkForRepeatedPassword(owner: LifecycleOwner): LiveData<Boolean>  {
-        val liveDataAdapter=MutableLiveData<Boolean>()
+    private fun chalkForRepeatedPassword(owner: LifecycleOwner): LiveData<DashBoardData>  {
+        val liveDataAdapter=MutableLiveData<DashBoardData>()
         viewModelScope.launch {
                 mainRepository.publicGetAllHashCredentials()
                     .observe(owner, Observer { data ->
-                        val repeatedList = data.groupBy { it.id }.filter { it.value.size > 1 }
-                        if (repeatedList.isNullOrEmpty())
-                            liveDataAdapter.postValue(false)
-                        else
-                            liveDataAdapter.postValue(true)
+                        var repeatedList = data.groupBy { it.id }.filter { it.value.size > 1 }
+                        val oldList = _data.value?.passwordRepeated
+                        if (!oldList.isNullOrEmpty())
+                            repeatedList = repeatedList.filter { !oldList.contains(it.key) }
+                        if (repeatedList.isNotEmpty()) {
+                            liveDataAdapter.postValue(
+                                _data.value?.copy(
+                                    securityRisks = _data.value!!.securityRisks + repeatedList.size,
+                                    repeatedPassport = repeatedList.size,
+                                    passwordRepeated = repeatedList,
+                                    viewAdapter = DashBoardRecyclerRepeatedPasswordAdapter(repeatedList.toList(),owner,this@DashboardViewModel)
+                                )
+                            )
+                        }
                     })
         }
         return liveDataAdapter
@@ -63,6 +67,8 @@ class DashboardViewModel internal constructor(
         //TODO make navigation to services fragment
         Log.i("test","Test")
     }
+
+    fun findServiceAndDataSet(dataSetId: Long) = mainRepository.findServiceAndDataSet(dataSetId)
 
     data class HashAndId(
         @ColumnInfo(name = "credentialsId") val id: Long,

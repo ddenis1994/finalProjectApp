@@ -13,8 +13,10 @@ import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.data.model.adpters.LayoutServiceView
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
+import com.example.finalprojectapp.data.model.adpters.LayoutDashBoardRepeatedPassword
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
 import java.util.*
@@ -259,6 +261,10 @@ interface LocalApplicationDAO {
     @Transaction
     @Query("select  r.credentialsId,c.innerHashValue hash, r.dataSetId dataSet from  credentials_ c,dataSetCredentialsManyToMany r where r.credentialsId=c.credentialsId and c.hint like '%Password%' or '%password%'   ")
     fun publicGetAllHashCredentials():LiveData<List<DashboardViewModel.HashAndId>>
+
+    @Transaction
+    @Query("select s.name serviceName,d.dataSetName dataSetName from dataSetCredentialsManyToMany r, dataSet_ d ,service_ s where d.serviceId = s.serviceId and d.dataSetId = r.dataSetId and r.credentialsId = :credentialID" )
+    fun publicFindServiceAndDataSet(credentialID: Long): LiveData<List<LayoutDashBoardRepeatedPassword>>
 
 
 }

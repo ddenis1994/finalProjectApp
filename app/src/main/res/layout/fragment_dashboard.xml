@@ -92,9 +92,24 @@
             />
 
     </LinearLayout>
-        <androidx.recyclerview.widget.RecyclerView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:visibility="@{MyData.repeatedPassport > 0 ? View.VISIBLE : View.GONE}"
+            android:orientation="vertical">
+            <TextView
+                style="@style/Credentials.text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/colorBad"
+                android:text="Repeated Password"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/repeatedPasswordRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
     </LinearLayout>
 
 

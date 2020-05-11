@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<data>
+    <variable
+        name="dataSetCard"
+        type="com.example.finalprojectapp.data.model.adpters.LayoutDashBoardRepeatedPassword" />
+</data>
+    <LinearLayout
+
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+        <TextView
+            android:text="At service"
+            style="@style/Credentials.text"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+            <TextView
+                android:text="@{dataSetCard.serviceName}"
+                style="@style/Credentials.text"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content" />
+        <TextView
+            android:text="in data Set"
+            style="@style/Credentials.text"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+            <TextView
+                style="@style/Credentials.text"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+            android:text="@{dataSetCard.dataSetName}"
+            />
+
+
+
+</LinearLayout>
+</layout>

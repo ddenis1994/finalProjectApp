@@ -3,7 +3,6 @@ package com.example.finalprojectapp.data
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
 import com.example.finalprojectapp.credentialsDB.LocalApplicationDAO
 import com.example.finalprojectapp.data.model.DashBoardData
 import com.google.firebase.auth.FirebaseAuth
@@ -84,7 +83,7 @@ class LocalRepository private constructor(
         credentialsDao.deleteDataSetById(dataSetId)
     }
 
-    suspend fun publicGetAllHashCredentials()=
+    fun publicGetAllHashCredentials()=
         credentialsDao.publicGetAllHashCredentials()
 
     private suspend fun deleteFromRemote(dataSetId: Long) {
@@ -112,6 +111,8 @@ class LocalRepository private constructor(
     fun getCredentialByDataSetID(dataSetId: Long)=credentialsDao.publicGetAllCredentialsByDataSetID(dataSetId)
 
     fun getDataSetById(serviceID: Long)=credentialsDao.publicGetAllDataSetsByServiceId(serviceID)
+
+    fun findServiceAndDataSet(dataSetId: Long) = credentialsDao.publicFindServiceAndDataSet(dataSetId)
 
     companion object {
         // For Singleton instantiation
