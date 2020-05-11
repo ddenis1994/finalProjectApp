@@ -1,6 +1,7 @@
 package com.example.finalprojectapp.credentialsDB
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.room.*
 import com.example.finalprojectapp.data.model.Credentials
@@ -255,9 +256,9 @@ interface LocalApplicationDAO {
     @Query("select count(*) from  service_ ")
     fun publicGetNumOfServices():LiveData<Int>
 
-
+    @Transaction
     @Query("select  r.credentialsId,c.innerHashValue hash, r.dataSetId dataSet from  credentials_ c,dataSetCredentialsManyToMany r where r.credentialsId=c.credentialsId and c.hint like '%Password%' or '%password%'   ")
-    suspend fun publicGetAllHashCredentials():List<DashboardViewModel.HashAndId>
+    fun publicGetAllHashCredentials():LiveData<List<DashboardViewModel.HashAndId>>
 
 
 }

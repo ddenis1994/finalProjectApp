@@ -38,7 +38,7 @@ class SettingsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
+            arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
@@ -51,15 +51,24 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val root=inflater.inflate(R.layout.fragment_settings, container, false)
+
         setupSettingsSwitch(
             root.settingsSetServiceContainer,
             R.id.settingsSetServiceLabel,
             R.id.settingsSetServiceSwitch,
             mAutofillManager.hasEnabledAutofillServices(),
             CompoundButton.OnCheckedChangeListener { compoundButton: CompoundButton?, serviceSet: Boolean ->
-                setService(
-                    serviceSet
-                )
+                setService(serviceSet)
+            }
+        )
+
+        setupSettingsSwitch(
+            root.settingsSetCheckRepeatedPasswords,
+            R.id.settingsSetRepeatedPasswordsLabel,
+            R.id.settingsSetRepeatedPasswordsSwitch,
+            mAutofillManager.hasEnabledAutofillServices(),
+            CompoundButton.OnCheckedChangeListener { _: CompoundButton?, serviceSet: Boolean ->
+                setting.edit().putBoolean("RepeatedPasswords",serviceSet).apply()
             }
         )
 
@@ -68,7 +77,7 @@ class SettingsFragment : Fragment() {
             R.id.settingsSetSecondFactorAuthentication,
             R.id.settingsSetSecondFactorAuthenticationSwitch,
             setting.getBoolean("SecondFactorAuthentication",false),
-            CompoundButton.OnCheckedChangeListener { compoundButton: CompoundButton?, serviceSet: Boolean ->
+            CompoundButton.OnCheckedChangeListener { _: CompoundButton?, serviceSet: Boolean ->
                 setting.edit().putBoolean("SecondFactorAuthentication",serviceSet).apply()
             }
         )
@@ -108,7 +117,7 @@ class SettingsFragment : Fragment() {
             container.findViewById<Switch>(switchId)
         switchView.contentDescription = switchLabel
         switchView.isChecked = checked
-        container.setOnClickListener { view: View? -> switchView.performClick() }
+        container.setOnClickListener { switchView.performClick() }
         switchView.setOnCheckedChangeListener(checkedChangeListener)
     }
 
@@ -124,7 +133,6 @@ class SettingsFragment : Fragment() {
         if (!mAutofillManager.hasEnabledAutofillServices()) {
             val intent = Intent(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE)
             intent.data = Uri.parse("package:com.example.android.autofill.service")
-
             startActivityForResult(
                 intent,
                 REQUEST_CODE_SET_DEFAULT
