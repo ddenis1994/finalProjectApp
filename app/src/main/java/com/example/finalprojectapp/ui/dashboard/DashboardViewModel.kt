@@ -6,6 +6,7 @@ import androidx.room.ColumnInfo
 import com.example.finalprojectapp.adapters.DashBoardRecyclerRepeatedPasswordAdapter
 import com.example.finalprojectapp.data.LocalRepository
 import com.example.finalprojectapp.data.model.DashBoardData
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class DashboardViewModel internal constructor(
@@ -19,8 +20,7 @@ class DashboardViewModel internal constructor(
 
     init {
         _data.postValue(DashBoardData())
-        _data.addSource(mainRepository.getNumOfServices()) {
-            _data.postValue(_data.value?.copy(serviceCount = it))
+        _data.addSource(mainRepository.getNumOfServices()) {_data.postValue(_data.value?.copy(serviceCount = it))
         }
     }
 
@@ -33,6 +33,7 @@ class DashboardViewModel internal constructor(
     private fun chalkForRepeatedPassword(owner: LifecycleOwner): LiveData<DashBoardData>  {
         val liveDataAdapter=MutableLiveData<DashBoardData>()
         viewModelScope.launch {
+            delay(100)
                 mainRepository.publicGetAllHashCredentials()
                     .observe(owner, Observer { data ->
                         var repeatedList = data.groupBy { it.id }.filter { it.value.size > 1 }
@@ -68,7 +69,7 @@ class DashboardViewModel internal constructor(
         Log.i("test","Test")
     }
 
-    fun findServiceAndDataSet(dataSetId: Long) = mainRepository.findServiceAndDataSet(dataSetId)
+    suspend fun findServiceAndDataSet(dataSetId: Long) = mainRepository.findServiceAndDataSet(dataSetId)
 
     data class HashAndId(
         @ColumnInfo(name = "credentialsId") val id: Long,

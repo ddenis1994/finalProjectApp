@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="Settings.Switch" parent="">
+    <style name="Settings.Switch" parent="@style/Widget.AppCompat.CompoundButton.Switch">
         <!-- We make the parent view clickable instead for better touch feedback -->
         <item name="android:background">@null</item>
         <item name="android:clickable">false</item>
@@ -66,7 +66,7 @@
     </style>
 
 
-    <style name="Credentials.Container" parent="Theme.MaterialComponents.DayNight">
+    <style name="Credentials.Container" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_marginStart">@dimen/credential_inner_layout_margin_start</item>
         <item name="android:layout_marginBottom">@dimen/spacing_normal</item>
         <item name="android:background">@drawable/card_list_cre_shape</item>

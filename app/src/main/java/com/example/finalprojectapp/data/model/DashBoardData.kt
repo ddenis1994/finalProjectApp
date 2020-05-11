@@ -5,7 +5,7 @@ import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 data class DashBoardData(
-    val serviceCount: Int = 0,
+    val serviceCount: Int = -1,
     val securityRisks: Int =0,
     val connectionToRemote:Boolean= FirebaseAuth.getInstance().currentUser != null,
     val passwordStrange:Int =0,

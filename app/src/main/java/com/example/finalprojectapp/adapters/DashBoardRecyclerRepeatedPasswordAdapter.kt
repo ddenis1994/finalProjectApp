@@ -4,10 +4,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finalprojectapp.data.model.adpters.LayoutDashBoardRepeatedPassword
 import com.example.finalprojectapp.databinding.LayoutDashBoardHashBinding
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DashBoardRecyclerRepeatedPasswordAdapter(
     private val children: List<Pair<Long, List<DashboardViewModel.HashAndId>>>,
@@ -16,10 +21,20 @@ class DashBoardRecyclerRepeatedPasswordAdapter(
 ):
     RecyclerView.Adapter<DashBoardRecyclerRepeatedPasswordAdapter.DataSetViewHolder>() {
 
+
     class DataSetViewHolder(
-        binding: LayoutDashBoardHashBinding
+        private val binding: LayoutDashBoardHashBinding
     ) : RecyclerView.ViewHolder(binding.root){
-        val recyclerView : RecyclerView = binding.repeatedPasswordInnerRecyclerView
+        fun bind(dashBoardInnerAdapter: DashBoardInnerAdapter) {
+            adapterSave=dashBoardInnerAdapter
+            binding.repeatedPasswordInnerRecyclerView.apply {
+                adapter=adapterSave
+                layoutManager=LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+            }
+
+        }
+
+        private lateinit var adapterSave:DashBoardInnerAdapter
     }
 
     override fun getItemCount(): Int = children.size
@@ -30,15 +45,16 @@ class DashBoardRecyclerRepeatedPasswordAdapter(
         ))
     }
 
+
     override fun onBindViewHolder(holder: DataSetViewHolder, position: Int) {
         val data=children[position]
-        dashboardViewModel.findServiceAndDataSet(data.first).observe(owner, Observer {
-            holder.recyclerView.apply {
-                adapter=DashBoardInnerAdapter(it)
-                layoutManager=
-                    LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)
-            }
-        })
+        dashboardViewModel.viewModelScope.launch {
+                val h =
+                    dashboardViewModel.findServiceAndDataSet(data.first)
+                holder.bind(DashBoardInnerAdapter(h))
+
+        }
+
 
 
     }

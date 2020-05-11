@@ -262,9 +262,9 @@ interface LocalApplicationDAO {
     @Query("select  r.credentialsId,c.innerHashValue hash, r.dataSetId dataSet from  credentials_ c,dataSetCredentialsManyToMany r where r.credentialsId=c.credentialsId and c.hint like '%Password%' or '%password%'   ")
     fun publicGetAllHashCredentials():LiveData<List<DashboardViewModel.HashAndId>>
 
-    @Transaction
+
     @Query("select s.name serviceName,d.dataSetName dataSetName from dataSetCredentialsManyToMany r, dataSet_ d ,service_ s where d.serviceId = s.serviceId and d.dataSetId = r.dataSetId and r.credentialsId = :credentialID" )
-    fun publicFindServiceAndDataSet(credentialID: Long): LiveData<List<LayoutDashBoardRepeatedPassword>>
+    suspend fun publicFindServiceAndDataSet(credentialID: Long): List<LayoutDashBoardRepeatedPassword>
 
 
 }
