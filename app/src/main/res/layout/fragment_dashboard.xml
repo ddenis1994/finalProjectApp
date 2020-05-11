@@ -5,6 +5,10 @@
     <data>
         <import type="android.view.View"/>
         <variable
+            name="MyData"
+            type="com.example.finalprojectapp.data.model.DashBoardData" />
+
+        <variable
             name="MyViewModel"
             type="com.example.finalprojectapp.ui.dashboard.DashboardViewModel" />
 
@@ -15,7 +19,7 @@
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-    android:onClick="@{()-> (MyViewModel.serviceCount >0) ? MyViewModel.showListServices() : null }"
+        android:onClick="@{()-> (MyData.serviceCount >0) ? MyViewModel.showListServices() : null }"
         android:orientation="vertical">
         <TextView
             style="@style/Credentials.Header"
@@ -42,14 +46,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="start"
-            android:visibility="@{MyViewModel.serviceCount==-1? View.GONE : View.VISIBLE}"
-            android:text="@{String.valueOf(MyViewModel.serviceCount)}" />
+
+            android:text="@{String.valueOf(MyData.serviceCount)}" />
 
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
-            android:visibility="@{MyViewModel.serviceCount!=-1? View.GONE : View.VISIBLE}"
+
             android:layout_height="wrap_content"
             />
 
@@ -78,21 +82,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textColor="@color/colorBad"
-            android:visibility="@{MyViewModel.securityRisks==-1? View.GONE : View.VISIBLE}"
-            android:text="@{String.valueOf(MyViewModel.securityRisks)}"/>
+            android:text="@{String.valueOf(MyData.securityRisks)}"/>
 
         <ProgressBar
-            android:id="@+id/progressBar2"
+            android:id="@+id/repeatCheck"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
-            android:visibility="@{MyViewModel.securityRisks!=-1? View.GONE : View.VISIBLE}"
             android:layout_height="wrap_content"
             />
 
     </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
-            android:visibility="@{MyViewModel.securityRisks >0 ? View.GONE : View.VISIBLE }"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
@@ -117,7 +118,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:background="@color/colorPrimary"
-        android:text="@{String.valueOf(MyViewModel.connectionToRemote)}" />
+        android:text="@{String.valueOf(MyData.connectionToRemote)}" />
 
 </LinearLayout>
 
@@ -141,7 +142,7 @@
             android:layout_height="match_parent"
             android:background="@color/colorPrimary"
             android:gravity="center"
-            android:text="@{String.valueOf(MyViewModel.passwordStrange)}" />
+            android:text="@{String.valueOf(MyData.passwordStrange)}" />
 
     </LinearLayout>
 

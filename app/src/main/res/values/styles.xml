@@ -39,7 +39,7 @@
 
     <!-- credentials fragment -->
 
-    <style name="Credentials.font" parent="@style/TextAppearance.AppCompat.Large">
+    <style name="Credentials.font" parent="@style/Theme.MaterialComponents.DayNight">
         <item name="fontFamily">@font/rajdhani_medium</item>
     </style>
 
@@ -66,7 +66,7 @@
     </style>
 
 
-    <style name="Credentials.Container" parent="">
+    <style name="Credentials.Container" parent="Theme.MaterialComponents.DayNight">
         <item name="android:layout_marginStart">@dimen/credential_inner_layout_margin_start</item>
         <item name="android:layout_marginBottom">@dimen/spacing_normal</item>
         <item name="android:background">@drawable/card_list_cre_shape</item>

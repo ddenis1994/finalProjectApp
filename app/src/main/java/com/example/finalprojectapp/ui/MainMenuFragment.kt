@@ -15,6 +15,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
+import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.workers.DBWorkerDecryption
@@ -48,6 +49,10 @@ class MainMenuFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         localDB=CredentialsDataBase.getDatabase(requireContext())
+        this.lifecycleScope.launch {
+           //localDB.serviceDao().publicInsertCredentials(Credentials().copy(data = "test",hint = listOf("username")))
+        }
+
         setHasOptionsMenu(true)
     }
 

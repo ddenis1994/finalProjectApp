@@ -50,7 +50,7 @@ interface LocalServiceDao {
             val cryptography=Cryptography(null)
             var hashData= credentials.innerHashValue
             if (hashData==null){
-                val message: ByteArray = (credentials.data+credentials.hint).toByteArray()
+                val message: ByteArray = (credentials.data +credentials.hint.toString()).toByteArray()
                 val md = MessageDigest.getInstance("SHA-256")
                 hashData= Base64.getEncoder().encodeToString(md.digest(message))
             }

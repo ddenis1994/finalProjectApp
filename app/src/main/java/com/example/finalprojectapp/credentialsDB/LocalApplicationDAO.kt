@@ -255,7 +255,8 @@ interface LocalApplicationDAO {
     @Query("select count(*) from  service_ ")
     fun publicGetNumOfServices():LiveData<Int>
 
-    @Query("select credentialsId, innerHashValue from  credentials_ ")
+
+    @Query("select  r.credentialsId,c.innerHashValue hash, r.dataSetId dataSet from  credentials_ c,dataSetCredentialsManyToMany r where r.credentialsId=c.credentialsId and c.hint like '%Password%' or '%password%'   ")
     suspend fun publicGetAllHashCredentials():List<DashboardViewModel.HashAndId>
 
 

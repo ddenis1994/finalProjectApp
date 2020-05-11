@@ -145,4 +145,8 @@ dependencies {
     androidTestRuntimeOnly "org.junit.platform:junit-platform-runner:1.6.1"
     androidTestRuntimeOnly "de.mannodermaus.junit5:android-instrumentation-test-runner:0.2.2"
 
+
+    implementation 'com.google.android.material:material:1.1.0'
+
+
 }
