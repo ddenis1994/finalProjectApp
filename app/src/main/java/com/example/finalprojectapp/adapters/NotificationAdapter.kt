@@ -1,10 +1,12 @@
 package com.example.finalprojectapp.adapters
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finalprojectapp.data.model.Notification
 import com.example.finalprojectapp.databinding.NotificationBinding
 
-class NotificationAdapter:
+class NotificationAdapter(private val data: List<Notification>) :
     RecyclerView.Adapter< NotificationAdapter.ViewHolder>() {
 
     class ViewHolder(
@@ -14,14 +16,17 @@ class NotificationAdapter:
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        TODO("Not yet implemented")
+        return ViewHolder(
+            NotificationBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false)
+        )
     }
 
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun getItemCount(): Int =data.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        TODO("Not yet implemented")
+
     }
 }
