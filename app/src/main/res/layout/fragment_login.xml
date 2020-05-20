@@ -55,7 +55,7 @@
         android:autofillHints="@string/prompt_password"
         app:endIconMode="clear_text"
         android:id="@+id/username"
-        android:hint="user name"
+        android:hint="User Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
