@@ -47,8 +47,8 @@ class LoginFragment : Fragment() {
     ): View? {
         super.onCreate(savedInstanceState)
         val root = inflater.inflate(R.layout.fragment_login, container, false)
-        val username = root.username
-        val password = root.password
+        val username = root.username_inner
+        val password = root.password_inner
         val login = root.login
         val loading = root.loading
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
