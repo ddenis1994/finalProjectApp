@@ -1,6 +1,6 @@
 package com.example.finalprojectapp.ui.login
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -94,7 +94,7 @@ class LoginFragment : Fragment() {
             if (loginResult.success != null) {
                 updateUiWithUser(loginResult.success)
             }
-            activity?.setResult(Activity.RESULT_OK)
+            activity?.setResult(AppCompatActivity.RESULT_OK)
         })
         username.afterTextChanged {
             loginViewModel.loginDataChanged(

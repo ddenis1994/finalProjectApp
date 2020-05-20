@@ -1,22 +1,20 @@
 package com.example.finalprojectapp.credentialsDB
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.room.*
+import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
-import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
-import com.example.finalprojectapp.data.model.relationship.ServiceToDataSet
-import com.example.finalprojectapp.crypto.Cryptography
-import com.example.finalprojectapp.data.model.adpters.LayoutServiceView
-import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import com.example.finalprojectapp.data.model.adpters.LayoutDashBoardRepeatedPassword
+import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
+import com.example.finalprojectapp.data.model.adpters.LayoutServiceView
+import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
+import com.example.finalprojectapp.data.model.relationship.ServiceToDataSet
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
 import java.util.*
@@ -36,6 +34,7 @@ interface LocalApplicationDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun privateInsertService(dataSet: Service):Long
 
+    @Transaction
     @Query("SELECT * FROM service_ ")
     suspend fun privateGetAllService(): List<ServiceToDataSet>
 

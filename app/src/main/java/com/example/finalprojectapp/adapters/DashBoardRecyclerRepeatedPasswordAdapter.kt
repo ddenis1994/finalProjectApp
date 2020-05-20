@@ -2,21 +2,15 @@ package com.example.finalprojectapp.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalprojectapp.data.model.adpters.LayoutDashBoardRepeatedPassword
 import com.example.finalprojectapp.databinding.LayoutDashBoardHashBinding
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class DashBoardRecyclerRepeatedPasswordAdapter(
     private val children: List<Pair<Long, List<DashboardViewModel.HashAndId>>>,
-    private val owner: LifecycleOwner,
     private val dashboardViewModel: DashboardViewModel
 ):
     RecyclerView.Adapter<DashBoardRecyclerRepeatedPasswordAdapter.DataSetViewHolder>() {

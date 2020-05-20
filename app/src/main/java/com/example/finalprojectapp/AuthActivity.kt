@@ -1,12 +1,11 @@
 package com.example.finalprojectapp
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
 import android.service.autofill.FillResponse
 import android.view.autofill.AutofillManager.EXTRA_AUTHENTICATION_RESULT
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
@@ -48,7 +47,7 @@ class AuthActivity : AppCompatActivity() {
                         else
                             putExtra(EXTRA_AUTHENTICATION_RESULT, structure)
                     }
-                    setResult(Activity.RESULT_OK, replyIntent)
+                    setResult(RESULT_OK, replyIntent)
                     Toast.makeText(applicationContext,
                         "Authentication succeeded!", Toast.LENGTH_SHORT)
                         .show()
@@ -60,7 +59,7 @@ class AuthActivity : AppCompatActivity() {
                     val replyIntent = Intent().apply {
                         // Send the data back to the service.
                     }
-                    setResult(Activity.RESULT_CANCELED, replyIntent)
+                    setResult(RESULT_CANCELED, replyIntent)
                     Toast.makeText(applicationContext, "Authentication failed",
                         Toast.LENGTH_SHORT)
                         .show()
@@ -81,7 +80,7 @@ class AuthActivity : AppCompatActivity() {
             BiometricManager.BIOMETRIC_SUCCESS ->
                 biometricPrompt.authenticate(promptInfo)
             else->{
-                setResult(Activity.RESULT_CANCELED)
+                setResult(RESULT_CANCELED)
                 Toast.makeText(applicationContext, "Authentication failed",
                     Toast.LENGTH_SHORT)
                     .show()

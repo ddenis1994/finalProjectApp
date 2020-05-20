@@ -1,6 +1,6 @@
 package com.example.finalprojectapp.ui.credentials
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -67,8 +67,8 @@ class CredentialsFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode==2) {
             when (resultCode ){
-                Activity.RESULT_CANCELED->Log.i("test","test321")
-                Activity.RESULT_OK-> if (data != null) {
+                AppCompatActivity.RESULT_CANCELED->Log.i("test","test321")
+                AppCompatActivity.RESULT_OK-> if (data != null) {
                     deleteDataSet(data.getIntExtra("dataSetId",-1).toLong())
                 }
             }

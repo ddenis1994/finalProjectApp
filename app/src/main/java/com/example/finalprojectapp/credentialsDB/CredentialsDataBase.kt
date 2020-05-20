@@ -7,14 +7,16 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
+import com.example.finalprojectapp.data.model.Notification
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
 
 
-@Database(entities = [Service::class, Credentials::class, DataSet::class, DataSetCredentialsManyToMany::class], version = 2, exportSchema = false)
+@Database(entities = [Notification::class,Service::class, Credentials::class, DataSet::class, DataSetCredentialsManyToMany::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class CredentialsDataBase: RoomDatabase() {
 
+    abstract fun notificationDao():NotificationDAO
     abstract fun serviceDao(): LocalServiceDao
     abstract fun applicationDAO():LocalApplicationDAO
 
