@@ -2,19 +2,60 @@
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        style="?attr/listDividerAlertDialog"
-        android:orientation="horizontal">
-        <TextView
-            android:drawableStart="@drawable/ic_devices_black_24dp"
+    <data>
+        <variable
+            name="notificationData"
+            type="com.example.finalprojectapp.data.model.Notification" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/Credentials.Container"
+        android:layout_width="match_parent">
+
+        <ImageButton
+            android:id="@+id/start_notifaction_icon"
+            style="@style/Credentials.Icon.big"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/ic_devices_black_24dp"
+            android:contentDescription="TODO" />
+
+        <LinearLayout
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/start_notifaction_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
-            android:drawableEnd="@drawable/ic_more_vert_black_24dp"
-            style="?attr/materialButtonOutlinedStyle"
-            android:text="new online Massage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Credentials.Header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{notificationData.component2()}" />
+
+            <TextView
+                style="@style/Credentials.text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{notificationData.component3()}" />
+        </LinearLayout>
+
+        <ImageButton
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            style="@style/Credentials.Icon.small"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_more_vert_black_24dp"
+            android:contentDescription="optionsNotification" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </layout>

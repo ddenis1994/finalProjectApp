@@ -51,6 +51,8 @@
     </style>
 
     <style name="Credentials.text" parent="@style/Credentials.font">
+
+        <item name="fontFamily">@font/rajdhani_medium</item>
         <item name="paddingStart">@dimen/spacing_normal</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_width">@dimen/credential_inner_text_layout_width</item>
@@ -59,14 +61,32 @@
 
 
     <style name="Credentials.Header" parent="@style/Credentials.font">
+        style="?attr/textAppearanceHeadline6"
         <item name="paddingStart">@dimen/spacing_large</item>
         <item name="android:textSize">@dimen/credential_dataSet_text_size</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <style name="Credentials.Icon.big" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="paddingStart">16dp</item>
+        <item name="paddingEnd">16dp</item>
+        <item name="android:textSize">@dimen/credential_dataSet_text_size</item>
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+    </style>
 
-    <style name="Credentials.Container" parent="Widget.MaterialComponents.Button">
+
+    <style name="Credentials.Icon.small" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="paddingStart">16dp</item>
+        <item name="paddingEnd">16dp</item>
+        <item name="android:textSize">@dimen/credential_dataSet_text_size</item>
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+    </style>
+
+
+    <style name="Credentials.Container" parent="">
         <item name="android:layout_marginStart">@dimen/credential_inner_layout_margin_start</item>
         <item name="android:layout_marginBottom">@dimen/spacing_normal</item>
         <item name="background">@drawable/card_list_cre_shape</item>

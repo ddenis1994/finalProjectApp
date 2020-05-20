@@ -35,7 +35,7 @@ class NotificationsFragment : Fragment() {
         notificationsViewModel.data.observe(viewLifecycleOwner, Observer {
             viewAdapter=NotificationAdapter(it)
 
-            notification_RecyclerView.adapter=NotificationAdapter(listOf(Notification(2,"",1,""),Notification(0,"",1,"")))
+            notification_RecyclerView.adapter=NotificationAdapter(it)
         })
         return root
     }

@@ -141,7 +141,6 @@ class CredentialsAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
         val data = children[position]
         holder.bind(data)
     }

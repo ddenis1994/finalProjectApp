@@ -7,18 +7,23 @@ import com.example.finalprojectapp.autoFillService.adapters.DataSetAdapter
 import com.example.finalprojectapp.autoFillService.adapters.ResponseAdapter
 import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
 import com.example.finalprojectapp.credentialsDB.LocalServiceDao
+import com.example.finalprojectapp.credentialsDB.NotificationRepository
 import com.example.finalprojectapp.data.ServiceRepository
 import com.example.finalprojectapp.data.autoFilleService.ClientViewMetadataBuilder
+import com.example.finalprojectapp.data.model.Notification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 
 class AutoFillService : AutofillService() {
 
     private lateinit var localServiceDAO: LocalServiceDao
     private lateinit var mainRepository: ServiceRepository
+    private lateinit var notificationRepository: NotificationRepository
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var clientViewMetadata: List<AutofillFieldMetadata>
     private lateinit var dataSetAdapter: DataSetAdapter
@@ -31,6 +36,7 @@ class AutoFillService : AutofillService() {
         coroutineScope=CoroutineScope(Job())
         localServiceDAO =CredentialsDataBase.getDatabase(this.applicationContext).serviceDao()
         mainRepository= ServiceRepository.getInstance(localServiceDAO,applicationContext)
+        notificationRepository=NotificationRepository.getInstance(CredentialsDataBase.getDatabase(this.applicationContext).notificationDao())
 
     }
 
@@ -75,6 +81,7 @@ class AutoFillService : AutofillService() {
             val service=dataSetAdapter.generatesServiceClass(clientViewSaveData)
             GlobalScope.launch {
                 mainRepository.addService(service,callback)
+                notificationRepository.insert(Notification(0,"Inserted Credentials",service.name,DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
             }
         }
 

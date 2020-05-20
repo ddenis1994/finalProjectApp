@@ -7,9 +7,10 @@ import com.google.firebase.firestore.Exclude
 @Entity
 data class Notification(
     var type:Int,
-    var massage:String,
+    var mainMassage:String,
+    var secondMassage:String,
+    val time:String,
     @PrimaryKey(autoGenerate = true)
     @Exclude
-    var key:Long,
-    val time:String
+    var key:Long=0
 )
