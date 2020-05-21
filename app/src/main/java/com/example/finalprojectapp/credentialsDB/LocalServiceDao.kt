@@ -18,6 +18,30 @@ import java.util.*
 @Dao
 interface LocalServiceDao {
 
+
+    @Query("Delete from service_")
+    fun deleteAllService()
+
+    @Query("Delete from dataSet_")
+    fun deleteAllDataSets()
+
+    @Query("Delete from dataSetCredentialsManyToMany")
+    fun deleteAllR()
+
+    @Query("Delete from credentials_")
+    fun deleteAllCredentials()
+
+
+    @Transaction
+    suspend fun nukeALl() {
+        deleteAllCredentials()
+        deleteAllDataSets()
+        deleteAllR()
+        deleteAllService()
+    }
+
+
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun privateInsertCredentials(credentials: Credentials):Long
 

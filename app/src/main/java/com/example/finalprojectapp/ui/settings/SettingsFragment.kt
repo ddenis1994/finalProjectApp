@@ -11,11 +11,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.autofill.AutofillManager
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import com.example.finalprojectapp.R
+import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
+import com.example.finalprojectapp.credentialsDB.NotificationRepository
+import com.example.finalprojectapp.data.ServiceRepository
 import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_settings.view.*
+import kotlinx.coroutines.launch
 import kotlin.reflect.KFunction0
 
 // TODO: Rename parameter arguments, choose names that match
@@ -35,6 +46,9 @@ class SettingsFragment : Fragment() {
     private lateinit var mAutofillManager:AutofillManager
     private val REQUEST_CODE_SET_DEFAULT = 1
     private lateinit var setting:SharedPreferences
+    private lateinit var serviceRepository: ServiceRepository
+    private lateinit var notificationRepository: NotificationRepository
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +58,8 @@ class SettingsFragment : Fragment() {
         }
         mAutofillManager = getSystemService(requireContext(), AutofillManager::class.java)!!
         setting=SingleEncryptedSharedPreferences().getSharedPreference(this.requireContext())
+        serviceRepository= ServiceRepository.getInstance(CredentialsDataBase.getDatabase(this.requireContext()).serviceDao(),requireContext())
+        notificationRepository=NotificationRepository.getInstance(CredentialsDataBase.getDatabase(this.requireContext()).notificationDao())
     }
 
     override fun onCreateView(
@@ -103,8 +119,17 @@ class SettingsFragment : Fragment() {
 
 
     private fun disconnectButton(){
-        //TODO make disconnect protocol
-        Log.i("sett","clicked disc")
+        this.lifecycleScope.launch {
+            serviceRepository.nukeALl()
+            notificationRepository.nukeAllNotification()
+            Firebase.firestore.clearPersistence()
+            FirebaseAuth.getInstance().signOut()
+            setting.edit().clear().apply()
+            activity?.finish()
+            Log.i("sett","clicked disc")
+        }
+
+
     }
 
 

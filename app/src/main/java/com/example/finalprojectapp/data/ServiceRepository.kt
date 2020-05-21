@@ -17,6 +17,10 @@ class ServiceRepository private constructor(
     private val context:Context
 ) {
 
+    suspend fun nukeALl(): Unit {
+        credentialsDao.nukeALl()
+    }
+
     suspend fun addService(
         service: Service,
         callback: SaveCallback
@@ -26,6 +30,7 @@ class ServiceRepository private constructor(
             addDataToRemoteWithSaveCallBack(service, callback)
         }
     }
+
 
 
     companion object {

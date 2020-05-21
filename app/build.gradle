@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlinx-serialization'
 apply plugin: "de.mannodermaus.android-junit5"
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 
 android {

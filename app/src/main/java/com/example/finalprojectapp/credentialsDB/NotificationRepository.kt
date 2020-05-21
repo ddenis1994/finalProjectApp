@@ -11,7 +11,7 @@ class NotificationRepository(
 ) {
     private val db=Firebase.firestore
     private val user = FirebaseAuth.getInstance().currentUser!!
-    val coroutineScope= CoroutineScope(Job())
+    private val coroutineScope= CoroutineScope(Job())
 
     val allNotification = notificationDAO.getAllNotification()
 
@@ -33,6 +33,10 @@ class NotificationRepository(
                 }
 
             }
+    }
+
+    suspend fun nukeAllNotification(): Unit {
+        notificationDAO.nukeAll()
     }
 
 

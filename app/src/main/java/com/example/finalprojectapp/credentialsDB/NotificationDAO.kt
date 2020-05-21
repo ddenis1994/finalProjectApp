@@ -15,4 +15,6 @@ interface NotificationDAO {
 
     @Delete
     suspend fun deleteNotifications(notifications: List<Notification>)
+    @Query("Delete from notification")
+    suspend fun nukeAll()
 }
