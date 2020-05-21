@@ -105,6 +105,7 @@ class SettingsFragment : Fragment() {
 
 
     private fun disconnectButton(){
+        //TODO make disconnect protocol
         Log.i("sett","clicked disc")
     }
 
