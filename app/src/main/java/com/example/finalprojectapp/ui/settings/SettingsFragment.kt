@@ -84,7 +84,6 @@ class SettingsFragment : Fragment() {
         )
 
         setUpSettingsButton(
-            root.settings_disconnect_layout,
             root.disconnectButton,
             ::disconnectButton
         )
@@ -94,7 +93,6 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setUpSettingsButton(
-        settingsLayout: LinearLayout?,
         button: Button?,
         func: ()->Unit
     ) {
