@@ -14,6 +14,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
@@ -30,12 +31,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import java.io.IOException
+import java.lang.Exception
 
 
 class LoginFragment : Fragment() {
 
     private val TAG ="loginFragment"
-    private lateinit var loginViewModel: LoginViewModel
+
+    private  val loginViewModel: LoginViewModel by activityViewModels{
+        LoginViewModelFactory()
+    }
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN:Int = 9001
     private lateinit var auth: FirebaseAuth
@@ -55,7 +60,6 @@ class LoginFragment : Fragment() {
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
-        Log.i(TAG,getString(R.string.default_web_client_id))
         mGoogleSignInClient = GoogleSignIn.getClient(requireContext().applicationContext, gso)
         auth = FirebaseAuth.getInstance()
 
@@ -68,8 +72,7 @@ class LoginFragment : Fragment() {
 
 
 
-        loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
-            .get(LoginViewModel::class.java)
+
 
         loginViewModel.loginFormState.observe(viewLifecycleOwner, Observer {
             val loginState = it ?: return@Observer
@@ -153,6 +156,8 @@ class LoginFragment : Fragment() {
             val res= Result.Success(user)
             loginViewModel.updateResult(res)
         }
+        else
+            loginViewModel.updateResult(Result.Error(Exception("do not have user logged in")))
     }
 
     private fun singInGoogle() {

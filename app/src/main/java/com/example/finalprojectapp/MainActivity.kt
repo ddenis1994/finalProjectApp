@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
-
+/*
         //TODO remove the firestore setting in the production
         val settings = FirebaseFirestoreSettings.Builder()
             .setHost("10.0.2.2:8080")
@@ -33,11 +33,7 @@ class MainActivity : AppCompatActivity() {
         //end of fire base settings
 
 
-
-
-
-/*
-
+ */
         val settings = FirebaseFirestoreSettings.Builder()
             .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
             .setPersistenceEnabled(true)
@@ -47,7 +43,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
- */
 
 
 

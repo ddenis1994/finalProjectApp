@@ -91,12 +91,6 @@ class MainMenuFragment : Fragment() {
                             DocumentChange.Type.MODIFIED -> listenerForService(serviceName)
                         }
                     }
-
-                    with(requireContext().getSharedPreferences("mainPreferences", Context.MODE_PRIVATE).edit()) {
-                        putBoolean("encrypted", true)
-                        apply()
-                    }
-
                 }
     }
 

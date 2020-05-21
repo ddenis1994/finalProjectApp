@@ -73,7 +73,7 @@ class SettingsFragment : Fragment() {
             R.id.settingsSetServiceLabel,
             R.id.settingsSetServiceSwitch,
             mAutofillManager.hasEnabledAutofillServices(),
-            CompoundButton.OnCheckedChangeListener { compoundButton: CompoundButton?, serviceSet: Boolean ->
+            CompoundButton.OnCheckedChangeListener { _: CompoundButton?, serviceSet: Boolean ->
                 setService(serviceSet)
             }
         )
@@ -122,12 +122,13 @@ class SettingsFragment : Fragment() {
         this.lifecycleScope.launch {
             serviceRepository.nukeALl()
             notificationRepository.nukeAllNotification()
-            Firebase.firestore.clearPersistence()
+            //Firebase.firestore.clearPersistence()
             FirebaseAuth.getInstance().signOut()
             setting.edit().clear().apply()
-            activity?.finish()
-            Log.i("sett","clicked disc")
-        }
+            this@SettingsFragment.parentFragmentManager.popBackStack(null,FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+         }
+
 
 
     }
