@@ -5,18 +5,18 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.autofill.AutofillManager
-import android.widget.CompoundButton
-import android.widget.Switch
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import kotlinx.android.synthetic.main.fragment_settings.view.*
+import kotlin.reflect.KFunction0
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -62,6 +62,7 @@ class SettingsFragment : Fragment() {
             }
         )
 
+
         setupSettingsSwitch(
             root.settingsSetCheckRepeatedPasswords,
             R.id.settingsSetRepeatedPasswordsLabel,
@@ -82,8 +83,29 @@ class SettingsFragment : Fragment() {
             }
         )
 
+        setUpSettingsButton(
+            root.settings_disconnect_layout,
+            root.disconnectButton,
+            ::disconnectButton
+        )
+
         // Inflate the layout for this fragment
         return root
+    }
+
+    private fun setUpSettingsButton(
+        settingsLayout: LinearLayout?,
+        button: Button?,
+        func: ()->Unit
+    ) {
+        button?.setOnClickListener {
+            func()
+        }
+    }
+
+
+    private fun disconnectButton(){
+        Log.i("sett","clicked disc")
     }
 
 

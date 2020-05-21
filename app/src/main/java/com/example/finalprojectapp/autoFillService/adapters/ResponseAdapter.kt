@@ -41,13 +41,17 @@ class ResponseAdapter(
         else
             withNoData(responseBuilder,dataSetAdapter.packageName)
 
-        val saveInfo = SaveInfo.Builder(clientViewMetadata.map { it.autofillType }
-            .reduce { acc, num -> acc or num },
-            clientViewMetadata.map { it.autofillId }.toTypedArray()
-        ).build()
-        responseBuilder.setSaveInfo(saveInfo)
+        if (clientViewMetadata.isNotEmpty()) {
+            val saveInfo = SaveInfo.Builder(clientViewMetadata.map { it.autofillType }
+                .reduce { acc, num -> acc or num },
+                clientViewMetadata.map { it.autofillId }.toTypedArray()
+            ).build()
+            responseBuilder.setSaveInfo(saveInfo)
 
-        callback.onSuccess(responseBuilder.build())
+            callback.onSuccess(responseBuilder.build())
+        }
+        else
+            callback.onFailure("cannot find hints")
     }
 
     private fun withLocalData(service:Service, fillResponse: FillResponse.Builder) {

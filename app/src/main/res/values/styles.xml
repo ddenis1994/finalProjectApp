@@ -51,7 +51,14 @@
     </style>
 
     <style name="Credentials.text" parent="@style/Credentials.font">
+        <item name="fontFamily">@font/rajdhani_medium</item>
+        <item name="paddingStart">@dimen/spacing_normal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_width">@dimen/credential_inner_text_layout_width</item>
+        <item name="android:layout_height">@dimen/credential_inner_text_layout_height</item>
+    </style>
 
+    <style name="Credentials.text.big" parent="@style/TextAppearance.AppCompat.Headline">
         <item name="fontFamily">@font/rajdhani_medium</item>
         <item name="paddingStart">@dimen/spacing_normal</item>
         <item name="android:gravity">center_vertical</item>

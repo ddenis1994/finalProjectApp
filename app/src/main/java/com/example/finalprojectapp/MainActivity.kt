@@ -17,7 +17,8 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-/*
+
+
 
         //TODO remove the firestore setting in the production
         val settings = FirebaseFirestoreSettings.Builder()
@@ -34,7 +35,8 @@ class MainActivity : AppCompatActivity() {
 
 
 
-          */
+
+/*
 
         val settings = FirebaseFirestoreSettings.Builder()
             .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
@@ -42,6 +44,10 @@ class MainActivity : AppCompatActivity() {
             .build()
         val firestore = FirebaseFirestore.getInstance()
         firestore.firestoreSettings = settings
+
+
+
+ */
 
 
 

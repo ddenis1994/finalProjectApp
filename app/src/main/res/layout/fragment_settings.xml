@@ -100,6 +100,28 @@
                 android:layout_marginStart="16dp"/>
 
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/settings_disconnect_layout"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/disconnectButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_disconnect_button"
+                />
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/Settings.Label"
+                android:layout_width="wrap_content"
+                android:text="@string/settings_disconnect_label"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+
     </LinearLayout>
 
 

@@ -1,19 +1,22 @@
 package com.example.finalprojectapp.credentialsDB
 
 import com.example.finalprojectapp.data.model.Notification
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.*
 
 class NotificationRepository(
     private val notificationDAO: NotificationDAO
 ) {
+    private val db=Firebase.firestore
+    private val user = FirebaseAuth.getInstance().currentUser!!
+    val coroutineScope= CoroutineScope(Job())
+
     val allNotification = notificationDAO.getAllNotification()
 
-    suspend fun insert(notification: Notification): Long {
+    fun insert(notification: Notification) {
         remoteInsert(notification)
-        return withContext(Dispatchers.IO) {
-            return@withContext localInsert(notification)
-        }
     }
 
     private suspend fun localInsert(notification: Notification): Long {
@@ -21,7 +24,15 @@ class NotificationRepository(
     }
 
     private fun remoteInsert(notification: Notification) {
+        db.collection("users").document(user.uid)
+            .collection("notifications").add(notification.copy()).addOnSuccessListener {
+                coroutineScope.launch {
+                    withContext(Dispatchers.IO){
+                        localInsert(notification)
+                    }
+                }
 
+            }
     }
 
 

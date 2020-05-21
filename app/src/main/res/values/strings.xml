@@ -28,4 +28,8 @@
     <string name="credentials_more_info">info</string>
     <string name="delete_data_set">Delete</string>
     <string name="check_for_repeated_passwords">check for repeated passwords</string>
+    <string name="facebook_app_id">need to add my id</string>
+    <string name="fb_login_protocol_scheme">need to add my fb schame</string>
+    <string name="settings_disconnect_button">Disconnect</string>
+    <string name="settings_disconnect_label">Disconnect will delete all data in device</string>
 </resources>
