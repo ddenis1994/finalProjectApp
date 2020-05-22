@@ -16,7 +16,6 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.data.Result
@@ -39,7 +38,7 @@ class LoginFragment : Fragment() {
     private val TAG ="loginFragment"
 
     private  val loginViewModel: LoginViewModel by activityViewModels{
-        LoginViewModelFactory()
+        LoginViewModelFactory(requireActivity())
     }
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN:Int = 9001
@@ -115,17 +114,17 @@ class LoginFragment : Fragment() {
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
-                            username.text.toString(),
-                            password.text.toString()
-                        )
+                        loginViewModel.login(username.text.toString(),password.text.toString())
                 }
                 false
             }
 
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString())
+                loginViewModel.login(username.text.toString(), password.text.toString()).observe(viewLifecycleOwner,
+                    Observer {
+                        loginViewModel.updateResult(it)
+                    })
             }
         }
 

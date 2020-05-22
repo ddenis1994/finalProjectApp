@@ -1,13 +1,17 @@
 package com.example.finalprojectapp.data
 
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.example.finalprojectapp.data.model.LoggedInUser
+import com.example.finalprojectapp.ui.login.LoginResult
 
 /**
  * Class that requests authentication and user information from the remote data source and
  * maintains an in-memory cache of login status and user credentials information.
  */
 
-class LoginRepository(val dataSource: LoginDataSource) {
+class LoginRepository(private val dataSource: LoginDataSource, private val lifecycleOwner: LifecycleOwner) {
 
     // in-memory cache of the loggedInUser object
     var user: LoggedInUser? = null
@@ -27,13 +31,31 @@ class LoginRepository(val dataSource: LoginDataSource) {
         dataSource.logout()
     }
 
-    fun login(username: String, password: String): Result<LoggedInUser> {
+//    fun login(
+//        username: String,
+//        password: String,
+//        _loginResult: MutableLiveData<LoginResult>
+//    ): Result<LoggedInUser> {
+//        // handle login
+//        val result = dataSource.login(username, password)
+//
+//        if (result.value is Result.Success) {
+//            setLoggedInUser((result.value as Result.Success<LoggedInUser>).data)
+//        }
+//
+//        return result
+//    }
+
+    fun login(
+        username: String,
+        password: String
+    ): MutableLiveData<Result<LoggedInUser>> {
         // handle login
         val result = dataSource.login(username, password)
-
-        if (result is Result.Success) {
-            setLoggedInUser(result.data)
-        }
+        result.observe(lifecycleOwner, Observer {
+            if(it is Result.Success)
+                setLoggedInUser(it.data)
+        })
 
         return result
     }

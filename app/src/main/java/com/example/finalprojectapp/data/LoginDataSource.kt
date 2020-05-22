@@ -1,30 +1,51 @@
 package com.example.finalprojectapp.data
 
-import android.content.Context
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.example.finalprojectapp.data.model.LoggedInUser
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import java.io.IOException
+import java.lang.Exception
 
 
 /**
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
-class LoginDataSource() {
+class LoginDataSource(private val activity: FragmentActivity) {
+
+    private val auth=FirebaseAuth.getInstance()
 
 
-    fun login(username: String, password: String): Result<LoggedInUser> {
-        try {
-            // TODO: handle loggedInUser authentication
-            val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe")
-            return Result.Success(fakeUser)
-        } catch (e: Throwable) {
-            return Result.Error(IOException("Error logging in", e))
-        }
+
+
+
+
+    fun login(username: String, password: String): MutableLiveData<Result<LoggedInUser>> {
+        val resultData=MutableLiveData<Result<LoggedInUser>>()
+        auth.signInWithEmailAndPassword(username,password)
+            .addOnCompleteListener(activity) {task->
+                if (task.isSuccessful) {
+                    resultData.postValue(auth.currentUser!!.displayName?.let {
+                        LoggedInUser(auth.currentUser!!.uid,it)
+                    }?.let { Result.Success(it) })
+                }
+                else{
+                    resultData.postValue(Result.Error(Exception("cannot log in")))
+                }
+            }
+        return resultData
     }
 
+
     fun logout() {
-        // TODO: revoke authentication
+        auth.signOut()
+    }
+
+    fun createNewAccent(username: String, password: String): Result<LoggedInUser>? {
+        auth.createUserWithEmailAndPassword(username,password)
+        return null
     }
 }
 
