@@ -31,6 +31,6 @@
     <string name="fb_login_protocol_scheme">need to add my fb schame</string>
     <string name="settings_disconnect_button">Disconnect</string>
     <string name="settings_disconnect_label">Disconnect will delete all data in device</string>
-    <string name="action_register" >Register</string>
+    <string name="action_register">Register</string>
     <string name="other_sing_in_options">Other sing in options</string>
 </resources>

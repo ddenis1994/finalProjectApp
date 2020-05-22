@@ -141,7 +141,7 @@ class LoginFragment : Fragment() {
                             })
                 }
                 else{
-                    //Todo register
+                    loginViewModel.register(username.text.toString())
                 }
             }
         }

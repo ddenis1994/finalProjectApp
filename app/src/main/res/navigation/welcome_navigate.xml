@@ -13,6 +13,9 @@
         <action
             android:id="@+id/startMainApplication"
             app:destination="@id/mainMenuFragment2" />
+        <action
+            android:id="@+id/action_loginFragment_to_registerUserNameFragement"
+            app:destination="@id/registerUserNameFragement" />
     </fragment>
     <fragment
         android:id="@+id/mainMenuFragment2"
@@ -27,6 +30,20 @@
     <action
         android:id="@+id/action_global_settingsFragment"
         app:destination="@id/navigation_settings" />
+    <fragment
+        android:id="@+id/registerUserNameFragement"
+        tools:layout="@layout/fragment_register_user_name"
+        android:name="com.example.finalprojectapp.ui.login.register.RegisterUserNameFragement"
+        android:label="RegisterUserNameFragement" >
+        <action
+            android:id="@+id/action_registerUserNameFragement_to_registerPassword"
+            app:destination="@id/registerPassword" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerPassword"
+        android:name="com.example.finalprojectapp.ui.login.register.RegisterPassword"
+        android:label="fragment_register_password"
+        tools:layout="@layout/fragment_register_password" />
 
 
 </navigation>
