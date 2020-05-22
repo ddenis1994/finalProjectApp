@@ -6,5 +6,6 @@ package com.example.finalprojectapp.ui.login
 data class LoginFormState(
     val usernameError: Int? = null,
     val passwordError: Int? = null,
+    val signIn:Boolean=false,
     val isDataValid: Boolean = false
 )

@@ -45,6 +45,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password_inner"
             app:layout_constraintTop_toBottomOf="@+id/username"
+            android:enabled="false"
             android:layout_width="match_parent"
             android:inputType="textPassword"
             android:layout_height="wrap_content" />
@@ -76,7 +77,6 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/username_inner"
-
             app:layout_constraintTop_toBottomOf="@+id/username"
             android:layout_width="match_parent"
             android:inputType="text"
@@ -104,8 +104,7 @@
             android:id="@+id/login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="@string/action_sign_in"
+            android:text="@string/action_register"
             style="@style/Widget.MaterialComponents.Button"
             android:paddingBottom="@dimen/spacing_normal"
             android:paddingTop="@dimen/spacing_normal"
@@ -114,7 +113,7 @@
         <com.google.android.material.textview.MaterialTextView
             style="@style/Credentials.text.big"
             android:layout_width="wrap_content"
-            android:text="Other sing in options"
+            android:text="@string/other_sing_in_options"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/spacing_normal"
             android:paddingTop="@dimen/spacing_normal"/>

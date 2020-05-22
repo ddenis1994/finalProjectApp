@@ -18,6 +18,8 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private var _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
+    var loginInPageState=0
+
     fun login(username: String, password: String): LiveData<Result<LoggedInUser>> {
         return loginRepository.login(username, password)
     }
@@ -34,11 +36,15 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
     fun loginDataChanged(username: String, password: String) {
         if (!isUserNameValid(username)) {
-            _loginForm.value = LoginFormState(usernameError = R.string.invalid_username)
+            _loginForm.value = LoginFormState(usernameError = R.string.invalid_username,signIn = false)
         } else if (!isPasswordValid(password)) {
-            _loginForm.value = LoginFormState(passwordError = R.string.invalid_password)
-        } else {
-            _loginForm.value = LoginFormState(isDataValid = true)
+            if (password.isNotEmpty())
+                _loginForm.value = LoginFormState(passwordError = R.string.invalid_password,signIn = true)
+            else
+                _loginForm.value = LoginFormState(passwordError = R.string.invalid_password,signIn = false)
+        }
+        else {
+            _loginForm.value = LoginFormState(isDataValid = true,signIn = true)
         }
     }
 

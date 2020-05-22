@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.StringRes
@@ -26,6 +27,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.fragment_login.view.*
@@ -67,24 +70,30 @@ class LoginFragment : Fragment() {
             singInGoogle()
         }
 
-
-
-
-
-
-
         loginViewModel.loginFormState.observe(viewLifecycleOwner, Observer {
             val loginState = it ?: return@Observer
 
-            // disable login button unless both username / password is valid
-            login.isEnabled = loginState.isDataValid
+            if (loginState.signIn) {
+                login.text = getString(R.string.action_sign_in)
+                login.isEnabled = loginState.isDataValid
+
+            }
+            else {
+                login.text = getString(R.string.action_register)
+                login.isEnabled = true
+            }
+
 
             if (loginState.usernameError != null) {
-                username.error = getString(loginState.usernameError)
+                root.username.helperText=getString(loginState.usernameError)
             }
+            else
+                root.username.helperText=getString(R.string.action_sign_in)
             if (loginState.passwordError != null) {
-                password.error = getString(loginState.passwordError)
+                root.password.helperText=getString(loginState.passwordError)
             }
+            else
+                root.password.helperText=""
         })
 
         loginViewModel.loginResult.observe(viewLifecycleOwner, Observer {
@@ -99,6 +108,8 @@ class LoginFragment : Fragment() {
             activity?.setResult(AppCompatActivity.RESULT_OK)
         })
         username.afterTextChanged {
+            if(it.isNotEmpty())
+                root.password.isEnabled=true
             loginViewModel.loginDataChanged(
                 username.text.toString(),
                 password.text.toString()
@@ -106,6 +117,7 @@ class LoginFragment : Fragment() {
         }
         password.apply {
             afterTextChanged {
+
                 loginViewModel.loginDataChanged(
                     username.text.toString(),
                     password.text.toString()
@@ -120,11 +132,17 @@ class LoginFragment : Fragment() {
             }
 
             login.setOnClickListener {
-                loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString()).observe(viewLifecycleOwner,
-                    Observer {
-                        loginViewModel.updateResult(it)
-                    })
+                if (loginViewModel.loginFormState.value!!.signIn) {
+                    loading.visibility = View.VISIBLE
+                    loginViewModel.login(username.text.toString(), password.text.toString())
+                        .observe(viewLifecycleOwner,
+                            Observer {
+                                loginViewModel.updateResult(it)
+                            })
+                }
+                else{
+                    //Todo register
+                }
             }
         }
 

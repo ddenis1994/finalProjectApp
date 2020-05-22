@@ -2,12 +2,8 @@ package com.example.finalprojectapp.data
 
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import com.example.finalprojectapp.data.model.LoggedInUser
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import java.io.IOException
-import java.lang.Exception
 
 
 /**

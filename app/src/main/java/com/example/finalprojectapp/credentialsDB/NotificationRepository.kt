@@ -10,7 +10,7 @@ class NotificationRepository(
     private val notificationDAO: NotificationDAO
 ) {
     private val db=Firebase.firestore
-    private val user = FirebaseAuth.getInstance().currentUser!!
+    private val user = FirebaseAuth.getInstance().currentUser
     private val coroutineScope= CoroutineScope(Job())
 
     val allNotification = notificationDAO.getAllNotification()
@@ -24,15 +24,17 @@ class NotificationRepository(
     }
 
     private fun remoteInsert(notification: Notification) {
-        db.collection("users").document(user.uid)
-            .collection("notifications").add(notification.copy()).addOnSuccessListener {
-                coroutineScope.launch {
-                    withContext(Dispatchers.IO){
-                        localInsert(notification)
+        user?.uid?.let {
+            db.collection("users").document(it)
+                .collection("notifications").add(notification.copy()).addOnSuccessListener {
+                    coroutineScope.launch {
+                        withContext(Dispatchers.IO){
+                            localInsert(notification)
+                        }
                     }
-                }
 
-            }
+                }
+        }
     }
 
     suspend fun nukeAllNotification(): Unit {
