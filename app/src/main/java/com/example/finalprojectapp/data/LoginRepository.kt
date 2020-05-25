@@ -4,7 +4,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.finalprojectapp.data.model.LoggedInUser
-import com.example.finalprojectapp.ui.login.LoginResult
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -31,20 +30,7 @@ class LoginRepository(private val dataSource: LoginDataSource, private val lifec
         dataSource.logout()
     }
 
-//    fun login(
-//        username: String,
-//        password: String,
-//        _loginResult: MutableLiveData<LoginResult>
-//    ): Result<LoggedInUser> {
-//        // handle login
-//        val result = dataSource.login(username, password)
-//
-//        if (result.value is Result.Success) {
-//            setLoggedInUser((result.value as Result.Success<LoggedInUser>).data)
-//        }
-//
-//        return result
-//    }
+
 
     fun login(
         username: String,
@@ -64,5 +50,9 @@ class LoginRepository(private val dataSource: LoginDataSource, private val lifec
         this.user = loggedInUser
         // If user credentials will be cached in local storage, it is recommended it be encrypted
         // @see https://developer.android.com/training/articles/keystore
+    }
+
+    fun register(username: String, email: String, password: String) {
+        dataSource.createNewAccent(username,email,password)
     }
 }

@@ -66,10 +66,10 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     }
 
     fun register(
-        toString: String,
+        username: String,
         email: String,
-        password: TextInputEditText
+        password: String
     ) {
-
+        loginRepository.register(username,email,password)
     }
 }

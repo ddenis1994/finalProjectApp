@@ -96,7 +96,7 @@ class RegisterPassword : Fragment() {
         root.register_button_2.setOnClickListener {
             root.register_loading.visibility=View.VISIBLE
             root.register_button_2.visibility=View.GONE
-            loginViewModel.register(userName,email,password)
+            loginViewModel.register(userName,email,password.text.toString())
         }
         return root
     }
