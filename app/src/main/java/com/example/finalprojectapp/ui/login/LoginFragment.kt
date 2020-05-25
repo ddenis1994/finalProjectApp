@@ -150,8 +150,7 @@ class LoginFragment : Fragment() {
     private fun updateUiWithUser(model: LoggedInUserView) {
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName
-        //ToDO make one main navigation
-        requireView().findNavController().navigate(R.id.startMainApplication)
+        requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.startMainApplication)
         Toast.makeText(
             requireContext(),
             "$welcome $displayName",

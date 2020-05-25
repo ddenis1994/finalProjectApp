@@ -1,64 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <data>
+
         <variable
             name="cardData"
             type="com.example.finalprojectapp.data.model.adpters.LayoutServiceView" />
+
         <variable
             name="moreDataListener"
-            type="android.view.View.OnClickListener"/>
+            type="android.view.View.OnClickListener" />
+
         <variable
             name="displayData"
-            type="android.view.View.OnClickListener"/>
+            type="android.view.View.OnClickListener" />
 
     </data>
-        <androidx.constraintlayout.widget.ConstraintLayout
-            style="@style/Credentials.Container"
-            android:layout_marginStart="0dp"
-            android:animateLayoutChanges="true">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/services_layout"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/Credentials.Container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_normal"
+        android:layout_marginEnd="@dimen/spacing_normal"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/services_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
-                android:onClick="@{displayData}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/service_name"
-                    style="@style/Credentials.Header"
+                android:gravity="center">
+                <Button
+                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                    android:layout_width="350dp"
+                    android:layout_height="match_parent"
+                    android:onClick="@{displayData}"
                     android:text="@{cardData.serviceName}"
+                    app:iconGravity="end"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/more_data"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
                     android:id="@+id/more_data"
-                    style="@style/Credentials.button"
                     android:onClick="@{moreDataListener}"
-                    android:text="@string/credentials_more_info"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:icon="@drawable/ic_info_black_24dp" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/data_set_recycler_View"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/services_layout"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+        </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/data_set_recycler_View"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/services_layout" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
 
