@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.MetadataChanges
 import com.google.firebase.firestore.ktx.toObject
+import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -49,26 +50,13 @@ class MainMenuFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         localDB=CredentialsDataBase.getDatabase(requireContext())
-        this.lifecycleScope.launch {
-           //localDB.serviceDao().publicInsertCredentials(Credentials().copy(data = "test",hint = listOf("username")))
-        }
 
-        setHasOptionsMenu(true)
+
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.show()
-        (activity as AppCompatActivity).supportActionBar?.title="PASCEMANGER"
-    }
 
-    override fun onStart() {
-        super.onStart()
-        val navView: BottomNavigationView =requireActivity().findViewById(R.id.nav_view2)
-        val navController: NavController = requireActivity().findNavController(R.id.nav_host_fragment2)
-        setOnUpdate()
-        navView.setupWithNavController(navController)
-    }
+
+
 
     private fun setOnUpdate() {
     if(context!=null)
@@ -145,19 +133,5 @@ class MainMenuFragment : Fragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.action_bar_menu, menu)
-        this.findNavController()
-        super.onCreateOptionsMenu(menu, inflater)
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.navigation_settings-> {
-                findNavController().navigate(R.id.action_global_settingsFragment)
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
 }

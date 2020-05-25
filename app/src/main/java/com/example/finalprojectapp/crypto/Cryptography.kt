@@ -177,6 +177,8 @@ class Cryptography(context:Context?) {
             if (credentials.iv == null)
                 return credentials
             val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            if (credentials.iv?.toByteArray()?.size!=12)
+                return null
             val spec = GCMParameterSpec(128, Base64.getDecoder().decode(credentials.iv))
             cipher.init(Cipher.DECRYPT_MODE, getKey(), spec)
             return credentials.copy(

@@ -4,13 +4,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.R
@@ -55,6 +54,7 @@ class CredentialsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        setHasOptionsMenu(true)
         viewManager = LinearLayoutManager(context)
         recyclerView = list_recycle_view_services.apply {
             setHasFixedSize(true)
@@ -84,6 +84,21 @@ class CredentialsFragment : Fragment() {
             }
         }
 
+    }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.action_bar_menu, menu)
+        this.findNavController()
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.navigation_settings-> {
+                findNavController().navigate(R.id.action_global_settingsFragment)
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
 }

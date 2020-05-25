@@ -45,7 +45,10 @@ interface LocalApplicationDAO {
     suspend fun publicGetCredentialsID(dataSet: Long): Credentials {
         val result=privateGetCredentialsID(dataSet)
         val cryptography=Cryptography(null)
-        return cryptography.localDecryptCredentials(result)!!
+        return if (cryptography.localDecryptCredentials(result)==null)
+            Credentials()
+        else
+            cryptography.localDecryptCredentials(result)!!
     }
 
 

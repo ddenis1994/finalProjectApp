@@ -6,13 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.AuthActivity
+import com.example.finalprojectapp.R
+import com.example.finalprojectapp.WelcomeNavigateDirections
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.databinding.LayoutListDataSetsBinding
 import com.example.finalprojectapp.ui.credentials.CredentialsFragment
+import com.example.finalprojectapp.ui.credentials.CredentialsFragmentDirections
 import com.example.finalprojectapp.ui.credentials.CredentialsViewModel
+import kotlinx.android.synthetic.main.fragment_main.*
 
 
 class DataSetAdapter(
@@ -50,6 +55,7 @@ class DataSetAdapter(
             }
         }
         fun bind(item: LayoutDataSetView) {
+
             binding.apply {
                 dataSetCard=item
 
@@ -74,16 +80,20 @@ class DataSetAdapter(
 
     override fun onBindViewHolder(holder: DataSetViewHolder, position: Int) {
         val data = dataSets[position]
-        holder.bind(data)
-        val localData=data.dataSetId?.let { credentialsViewModel.getCrede(it) }
-        localData?.observe(viewLifecycleOwner, Observer {
-            holder.recyclerView.apply {
-                credentialsAdapter=CredentialsAdapter(it,viewLifecycleOwner,mContext)
-                adapter=credentialsAdapter
-                layoutManager=
-                    LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)
-            }
-        })
+        val action=CredentialsFragmentDirections.actionNavigationPasswordToCredentialInnerFragment(data.dataSetId)
+        this.mContext.requireView().findNavController().navigate(action)
+//        holder.bind(data)
+//
+//        val localData= data.dataSetId.let { credentialsViewModel.getCrede(it) }
+//        localData.observe(viewLifecycleOwner, Observer {
+//
+//            holder.recyclerView.apply {
+//                credentialsAdapter=CredentialsAdapter(it,viewLifecycleOwner,mContext)
+//                adapter=credentialsAdapter
+//                layoutManager=
+//                    LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)
+//            }
+//        })
     }
 
 

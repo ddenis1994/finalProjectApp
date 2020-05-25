@@ -22,6 +22,7 @@ import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
 import com.example.finalprojectapp.data.ServiceRepository
 import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -125,6 +126,7 @@ class SettingsFragment : Fragment() {
             //Firebase.firestore.clearPersistence()
             FirebaseAuth.getInstance().signOut()
             setting.edit().clear().apply()
+            requireActivity().findViewById<BottomNavigationView>(R.id.my_nav_view).visibility=View.GONE
             this@SettingsFragment.parentFragmentManager.popBackStack(null,FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
          }

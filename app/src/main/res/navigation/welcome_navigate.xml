@@ -6,22 +6,70 @@
     app:startDestination="@id/loginFragment">
 
     <fragment
+        android:id="@+id/navigation_password"
+        android:name="com.example.finalprojectapp.ui.credentials.CredentialsFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_cre" >
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_dashboard"
+            app:destination="@id/navigation_dashboard" />
+        <action
+            android:id="@+id/action_navigation_password_to_credentialInnerFragment"
+            app:destination="@id/credentialInnerFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name="com.example.finalprojectapp.ui.dashboard.DashboardFragment"
+        android:label="@string/title_dashboard"
+        tools:layout="@layout/fragment_dashboard" >
+        <action
+            android:id="@+id/action_navigation_dashboard_to_navigation_notifications"
+            app:destination="@id/navigation_notifications" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.example.finalprojectapp.ui.notifications.NotificationsFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_notifications" >
+        <action
+            android:id="@+id/action_navigation_notifications_to_navigation_home"
+            app:destination="@id/navigation_password" />
+    </fragment>
+    <fragment
+        android:id="@+id/credentialInnerFragment"
+        android:name="com.example.finalprojectapp.ui.credentials.inner.CredentialInnerFragment"
+        android:label="fragment_inner_credential"
+        tools:layout="@layout/fragment_inner_credential" >
+        <argument
+            android:name="dataSetId"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainMenuFragment"
+        android:name="com.example.finalprojectapp.ui.MainMenuFragment"
+        tools:layout="@layout/fragment_main"
+        android:label="MainMenuFragment" >
+        <action
+            android:id="@+id/action_mainMenuFragment_to_navigation_password"
+            app:destination="@id/navigation_password" />
+    </fragment>
+
+    <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.finalprojectapp.ui.login.LoginFragment"
         android:label="activity_login"
         tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/startMainApplication"
-            app:destination="@id/mainMenuFragment2" />
+            app:destination="@id/navigation_password" />
         <action
-            android:id="@+id/action_loginFragment_to_registerUserNameFragment"
+            android:id="@+id/action_loginFragment_to_navigation_fragment_register_user_name"
             app:destination="@id/navigation_fragment_register_user_name" />
     </fragment>
-    <fragment
-        android:id="@+id/mainMenuFragment2"
-        android:name="com.example.finalprojectapp.ui.MainMenuFragment"
-        android:label="MainMenuFragment"
-        tools:layout="@layout/fragment_main" />
 
     <fragment
         android:id="@+id/navigation_settings"
@@ -50,7 +98,7 @@
         tools:layout="@layout/fragment_register_password">
         <action
             android:id="@+id/action_registerPassword_to_mainMenuFragment2"
-            app:destination="@id/mainMenuFragment2" />
+            app:destination="@id/navigation_password" />
         <argument
             android:name="username"
             app:argType="string" />
@@ -58,6 +106,10 @@
             android:name="email"
             app:argType="string" />
     </fragment>
+
+
+
+
 
 
 </navigation>

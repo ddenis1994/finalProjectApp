@@ -44,7 +44,7 @@
                 <Button
                     style="@style/Widget.App.Button.OutlinedButton.IconOnly"
                     android:layout_width="350dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="48dp"
                     android:onClick="@{displayData}"
                     android:text="@{cardData.serviceName}"
                     app:iconGravity="end"
@@ -53,9 +53,9 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
+                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
                     android:id="@+id/more_data"
                     android:onClick="@{moreDataListener}"
-                    style="@style/Widget.App.Button.OutlinedButton.IconOnly"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:icon="@drawable/ic_info_black_24dp" />

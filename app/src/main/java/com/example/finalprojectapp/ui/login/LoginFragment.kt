@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
@@ -16,7 +14,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.setupWithNavController
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.data.Result
 import com.example.finalprojectapp.data.model.LoggedInUser
@@ -26,8 +27,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import java.io.IOException
 
@@ -49,6 +53,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         super.onCreate(savedInstanceState)
+
         val root = inflater.inflate(R.layout.fragment_login, container, false)
         val username = root.username_inner
         val password = root.password_inner
@@ -137,7 +142,7 @@ class LoginFragment : Fragment() {
                 }
                 else{
                     val userNamePassword=username.text.toString()
-                    val action =LoginFragmentDirections.actionLoginFragmentToRegisterUserNameFragment(userNamePassword)
+                    val action =LoginFragmentDirections.actionLoginFragmentToNavigationFragmentRegisterUserName(userNamePassword)
                     requireView().findNavController().navigate(action)
 
                 }
@@ -147,10 +152,22 @@ class LoginFragment : Fragment() {
         return root
     }
 
-    private fun updateUiWithUser(model: LoggedInUserView) {
+    private fun updateUiWithUser(
+        model: LoggedInUserView
+    ) {
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName
-        requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.startMainApplication)
+
+        requireActivity().findViewById<BottomNavigationView>(R.id.my_nav_view).visibility=View.VISIBLE
+        val navView: BottomNavigationView =requireActivity().findViewById(R.id.my_nav_view)
+        val navController: NavController = requireActivity().findNavController(R.id.nav_host_fragment)
+        (activity as AppCompatActivity).supportActionBar?.show()
+        (activity as AppCompatActivity).supportActionBar?.title="PASCEMANGER"
+        navView.setupWithNavController(navController)
+        requireView().findNavController().navigate(R.id.startMainApplication)
+
+
+
         Toast.makeText(
             requireContext(),
             "$welcome $displayName",
@@ -227,6 +244,8 @@ class LoginFragment : Fragment() {
     }
 
 
+
+
 }
 
 /**
@@ -242,5 +261,8 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
     })
+
+
+
 
 }
