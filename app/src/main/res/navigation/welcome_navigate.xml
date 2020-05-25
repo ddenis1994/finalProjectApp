@@ -9,19 +9,19 @@
         android:id="@+id/loginFragment"
         android:name="com.example.finalprojectapp.ui.login.LoginFragment"
         android:label="activity_login"
-        tools:layout="@layout/fragment_login" >
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/startMainApplication"
             app:destination="@id/mainMenuFragment2" />
         <action
             android:id="@+id/action_loginFragment_to_registerUserNameFragment"
-            app:destination="@id/registerUserNameFragement" />
+            app:destination="@id/navigation_fragment_register_user_name" />
     </fragment>
     <fragment
         android:id="@+id/mainMenuFragment2"
-        tools:layout="@layout/fragment_main"
         android:name="com.example.finalprojectapp.ui.MainMenuFragment"
-        android:label="MainMenuFragment" />
+        android:label="MainMenuFragment"
+        tools:layout="@layout/fragment_main" />
 
     <fragment
         android:id="@+id/navigation_settings"
@@ -32,22 +32,31 @@
         android:id="@+id/action_global_settingsFragment"
         app:destination="@id/navigation_settings" />
     <fragment
-        android:id="@+id/registerUserNameFragement"
-        tools:layout="@layout/fragment_register_user_name"
-        android:name="com.example.finalprojectapp.ui.login.register.RegisterUserNameFragement"
-        android:label="RegisterUserNameFragement" >
+        android:id="@+id/navigation_fragment_register_user_name"
+        android:name="com.example.finalprojectapp.ui.login.register.RegisterUserNameFragment"
+        android:label="RegisterUserNameFragement"
+        tools:layout="@layout/fragment_register_user_name">
         <action
             android:id="@+id/action_registerUserNameFragement_to_registerPassword"
             app:destination="@id/registerPassword" />
+        <argument
+            android:name="user_name_password"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/registerPassword"
         android:name="com.example.finalprojectapp.ui.login.register.RegisterPassword"
         android:label="fragment_register_password"
-        tools:layout="@layout/fragment_register_password" >
+        tools:layout="@layout/fragment_register_password">
         <action
             android:id="@+id/action_registerPassword_to_mainMenuFragment2"
             app:destination="@id/mainMenuFragment2" />
+        <argument
+            android:name="username"
+            app:argType="string" />
+        <argument
+            android:name="email"
+            app:argType="string" />
     </fragment>
 
 

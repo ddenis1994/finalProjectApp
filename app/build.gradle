@@ -88,6 +88,7 @@ dependencies {
     implementation "androidx.navigation:navigation-ui:$nev"
     implementation "androidx.navigation:navigation-fragment-ktx:$nev"
     implementation "androidx.navigation:navigation-ui-ktx:$nev"
+
     implementation 'com.google.firebase:firebase-analytics:17.4.1'
     implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
     implementation 'com.google.firebase:firebase-auth:19.3.1'

@@ -7,7 +7,9 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="invalid_password">invalid_password</string>
+    <string name="invalid_password_length">Password must be between 6–20 characters</string>
+    <string name="invalid_reaped_password_not_same">Password no the same</string>
     <string name="login_failed">"Login failed"</string>
     <string name="title_activity_main_menu">MainMenu</string>
     <string name="title_home">Home</string>
@@ -33,4 +35,10 @@
     <string name="settings_disconnect_label">Disconnect will delete all data in device</string>
     <string name="action_register">Register</string>
     <string name="other_sing_in_options">Other sing in options</string>
+    <string name="password_requirements">Password must include between 6 to 20 characters small digit, large digit and spacial character </string>
+    <string name="password">Password</string>
+    <string name="my_app_name">PASCEMANGER</string>
+    <string name="register_repeat_password">Repeat Password</string>
+    <string name="register">Register</string>
+    <string name="user_name">User Name</string>
 </resources>

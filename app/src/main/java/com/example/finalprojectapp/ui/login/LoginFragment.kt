@@ -1,6 +1,5 @@
 package com.example.finalprojectapp.ui.login
 
-import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -10,10 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -27,13 +26,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.google.android.material.textfield.TextInputLayout
-import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import java.io.IOException
-import java.lang.Exception
 
 
 class LoginFragment : Fragment() {
@@ -117,7 +113,6 @@ class LoginFragment : Fragment() {
         }
         password.apply {
             afterTextChanged {
-
                 loginViewModel.loginDataChanged(
                     username.text.toString(),
                     password.text.toString()
@@ -132,7 +127,7 @@ class LoginFragment : Fragment() {
             }
 
             login.setOnClickListener {
-                if (loginViewModel.loginFormState.value!!.signIn) {
+                if (loginViewModel.loginFormState.value?.signIn!!) {
                     loading.visibility = View.VISIBLE
                     loginViewModel.login(username.text.toString(), password.text.toString())
                         .observe(viewLifecycleOwner,
@@ -141,7 +136,10 @@ class LoginFragment : Fragment() {
                             })
                 }
                 else{
-                    loginViewModel.register(username.text.toString())
+                    val userNamePassword=username.text.toString()
+                    val action =LoginFragmentDirections.actionLoginFragmentToRegisterUserNameFragment(userNamePassword)
+                    requireView().findNavController().navigate(action)
+
                 }
             }
         }

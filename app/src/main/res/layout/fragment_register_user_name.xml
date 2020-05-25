@@ -3,48 +3,64 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    tools:context=".ui.login.register.RegisterUserNameFragmentViewModel"
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/username_register_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/register_top_text"
+            style="@style/Credentials.text.big"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="email"
-            app:helperTextEnabled="true"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="UserName &amp; Email"
             android:paddingTop="@dimen/spacing_large"
-            android:paddingStart="@dimen/spacing_normal"
-            android:paddingEnd="@dimen/spacing_normal"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:inputType="textEmailAddress"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/email_register_layout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="email"
+            app:endIconMode="clear_text"
+            app:helperTextEnabled="true"
+            app:layout_constraintEnd_toEndOf="parent"
             android:paddingTop="@dimen/spacing_large"
             android:paddingStart="@dimen/spacing_normal"
             android:paddingEnd="@dimen/spacing_normal"
-            android:hint="username"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/register_top_text">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/register_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/username_register_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/spacing_large"
+            android:paddingStart="@dimen/spacing_normal"
+            android:paddingEnd="@dimen/spacing_normal"
+            android:hint="Username"
+            app:endIconMode="clear_text"
             app:helperTextEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/username_register_layout">
+            app:layout_constraintTop_toBottomOf="@id/email_register_layout">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/register_user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text" />
@@ -52,6 +68,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/register_button_1"
             android:layout_width="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/email_register_layout"
             app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +78,11 @@
             android:enabled="false"
             android:layout_height="wrap_content"/>
 
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 </FrameLayout>
 

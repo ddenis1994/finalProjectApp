@@ -40,7 +40,10 @@ class LoginDataSource(private val activity: FragmentActivity) {
     }
 
     fun createNewAccent(username: String, password: String): Result<LoggedInUser>? {
-        auth.createUserWithEmailAndPassword(username,password)
+        auth.createUserWithEmailAndPassword(username,password).addOnSuccessListener {
+            auth.currentUser
+        }
+
         return null
     }
 }

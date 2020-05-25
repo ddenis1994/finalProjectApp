@@ -9,10 +9,13 @@ import com.example.finalprojectapp.data.Result
 
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.data.model.LoggedInUser
+import com.google.android.material.textfield.TextInputEditText
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 
-    private val _loginForm = MutableLiveData<LoginFormState>()
+    private val _loginForm = MutableLiveData(
+        LoginFormState()
+    )
     val loginFormState: LiveData<LoginFormState> = _loginForm
 
     private var _loginResult = MutableLiveData<LoginResult>()
@@ -62,7 +65,11 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         return password.length > 5
     }
 
-    fun register(toString: String) {
+    fun register(
+        toString: String,
+        email: String,
+        password: TextInputEditText
+    ) {
 
     }
 }

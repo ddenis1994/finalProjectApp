@@ -1,11 +1,22 @@
 package com.example.finalprojectapp.ui.login.register
 
+import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import com.example.finalprojectapp.R
+import com.example.finalprojectapp.ui.login.LoginViewModel
+import com.example.finalprojectapp.ui.login.LoginViewModelFactory
+import kotlinx.android.synthetic.main.fragment_register_password.*
+import kotlinx.android.synthetic.main.fragment_register_password.view.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -22,6 +33,11 @@ class RegisterPassword : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private val registerPasswordArgs:RegisterPasswordArgs by navArgs()
+    private val registerPasswordViewModel:RegisterPasswordViewModel by activityViewModels()
+    private  val loginViewModel: LoginViewModel by activityViewModels{
+        LoginViewModelFactory(requireActivity())
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -34,11 +50,70 @@ class RegisterPassword : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_register_password, container, false)
+        val root=inflater.inflate(R.layout.fragment_register_password, container, false)
+        val userName=registerPasswordArgs.username
+        val email=registerPasswordArgs.email
+        val password=root.register_password
+        val repeatedPassword=root.register_password_repeat
+
+        registerPasswordViewModel.passwordLoginData.observe(viewLifecycleOwner, Observer {
+
+            root.register_button_2.isEnabled=it.isDataValid
+
+            if (it.usernameError!=null) {
+                root.register_password_layout.isErrorEnabled = true
+                root.register_password_layout.error = getString(it.usernameError)
+            }
+            else {
+                root.register_password_layout.isErrorEnabled = false
+                root.register_password_layout.error = ""
+            }
+            if(it.passwordError!=null) {
+                root.register_password_repeat_layout.isErrorEnabled = true
+                root.register_password_repeat_layout.error = getString(it.passwordError)
+            }
+            else {
+                root.register_password_repeat_layout.isErrorEnabled = false
+                root.register_password_repeat_layout.error = ""
+            }
+
+        })
+
+        password.afterTextChanged {
+            registerPasswordViewModel.registerPasswordDataChanged(
+                password.text.toString(),
+                repeatedPassword.text.toString()
+            )
+        }
+
+        repeatedPassword.afterTextChanged {
+            registerPasswordViewModel.registerPasswordDataChanged(
+                password.text.toString(),
+                repeatedPassword.text.toString()
+            )
+        }
+
+        root.register_button_2.setOnClickListener {
+            root.register_loading.visibility=View.VISIBLE
+            root.register_button_2.visibility=View.GONE
+            loginViewModel.register(userName,email,password)
+        }
+        return root
+    }
+    private fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
+        this.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(editable: Editable?) {
+                afterTextChanged.invoke(editable.toString())
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        })
     }
 
-    companion object {
+
+        companion object {
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
