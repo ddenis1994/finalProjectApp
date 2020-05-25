@@ -1,6 +1,5 @@
 package com.example.finalprojectapp.ui.login.register
 
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,13 +8,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.finalprojectapp.R
+import com.example.finalprojectapp.data.Result
+import com.example.finalprojectapp.data.model.LoggedInUser
 import com.example.finalprojectapp.ui.login.LoginViewModel
 import com.example.finalprojectapp.ui.login.LoginViewModelFactory
-import kotlinx.android.synthetic.main.fragment_register_password.*
+import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.android.synthetic.main.fragment_register_password.view.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -55,6 +58,8 @@ class RegisterPassword : Fragment() {
         val email=registerPasswordArgs.email
         val password=root.register_password
         val repeatedPassword=root.register_password_repeat
+
+
 
         registerPasswordViewModel.passwordLoginData.observe(viewLifecycleOwner, Observer {
 
@@ -96,10 +101,36 @@ class RegisterPassword : Fragment() {
         root.register_button_2.setOnClickListener {
             root.register_loading.visibility=View.VISIBLE
             root.register_button_2.visibility=View.GONE
-            loginViewModel.register(userName,email,password.text.toString())
+            loginViewModel.register(userName,email,password.text.toString()).observe(
+                viewLifecycleOwner, Observer {
+                        updateUI(it,root)
+                }
+            )
         }
         return root
     }
+
+    private fun updateUI(
+        result: Result<LoggedInUser>?,
+        root: View
+    ) {
+        root.register_loading.visibility=View.GONE
+        root.register_button_2.visibility=View.VISIBLE
+        if (result is Result.Success){
+            val welcome = getString(R.string.welcome)
+            val displayName = result.data.displayName
+            requireView().findNavController().navigate(R.id.startMainApplication)
+            Toast.makeText(
+                requireContext(),
+                "$welcome $displayName",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        else{
+            root.register_text_error.visibility=View.VISIBLE
+        }
+    }
+
     private fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
         this.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {

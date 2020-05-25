@@ -69,7 +69,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         username: String,
         email: String,
         password: String
-    ) {
-        loginRepository.register(username,email,password)
+    ): MutableLiveData<Result<LoggedInUser>> {
+        return loginRepository.register(username,email,password)
     }
 }

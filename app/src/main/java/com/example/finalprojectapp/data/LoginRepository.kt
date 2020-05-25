@@ -52,7 +52,7 @@ class LoginRepository(private val dataSource: LoginDataSource, private val lifec
         // @see https://developer.android.com/training/articles/keystore
     }
 
-    fun register(username: String, email: String, password: String) {
-        dataSource.createNewAccent(username,email,password)
+    fun register(username: String, email: String, password: String): MutableLiveData<Result<LoggedInUser>> {
+        return dataSource.createNewAccent(username,email,password)
     }
 }
