@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.ui.login.LoginFormState
+import java.util.regex.Pattern
 
 class RegisterUserNameFragmentViewModel : ViewModel() {
 
@@ -27,8 +28,12 @@ class RegisterUserNameFragmentViewModel : ViewModel() {
         }
     }
 
-    private fun isUserNameValid(username: String): Boolean =
-        username.isNotEmpty()
+    private fun isUserNameValid(username: String): Boolean {
+        val stringPattern="^[a-zA-Z]\\w{3,14}$"
+        val pattern=Pattern.compile(stringPattern)
+        return pattern.matcher(username).matches()
+    }
+
 
 
     private fun isEmailValid(email: String): Boolean =
