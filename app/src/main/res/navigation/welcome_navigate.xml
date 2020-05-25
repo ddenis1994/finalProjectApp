@@ -48,16 +48,7 @@
             android:name="dataSetId"
             app:argType="long" />
     </fragment>
-    <fragment
-        android:id="@+id/mainMenuFragment"
-        android:name="com.example.finalprojectapp.ui.MainMenuFragment"
-        tools:layout="@layout/fragment_main"
-        android:label="MainMenuFragment" >
-        <action
-            android:id="@+id/action_mainMenuFragment_to_navigation_password"
-            app:destination="@id/navigation_password" />
-    </fragment>
-
+    
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.finalprojectapp.ui.login.LoginFragment"

@@ -1,7 +1,5 @@
 package com.example.finalprojectapp.adapters
 
-import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,7 +72,7 @@ class ServiceAdapter(
         val localData=data.dataSetId?.let { credentialsViewModel.getDataSet(it) }
         localData?.observe(viewLifecycleOwner, Observer {
             holder.recyclerView.apply {
-                dataSetAdapter=DataSetAdapter(it,credentialsViewModel,viewLifecycleOwner,mContext)
+                dataSetAdapter=DataSetAdapter(it, mContext)
                 adapter=dataSetAdapter
                 layoutManager=
                     LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)

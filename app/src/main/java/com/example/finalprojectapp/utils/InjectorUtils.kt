@@ -22,6 +22,8 @@ import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
 import com.example.finalprojectapp.data.LocalRepository
 import com.example.finalprojectapp.ui.credentials.CredentialsViewModelFactory
+import com.example.finalprojectapp.ui.credentials.inner.CredentialInnerFragment
+import com.example.finalprojectapp.ui.credentials.inner.CredentialInnerViewModelFactory
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModelFactory
 import com.example.finalprojectapp.ui.notifications.NotificationViewModelFactory
 
@@ -63,5 +65,10 @@ object InjectorUtils {
     ): NotificationViewModelFactory {
         val repository = getNotificationRepository(fragment.requireContext())
         return NotificationViewModelFactory(repository)
+    }
+
+    fun provideCredentialInnerViewModelFactory(fragment: Fragment):CredentialInnerViewModelFactory {
+        val repository = getMainRepository(fragment.requireContext())
+        return CredentialInnerViewModelFactory(repository)
     }
 }

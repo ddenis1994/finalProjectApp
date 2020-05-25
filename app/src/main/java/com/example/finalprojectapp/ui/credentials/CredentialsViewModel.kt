@@ -13,7 +13,6 @@ class CredentialsViewModel internal constructor(
     private val _allPasswords = mainRepository.getAllData()
     val allPasswords: LiveData<List<LayoutServiceView>> = _allPasswords
 
-    fun getCrede(dataSetId:Long)=mainRepository.getCredentialByDataSetID(dataSetId)
 
     fun getDataSet(dataSetId:Long)=mainRepository.getDataSetById(dataSetId)
 
