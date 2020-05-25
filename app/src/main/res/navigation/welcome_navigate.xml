@@ -14,11 +14,12 @@
             android:id="@+id/startMainApplication"
             app:destination="@id/mainMenuFragment2" />
         <action
-            android:id="@+id/action_loginFragment_to_registerUserNameFragement"
+            android:id="@+id/action_loginFragment_to_registerUserNameFragment"
             app:destination="@id/registerUserNameFragement" />
     </fragment>
     <fragment
         android:id="@+id/mainMenuFragment2"
+        tools:layout="@layout/fragment_main"
         android:name="com.example.finalprojectapp.ui.MainMenuFragment"
         android:label="MainMenuFragment" />
 
@@ -43,7 +44,11 @@
         android:id="@+id/registerPassword"
         android:name="com.example.finalprojectapp.ui.login.register.RegisterPassword"
         android:label="fragment_register_password"
-        tools:layout="@layout/fragment_register_password" />
+        tools:layout="@layout/fragment_register_password" >
+        <action
+            android:id="@+id/action_registerPassword_to_mainMenuFragment2"
+            app:destination="@id/mainMenuFragment2" />
+    </fragment>
 
 
 </navigation>
