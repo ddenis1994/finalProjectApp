@@ -12,22 +12,20 @@ class CredentialInnerViewModel internal constructor(
     private val mainRepository: LocalRepository
 ) : ViewModel() {
 
-    private var _data=MutableLiveData<List<LayoutCredentialView>>()
-    val data:LiveData<List<LayoutCredentialView>> = _data
+    private var _data = MutableLiveData<List<LayoutCredentialView>>()
+    val data: LiveData<List<LayoutCredentialView>> = _data
 
-    fun firstTimeCredentials(dataSetId: Long)=mainRepository.getCredentialByDataSetID(dataSetId)
-
-
+    fun firstTimeCredentials(dataSetId: Long) = mainRepository.getCredentialByDataSetID(dataSetId)
 
 
     fun updateData(dataPosition: Int) {
-        val oldData= _data.value?.get(dataPosition)
-        if (oldData!=null){
-          val decryptedCredentials  =decrepitCredentials(Credentials().copy(data = oldData.data!!,iv = oldData.iv))
-            val newData= _data.value?.toMutableList()
-            newData?.set(dataPosition, LayoutCredentialView(decryptedCredentials.data,"",
-                newData[dataPosition].hintList
-            )
+        val oldData = _data.value?.get(dataPosition)
+        if (oldData != null) {
+            val decryptedCredentials =
+                decrepitCredentials(Credentials().copy(data = oldData.data!!, iv = oldData.iv))
+            val newData = _data.value?.toMutableList()
+            newData?.set(
+                dataPosition, newData[dataPosition].copy(data = decryptedCredentials.data,iv = "")
             )
             _data.postValue(newData)
         }
@@ -40,6 +38,10 @@ class CredentialInnerViewModel internal constructor(
 
     fun setData(data: List<LayoutCredentialView>) {
         _data.postValue(data)
+    }
+
+    fun deleteCredential(credentialID: Long?) {
+        mainRepository.deleteCredential(credentialID)
     }
 
 

@@ -141,6 +141,9 @@ interface LocalApplicationDAO {
     fun deleteDataSet(vararg dataSet: DataSet)
 
     @Delete
+    fun deleteCredential(vararg dataSet: Credentials)
+
+    @Delete
     fun privateDeleteService(vararg service: Service)
 
     @Transaction
@@ -237,7 +240,7 @@ interface LocalApplicationDAO {
     @Query("Select s.name,s.serviceId from service_ s")
     fun publicGetAllServiceName():LiveData<List<LayoutServiceView>>
 
-    @Query("Select c.iv,c.data,c.hint from dataSetCredentialsManyToMany r,credentials_ c where r.dataSetId=:dataSetId and r.credentialsId = c.credentialsId")
+    @Query("Select c.iv,c.data,c.hint,c.credentialsId from dataSetCredentialsManyToMany r,credentials_ c where r.dataSetId=:dataSetId and r.credentialsId = c.credentialsId")
     fun publicGetAllCredentialsByDataSetID(dataSetId:Long):LiveData<List<LayoutCredentialView>>
 
 
@@ -246,6 +249,9 @@ interface LocalApplicationDAO {
 
     @Query("DELETE FROM dataSetCredentialsManyToMany  WHERE dataSetId=:dataSetId")
     fun deleteFromRelationship(dataSetId: Long): Int
+
+    @Query("DELETE FROM dataSetCredentialsManyToMany  WHERE credentialsId=:credentialId")
+    fun deleteFromRelationshipCredential(credentialId: Long): Int
 
     @Transaction
     suspend fun deleteDataSetById(dataSetId: Long) {
@@ -267,6 +273,12 @@ interface LocalApplicationDAO {
 
     @Query("select s.name serviceName,d.dataSetName dataSetName from dataSetCredentialsManyToMany r, dataSet_ d ,service_ s where d.serviceId = s.serviceId and d.dataSetId = r.dataSetId and r.credentialsId = :credentialID" )
     suspend fun publicFindServiceAndDataSet(credentialID: Long): List<LayoutDashBoardRepeatedPassword>
+
+
+    fun publicDeleteCredential(credentialID: Long) {
+        deleteCredential(Credentials().copy(credentialsId = credentialID))
+        deleteFromRelationship(credentialID)
+    }
 
 
 }

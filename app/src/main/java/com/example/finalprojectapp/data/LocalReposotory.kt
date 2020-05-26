@@ -1,10 +1,6 @@
 package com.example.finalprojectapp.data
 
-import androidx.annotation.MainThread
-import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
 import com.example.finalprojectapp.credentialsDB.LocalApplicationDAO
-import com.example.finalprojectapp.data.model.DashBoardData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
@@ -25,9 +21,6 @@ class LocalRepository private constructor(
 
     fun getNumOfServices() =
         credentialsDao.publicGetNumOfServices()
-
-    fun getService(name:String) =
-        credentialsDao.publicGetServiceByNameLive(name)
 
     suspend fun deleteDataSet(dataSetId:Long){
         deleteFromRemote(dataSetId)
@@ -64,6 +57,19 @@ class LocalRepository private constructor(
     fun getDataSetById(serviceID: Long)=credentialsDao.publicGetAllDataSetsByServiceId(serviceID)
 
     suspend fun findServiceAndDataSet(dataSetId: Long) = credentialsDao.publicFindServiceAndDataSet(dataSetId)
+
+    fun deleteCredential(credentialID: Long?) {
+        if (credentialID != null) {
+            GlobalScope.launch {
+                deleteLocalCredential(credentialID)
+            }
+
+        }
+    }
+
+    private suspend fun deleteLocalCredential(credentialID: Long){
+        credentialsDao.publicDeleteCredential(credentialID)
+    }
 
     companion object {
         // For Singleton instantiation

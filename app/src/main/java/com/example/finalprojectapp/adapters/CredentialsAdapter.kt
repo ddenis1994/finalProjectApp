@@ -1,10 +1,9 @@
 package com.example.finalprojectapp.adapters
 
-import android.content.*
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.AppAuthActivity
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
@@ -14,7 +13,9 @@ import com.example.finalprojectapp.ui.credentials.inner.CredentialInnerFragment
 class CredentialsAdapter(
     private val children: List<LayoutCredentialView>,
     private val credentialsFragment: CredentialInnerFragment,
-    private val requestCode: Int
+    private val requestCodeForDecrypt: Int,
+    private val requestCodeForDelete:Int,
+    private val requestCodeForCopy:Int
 ) :
     RecyclerView.Adapter<CredentialsAdapter.ViewHolder>() {
 
@@ -26,38 +27,44 @@ class CredentialsAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         private var bindingPotion: Int = 0
         private var requestCodeForDecrypt: Int = 0
+        private var requestCodeForDelete: Int = 0
+        private var requestCodeForCopy:Int=0
 
 
         init {
-
             binding.setCopyCredentials {
-                binding.credentialText.text.let { text ->
-                    val myClipboard =
-                        it.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val myClip = ClipData.newPlainText("user name", text)
-                    myClipboard.setPrimaryClip(myClip)
-                    Toast.makeText(it.context, "copy user", Toast.LENGTH_SHORT).show()
+                val intent = Intent(mContext.context, AppAuthActivity::class.java).apply {
+                    putExtra("target", bindingPotion)
                 }
+                mContext.startActivityForResult(intent, requestCodeForCopy)
             }
+
             binding.setRevelCredentials {
                 val intent = Intent(mContext.context, AppAuthActivity::class.java).apply {
                     putExtra("target", bindingPotion)
                 }
                 mContext.startActivityForResult(intent, requestCodeForDecrypt)
-
-
+            }
+            binding.setDeleteCredentials {
+                val intent = Intent(mContext.context, AppAuthActivity::class.java).apply {
+                    putExtra("target", bindingPotion)
+                }
+                mContext.startActivityForResult(intent, requestCodeForDelete)
             }
 
         }
 
-
         fun bind(
             data: LayoutCredentialView,
             position: Int,
-            requestCode: Int
+            requestCode: Int,
+            requestCodeForDelete: Int,
+            requestCodeForCopy: Int
         ) {
-            bindingPotion = position
-            requestCodeForDecrypt = requestCode
+            this.bindingPotion = position
+            this.requestCodeForDecrypt = requestCode
+            this.requestCodeForDelete = requestCodeForDelete
+            this.requestCodeForCopy=requestCodeForCopy
             binding.apply {
                 if (data.iv.isNullOrEmpty()) {
                     binding.credentialRevel.visibility = View.GONE
@@ -86,6 +93,6 @@ class CredentialsAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = children[position]
-        holder.bind(data, position, requestCode)
+        holder.bind(data, position, requestCodeForDecrypt,requestCodeForDelete,requestCodeForCopy)
     }
 }

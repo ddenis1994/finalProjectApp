@@ -1,11 +1,15 @@
 package com.example.finalprojectapp.ui.credentials.inner
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -21,7 +25,9 @@ import java.util.*
 
 
 class CredentialInnerFragment : Fragment() {
-    private val requestCodeDeleteCredential=3000
+    private val requestCodeDecryptCredential = 3000
+    private val requestCodeDeleteCredential = 3100
+    private val requestCodeCopyCredential = 3010
 
     private var dataSetId: Long = 0
     private lateinit var dataSetName: String
@@ -53,10 +59,10 @@ class CredentialInnerFragment : Fragment() {
         serviceName = args.serviceName
         dataSetName = args.dataSetName
 
-        val temp= serviceName
-            .replace("."," ", false)
+        val temp = serviceName
+            .replace(".", " ", false)
             .split(" ")
-        root.credential_service_name.text=temp[temp.size-1].capitalize(Locale.ROOT)
+        root.credential_service_name.text = temp[temp.size - 1].capitalize(Locale.ROOT)
         root.credential_data_set_name.text = dataSetName.toUpperCase(Locale.ROOT)
 
         dataSetId = args.dataSetId
@@ -68,7 +74,13 @@ class CredentialInnerFragment : Fragment() {
         })
 
         viewModel.data.observe(viewLifecycleOwner, Observer {
-            viewAdapter = CredentialsAdapter(it, this, requestCodeDeleteCredential)
+            viewAdapter = CredentialsAdapter(
+                it,
+                this,
+                requestCodeDecryptCredential,
+                requestCodeDeleteCredential,
+                requestCodeCopyCredential
+            )
             recyclerView.apply {
                 adapter = viewAdapter
             }
@@ -88,17 +100,29 @@ class CredentialInnerFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode==Activity.RESULT_OK && requestCode == requestCodeDeleteCredential) {
-            val dataToUpdate = data?.getIntExtra("target", -1)!!
-            if (dataToUpdate != -1) {
-                viewModel.updateData(dataToUpdate)
+        if (resultCode == Activity.RESULT_OK) {
+            val target = data?.getIntExtra("target", -1)!!
+            when (requestCode) {
+                requestCodeDecryptCredential -> {
+                    if (target != -1)
+                        viewModel.updateData(target)
+
+                }
+                requestCodeCopyCredential -> {
+                    val myClipboard =requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val myClip = ClipData.newPlainText("user name", viewModel.data.value?.get(target)?.data)
+                    myClipboard.setPrimaryClip(myClip)
+                    Toast.makeText(requireContext(), "copy user", Toast.LENGTH_SHORT).show()
+                }
+                requestCodeDeleteCredential ->{
+                    viewModel.deleteCredential(viewModel.data.value?.get(target)?.id)
+                }
             }
+
         }
 
 
-
     }
-
 
 
 }
