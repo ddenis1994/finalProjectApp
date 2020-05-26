@@ -58,17 +58,17 @@ class LocalRepository private constructor(
 
     suspend fun findServiceAndDataSet(dataSetId: Long) = credentialsDao.publicFindServiceAndDataSet(dataSetId)
 
-    fun deleteCredential(credentialID: Long?) {
+    fun deleteCredential(credentialID: Long?, dataSetId: Long) {
         if (credentialID != null) {
             GlobalScope.launch {
-                deleteLocalCredential(credentialID)
+                deleteLocalCredential(credentialID,dataSetId)
             }
 
         }
     }
 
-    private suspend fun deleteLocalCredential(credentialID: Long){
-        credentialsDao.publicDeleteCredential(credentialID)
+    private suspend fun deleteLocalCredential(credentialID: Long, dataSetId: Long){
+        credentialsDao.publicDeleteCredential(credentialID,dataSetId)
     }
 
     companion object {

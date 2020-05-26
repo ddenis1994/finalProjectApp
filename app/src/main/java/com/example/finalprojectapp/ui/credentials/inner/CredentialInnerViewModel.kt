@@ -40,8 +40,8 @@ class CredentialInnerViewModel internal constructor(
         _data.postValue(data)
     }
 
-    fun deleteCredential(credentialID: Long?) {
-        mainRepository.deleteCredential(credentialID)
+    fun deleteCredential(credentialID: Long?, dataSetId: Long) {
+        mainRepository.deleteCredential(credentialID,dataSetId)
     }
 
 

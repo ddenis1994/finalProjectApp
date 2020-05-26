@@ -250,8 +250,8 @@ interface LocalApplicationDAO {
     @Query("DELETE FROM dataSetCredentialsManyToMany  WHERE dataSetId=:dataSetId")
     fun deleteFromRelationship(dataSetId: Long): Int
 
-    @Query("DELETE FROM dataSetCredentialsManyToMany  WHERE credentialsId=:credentialId")
-    fun deleteFromRelationshipCredential(credentialId: Long): Int
+    @Query("DELETE FROM dataSetCredentialsManyToMany  WHERE credentialsId=:credentialId and dataSetId=:dataSetId")
+    fun deleteFromRelationshipCredential(credentialId: Long, dataSetId: Long): Int
 
     @Transaction
     suspend fun deleteDataSetById(dataSetId: Long) {
@@ -275,10 +275,15 @@ interface LocalApplicationDAO {
     suspend fun publicFindServiceAndDataSet(credentialID: Long): List<LayoutDashBoardRepeatedPassword>
 
 
-    fun publicDeleteCredential(credentialID: Long) {
-        deleteCredential(Credentials().copy(credentialsId = credentialID))
-        deleteFromRelationship(credentialID)
+    suspend fun publicDeleteCredential(credentialID: Long, dataSetId: Long) {
+        deleteFromRelationshipCredential(credentialID,dataSetId)
+        val result=privateGetRelationshipCredential(credentialID)
+        if (result.isEmpty())
+            deleteCredential(Credentials().copy(credentialsId = credentialID))
     }
+
+    @Query("SELECT * FROM dataSetCredentialsManyToMany  Where credentialsId=:credentialID")
+    fun privateGetRelationshipCredential(credentialID: Long): List<DataSetCredentialsManyToMany>
 
 
 }
