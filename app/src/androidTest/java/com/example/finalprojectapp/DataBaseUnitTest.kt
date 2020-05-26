@@ -3,8 +3,8 @@ package com.example.finalprojectapp
 
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.finalprojectapp.credentialsDB.LocalServiceDao
 import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
+import com.example.finalprojectapp.credentialsDB.ServiceDAO
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
@@ -18,7 +18,7 @@ class DataBaseUnitTest {
     private val db = Room.inMemoryDatabaseBuilder(
         context, CredentialsDataBase::class.java
     ).build()
-    private val serverDAO: LocalServiceDao = db.serviceDao()
+    private val serverDAO: ServiceDAO = db.serviceDao()
     private val credentials = Credentials(
         data = "test",
         hint = listOf()

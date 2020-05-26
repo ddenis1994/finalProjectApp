@@ -2,7 +2,7 @@ package com.example.finalprojectapp.autoFillService.adapters
 
 import android.view.View
 import com.example.finalprojectapp.autoFillService.AutoFillNodeData
-import com.example.finalprojectapp.credentialsDB.LocalServiceDao
+import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
@@ -11,7 +11,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 
 class DataSetAdapter(
-    private val localServiceDAO: LocalServiceDao,
+    private val localServiceDAO: ServiceRepository,
     val packageName: String,
     private val coroutineScope: CoroutineScope
 ) {

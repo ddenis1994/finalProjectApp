@@ -4,13 +4,12 @@ import android.util.Log
 import androidx.lifecycle.*
 import androidx.room.ColumnInfo
 import com.example.finalprojectapp.adapters.DashBoardRecyclerRepeatedPasswordAdapter
-import com.example.finalprojectapp.data.LocalRepository
+import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.data.model.DashBoardData
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class DashboardViewModel internal constructor(
-    private val mainRepository: LocalRepository
+    private val mainRepository: ServiceRepository
 ) : ViewModel() {
 
 

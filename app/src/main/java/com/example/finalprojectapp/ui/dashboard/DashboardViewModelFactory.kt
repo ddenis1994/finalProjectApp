@@ -2,9 +2,10 @@ package com.example.finalprojectapp.ui.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.finalprojectapp.data.LocalRepository
+import com.example.finalprojectapp.credentialsDB.ServiceRepository
 
-class DashboardViewModelFactory(private val repository: LocalRepository
+
+class DashboardViewModelFactory(private val repository: ServiceRepository
 ) : ViewModelProvider.NewInstanceFactory() {
 
     @Suppress("UNCHECKED_CAST")

@@ -6,9 +6,8 @@ import android.service.autofill.*
 import com.example.finalprojectapp.autoFillService.adapters.DataSetAdapter
 import com.example.finalprojectapp.autoFillService.adapters.ResponseAdapter
 import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
-import com.example.finalprojectapp.credentialsDB.LocalServiceDao
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
-import com.example.finalprojectapp.data.ServiceRepository
+import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.data.autoFilleService.ClientViewMetadataBuilder
 import com.example.finalprojectapp.data.model.Notification
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +20,7 @@ import java.time.format.DateTimeFormatter
 
 class AutoFillService : AutofillService() {
 
-    private lateinit var localServiceDAO: LocalServiceDao
+
     private lateinit var mainRepository: ServiceRepository
     private lateinit var notificationRepository: NotificationRepository
     private lateinit var coroutineScope: CoroutineScope
@@ -34,8 +33,7 @@ class AutoFillService : AutofillService() {
     override fun onCreate() {
         super.onCreate()
         coroutineScope=CoroutineScope(Job())
-        localServiceDAO =CredentialsDataBase.getDatabase(this.applicationContext).serviceDao()
-        mainRepository= ServiceRepository.getInstance(localServiceDAO,applicationContext)
+        mainRepository= ServiceRepository.getInstance(applicationContext)
         notificationRepository=NotificationRepository.getInstance(CredentialsDataBase.getDatabase(this.applicationContext).notificationDao())
 
     }
@@ -51,7 +49,7 @@ class AutoFillService : AutofillService() {
                 newParserV2
             ).buildClientViewMetadata()
         dataSetAdapter= DataSetAdapter(
-                localServiceDAO,
+                mainRepository,
                 structure.activityComponent.packageName,
                 coroutineScope)
         responseAdapter= ResponseAdapter(
@@ -75,7 +73,7 @@ class AutoFillService : AutofillService() {
                     newParserV2
                 ).buildClientSaveMetadata()
             dataSetAdapter= DataSetAdapter(
-                localServiceDAO,
+                mainRepository,
                 structure.activityComponent.packageName,
                 coroutineScope)
             val service=dataSetAdapter.generatesServiceClass(clientViewSaveData)

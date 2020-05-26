@@ -10,13 +10,13 @@ class DBWorkerDecryption(appContext: Context, workerParams: WorkerParameters)
     : CoroutineWorker(appContext, workerParams) {
     override suspend  fun doWork(): Result  {
         val localDB= CredentialsDataBase.getDatabase(applicationContext)
-        val test = localDB.serviceDao().getAllEncryptedCredentials()
+        val test = localDB.credentialDAO().getAllEncryptedCredentials()
         val cryptography=Cryptography(applicationContext)
 
         test.forEach {
             val localTemp=cryptography.localEncryptSingle(cryptography.remoteDecryptSingle(it))
             localTemp?.let { it1 ->
-                localDB.serviceDao().updateCredentials(it1)
+                localDB.credentialDAO().updateCredentials(it1)
             }
         }
 

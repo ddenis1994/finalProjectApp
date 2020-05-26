@@ -2,12 +2,13 @@ package com.example.finalprojectapp.ui.credentials
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.example.finalprojectapp.data.LocalRepository
+import com.example.finalprojectapp.credentialsDB.ServiceRepository
+
 import com.example.finalprojectapp.data.model.adpters.LayoutServiceView
 
 
 class CredentialsViewModel internal constructor(
-    private val mainRepository: LocalRepository
+    private val mainRepository: ServiceRepository
     ) : ViewModel() {
 
     private val _allPasswords = mainRepository.getAllData()

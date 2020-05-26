@@ -5,30 +5,27 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.autofill.AutofillManager
-import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Button
+import android.widget.CompoundButton
+import android.widget.Switch
+import android.widget.TextView
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
-import com.example.finalprojectapp.data.ServiceRepository
+import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_settings.view.*
 import kotlinx.coroutines.launch
-import kotlin.reflect.KFunction0
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,7 +56,7 @@ class SettingsFragment : Fragment() {
         }
         mAutofillManager = getSystemService(requireContext(), AutofillManager::class.java)!!
         setting=SingleEncryptedSharedPreferences().getSharedPreference(this.requireContext())
-        serviceRepository= ServiceRepository.getInstance(CredentialsDataBase.getDatabase(this.requireContext()).serviceDao(),requireContext())
+        serviceRepository= ServiceRepository.getInstance(requireContext())
         notificationRepository=NotificationRepository.getInstance(CredentialsDataBase.getDatabase(this.requireContext()).notificationDao())
     }
 

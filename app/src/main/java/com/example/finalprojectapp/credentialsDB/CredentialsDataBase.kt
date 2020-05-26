@@ -16,9 +16,11 @@ import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsMan
 @TypeConverters(Converters::class)
 abstract class CredentialsDataBase: RoomDatabase() {
 
+    abstract fun credentialDAO():CredentialDAO
+    abstract fun dataSetDAO():DataSetDAO
+    abstract fun serviceDao():ServiceDAO
     abstract fun notificationDao():NotificationDAO
-    abstract fun serviceDao(): LocalServiceDao
-    abstract fun applicationDAO():LocalApplicationDAO
+
 
     companion object {
         @Volatile
