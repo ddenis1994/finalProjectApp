@@ -1,5 +1,6 @@
 package com.example.finalprojectapp.ui.credentials.inner
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ import java.util.*
 
 
 class CredentialInnerFragment : Fragment() {
+    private val requestCodeDeleteCredential=3000
 
     private var dataSetId: Long = 0
     private lateinit var dataSetName: String
@@ -59,9 +61,14 @@ class CredentialInnerFragment : Fragment() {
 
         dataSetId = args.dataSetId
 
-        val credentials = viewModel.getCrede(dataSetId)
-        credentials.observe(viewLifecycleOwner, Observer {
-            viewAdapter = CredentialsAdapter(it, viewLifecycleOwner, this)
+        val firstTimeCredentials = viewModel.firstTimeCredentials(dataSetId)
+
+        firstTimeCredentials.observe(viewLifecycleOwner, Observer {
+            viewModel.setData(it)
+        })
+
+        viewModel.data.observe(viewLifecycleOwner, Observer {
+            viewAdapter = CredentialsAdapter(it, this, requestCodeDeleteCredential)
             recyclerView.apply {
                 adapter = viewAdapter
             }
@@ -81,8 +88,17 @@ class CredentialInnerFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        val test = data?.getIntExtra("target",-1)
+        if (resultCode==Activity.RESULT_OK && requestCode == requestCodeDeleteCredential) {
+            val dataToUpdate = data?.getIntExtra("target", -1)!!
+            if (dataToUpdate != -1) {
+                viewModel.updateData(dataToUpdate)
+            }
+        }
+
 
 
     }
+
+
+
 }

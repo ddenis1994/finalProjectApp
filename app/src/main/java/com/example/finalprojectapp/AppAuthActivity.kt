@@ -3,6 +3,7 @@ package com.example.finalprojectapp
 import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.service.autofill.FillResponse
 import android.view.autofill.AutofillManager.EXTRA_AUTHENTICATION_RESULT
@@ -11,6 +12,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import com.example.finalprojectapp.adapters.CredentialsAdapter
+import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import java.util.concurrent.Executor
 
 class AppAuthActivity : AppCompatActivity() {
@@ -18,6 +20,7 @@ class AppAuthActivity : AppCompatActivity() {
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
+    private lateinit var setting: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,10 +30,22 @@ class AppAuthActivity : AppCompatActivity() {
         val dataSetId = intent.getIntExtra("dataSetId",-1)
         val test = intent.getIntExtra("target",-1)
         val returnIntent=Intent().apply {
-            putExtra("decryptionTarget",test)
+            putExtra("target",test)
         }
         setResult(Activity.RESULT_OK,returnIntent)
         finish()
+
+        setting =
+            SingleEncryptedSharedPreferences().getSharedPreference(this)
+        when (setting.getBoolean("SecondFactorAuthentication", false)) {
+            true -> {
+
+            }
+            false -> {
+
+            }
+        }
+
         biometricManager = BiometricManager.from(this)
         executor = ContextCompat.getMainExecutor(this)
         biometricPrompt = BiometricPrompt(this, executor,
