@@ -72,7 +72,7 @@ class ServiceAdapter(
         val localData=data.dataSetId?.let { credentialsViewModel.getDataSet(it) }
         localData?.observe(viewLifecycleOwner, Observer {
             holder.recyclerView.apply {
-                dataSetAdapter=DataSetAdapter(it, mContext)
+                dataSetAdapter=DataSetAdapter(it, mContext,data.serviceName)
                 adapter=dataSetAdapter
                 layoutManager=
                     LinearLayoutManager(holder.recyclerView.context, RecyclerView.VERTICAL, false)

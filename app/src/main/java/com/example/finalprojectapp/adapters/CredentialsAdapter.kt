@@ -1,6 +1,9 @@
 package com.example.finalprojectapp.adapters
 
-import android.content.*
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +19,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
-import com.example.finalprojectapp.ui.credentials.CredentialsFragment
+import com.example.finalprojectapp.databinding.LayoutCredentialBinding
+import com.example.finalprojectapp.ui.credentials.inner.CredentialInnerFragment
 import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
@@ -30,13 +34,12 @@ class CredentialsAdapter(
 
 
     class ViewHolder(
-        private val binding: LayoutSingleCredentialsBinding,
+        private val binding: LayoutCredentialBinding,
         private val viewLifecycleOwner: LifecycleOwner,
         private val mContext: CredentialInnerFragment
     ) : RecyclerView.ViewHolder(binding.root) {
         private lateinit var setting: SharedPreferences
 
-        //TODO fix the chack for the biometric manger
         private val biometricManager: BiometricManager =
             BiometricManager.from(mContext.requireContext())
         private val executor: Executor = ContextCompat.getMainExecutor(mContext.requireContext())
@@ -81,7 +84,7 @@ class CredentialsAdapter(
         init {
 
             binding.setCopyCredentials {
-                binding.username2.text.let { text ->
+                binding.credentialText.text.let { text ->
                     val myClipboard =
                         it.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val myClip = ClipData.newPlainText("user name", text)
@@ -107,9 +110,9 @@ class CredentialsAdapter(
         private fun startDecryption() {
             val result2 = MutableLiveData<String>().apply {
                 observe(viewLifecycleOwner, Observer {
-                    binding.username2.text = it
-                    binding.revelCredentialsButton.visibility = View.GONE
-                    binding.copyCredentialsButton.visibility = View.VISIBLE
+                    binding.credentialText.text = it
+                    binding.credentialRevel.visibility = View.GONE
+                    binding.credentialCopy.visibility = View.VISIBLE
                 })
             }
             viewLifecycleOwner.lifecycleScope.launch {
@@ -127,5 +130,26 @@ class CredentialsAdapter(
             val cryptography = Cryptography(null)
             return cryptography.decryptLocalSingleCredentials(cre)!!
         }
+
+        fun bind(data: LayoutCredentialView) {
+            binding.apply {
+                credentialsData=data
+            }
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(LayoutCredentialBinding.inflate(
+            LayoutInflater.from(parent.context),parent,false
+        ),viewLifecycleOwner,credentialsFragment)
+    }
+
+    override fun getItemCount(): Int {
+        return children.size
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val data = children[position]
+        holder.bind(data)
     }
 }

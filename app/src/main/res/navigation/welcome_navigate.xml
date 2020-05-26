@@ -47,6 +47,13 @@
         <argument
             android:name="dataSetId"
             app:argType="long" />
+        <argument
+            android:name="dataSetName"
+            app:argType="string"
+            android:defaultValue="Data Set" />
+        <argument
+            android:name="serviceName"
+            app:argType="string" />
     </fragment>
     
     <fragment

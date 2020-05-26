@@ -2,7 +2,6 @@ package com.example.finalprojectapp.adapters
 
 import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +15,8 @@ import com.example.finalprojectapp.ui.credentials.CredentialsFragmentDirections
 
 class DataSetAdapter(
     private val dataSets: List<LayoutDataSetView>,
-    private val mContext: CredentialsFragment
+    private val mContext: CredentialsFragment,
+    private val serviceName: String?
 ) :
     RecyclerView.Adapter<DataSetAdapter.DataSetViewHolder>() {
 
@@ -26,16 +26,12 @@ class DataSetAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         private val forDeleteCode = 2
         private var dataSetId: Long = 0
+        private lateinit var localDataSetName:String
+        private lateinit var localServiceName:String
+
 
         init {
-            binding.setDisplayDataSet {
-                binding.credentialsRecyclerView.let {
-                    if (it.visibility == View.GONE)
-                        it.visibility = View.VISIBLE
-                    else
-                        it.visibility = View.GONE
-                }
-            }
+
             binding.setDeleteDataSet {
                 val deleteAuthActivity =
                     Intent(mContext.requireContext(), AuthActivity::class.java).apply {
@@ -47,17 +43,26 @@ class DataSetAdapter(
             binding.setDisplayDataSet {
                 val action =
                     CredentialsFragmentDirections.actionNavigationPasswordToCredentialInnerFragment(
-                        dataSetId
+                        dataSetId,
+                        localDataSetName,
+                        localServiceName
                     )
                 this.mContext.requireActivity().findNavController(R.id.nav_host_fragment)
                     .navigate(action)
             }
         }
 
-        fun bind(item: LayoutDataSetView) {
+        fun bind(
+            item: LayoutDataSetView,
+            _serviceName: String?
+        ) {
             binding.apply {
                 dataSetCard = item
                 dataSetId = item.dataSetId
+                localDataSetName=item.dataSetName
+                if (_serviceName != null) {
+                    localServiceName=_serviceName
+                }
 
             }
         }
@@ -79,7 +84,7 @@ class DataSetAdapter(
 
     override fun onBindViewHolder(holder: DataSetViewHolder, position: Int) {
         val data = dataSets[position]
-        holder.bind(data)
+        holder.bind(data,serviceName)
     }
 
 
