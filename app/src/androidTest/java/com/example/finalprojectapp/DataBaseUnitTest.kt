@@ -3,8 +3,9 @@ package com.example.finalprojectapp
 
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
+import com.example.finalprojectapp.credentialsDB.LocalDataBase
 import com.example.finalprojectapp.credentialsDB.ServiceDAO
+import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
@@ -16,9 +17,9 @@ import org.junit.jupiter.api.Assertions.*
 class DataBaseUnitTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val db = Room.inMemoryDatabaseBuilder(
-        context, CredentialsDataBase::class.java
+        context, LocalDataBase::class.java
     ).build()
-    private val serverDAO: ServiceDAO = db.serviceDao()
+    private val serverDAO: ServiceRepository = ServiceRepository.getInstance(context)
     private val credentials = Credentials(
         data = "test",
         hint = listOf()
@@ -121,7 +122,7 @@ class DataBaseUnitTest {
             serverDAO.publicInsertService(
                 Service()
                     .copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "3"))))))
-            val allData=serverDAO.publicGetAllService()
+            val allData=serverDAO.publicGetAllServiceSuspand()
             assertEquals(2, allData.size)
         }
 
@@ -130,7 +131,7 @@ class DataBaseUnitTest {
         fun insertSingleService()= runBlocking {
             val result=serverDAO.publicInsertService(service)
             assertNotEquals(result.first,-1L)
-            val allData=serverDAO.publicGetAllService()
+            val allData=serverDAO.publicGetAllServiceSuspand()
             assertEquals(1,allData.size)
         }
 
@@ -139,7 +140,7 @@ class DataBaseUnitTest {
         fun insert2Service()= runBlocking {
             serverDAO.publicInsertService(service)
             serverDAO.publicInsertService(service)
-            val allData=serverDAO.publicGetAllService()
+            val allData=serverDAO.publicGetAllServiceSuspand()
             assertEquals(1,allData.size)
         }
 
@@ -149,7 +150,7 @@ class DataBaseUnitTest {
         fun insert2DifferentService()= runBlocking {
             serverDAO.publicInsertService(service.copy(name = "test"))
             serverDAO.publicInsertService(service)
-            val allData=serverDAO.publicGetAllService()
+            val allData=serverDAO.publicGetAllServiceSuspand()
             assertEquals(2,allData.size)
         }
 
@@ -159,7 +160,7 @@ class DataBaseUnitTest {
         fun insertOneServiceWith2Diffrent()= runBlocking {
             serverDAO.publicInsertService(service.copy())
             serverDAO.publicInsertService(service.copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials.copy(data = "new")))) ))
-            val allData=serverDAO.publicGetAllService()
+            val allData=serverDAO.publicGetAllServiceSuspand()
             assertEquals(1,allData.size)
             assertEquals(2,allData[0].dataSets!!.size)
         }
@@ -176,7 +177,7 @@ class DataBaseUnitTest {
             serverDAO.publicInsertService(service2)
             serverDAO.publicInsertService(service2.copy(name = "test"))
             val t=serverDAO.publicGetUnionServiceNameAndCredentialsHash(service2,oldCredentials,newCredentials)
-            val allData=serverDAO.publicGetAllService()
+            val allData=serverDAO.publicGetAllServiceSuspand()
             assertEquals(2,allData.size)
             assertEquals(1,t)
         }

@@ -18,7 +18,7 @@ package com.example.finalprojectapp.utils
 
 import android.content.Context
 import androidx.fragment.app.Fragment
-import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
+import com.example.finalprojectapp.credentialsDB.LocalDataBase
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.ui.credentials.CredentialsViewModelFactory
@@ -38,7 +38,7 @@ object InjectorUtils {
 
     private fun getNotificationRepository(context: Context): NotificationRepository {
         return NotificationRepository.getInstance(
-            CredentialsDataBase.getDatabase(context.applicationContext).notificationDao()
+            LocalDataBase.getDatabase(context.applicationContext).notificationDao()
         )
     }
 

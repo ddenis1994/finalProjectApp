@@ -28,7 +28,7 @@ class ServiceRepository private constructor(
     private val context: Context
 ) {
     private val dataSetRepository=DataSetRepository.getInstance(context)
-    private val serviceDAO=CredentialsDataBase.getDatabase(context).serviceDao()
+    private val serviceDAO=LocalDataBase.getDatabase(context).serviceDao()
     private val user = FirebaseAuth.getInstance().currentUser!!
     private val db = FirebaseFirestore.getInstance()
 
@@ -302,6 +302,19 @@ class ServiceRepository private constructor(
 
     fun getCredentialByDataSetID(dataSetId: Long): LiveData<List<LayoutCredentialView>> {
         return dataSetRepository.getCredentialByDataSetID(dataSetId)
+    }
+
+    suspend fun publicInsertCredentials(credential: Credentials) {
+        dataSetRepository.publicInsertCredentials(credential)
+    }
+
+    suspend fun privateGetAllCredentials(): List<Credentials> {
+        return dataSetRepository.privateGetAllCredentials()
+    }
+
+    suspend fun publicInsertArrayCredentials(listCredentials: List<Credentials>): List<Long> {
+        return dataSetRepository.publicInsertArrayCredentials(listCredentials)
+
     }
 
 

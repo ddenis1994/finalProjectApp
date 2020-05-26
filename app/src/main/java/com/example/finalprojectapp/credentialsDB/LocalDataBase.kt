@@ -14,7 +14,7 @@ import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsMan
 
 @Database(entities = [Notification::class,Service::class, Credentials::class, DataSet::class, DataSetCredentialsManyToMany::class], version = 5, exportSchema = false)
 @TypeConverters(Converters::class)
-abstract class CredentialsDataBase: RoomDatabase() {
+abstract class LocalDataBase: RoomDatabase() {
 
     abstract fun credentialDAO():CredentialDAO
     abstract fun dataSetDAO():DataSetDAO
@@ -24,9 +24,9 @@ abstract class CredentialsDataBase: RoomDatabase() {
 
     companion object {
         @Volatile
-        private var INSTANCE: CredentialsDataBase? = null
+        private var INSTANCE: LocalDataBase? = null
 
-    fun getDatabase(context: Context): CredentialsDataBase {
+    fun getDatabase(context: Context): LocalDataBase {
         val tempInstance = INSTANCE
         if (tempInstance != null) {
             return tempInstance
@@ -34,7 +34,7 @@ abstract class CredentialsDataBase: RoomDatabase() {
         synchronized(this) {
             val instance = Room.databaseBuilder(
                 context.applicationContext,
-                CredentialsDataBase::class.java,
+                LocalDataBase::class.java,
                 "password_Database"
             )
                 .addCallback(

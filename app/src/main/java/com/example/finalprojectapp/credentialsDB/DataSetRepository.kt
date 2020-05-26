@@ -18,7 +18,7 @@ class DataSetRepository private constructor(
 
     private val credentialRepository=CredentialRepository.getInstance(context)
 
-    private val dataSetDAO=CredentialsDataBase.getDatabase(context).dataSetDAO()
+    private val dataSetDAO=LocalDataBase.getDatabase(context).dataSetDAO()
 
     fun getCredentialByDataSetID(dataSetId: Long)=dataSetDAO.publicGetAllCredentialsByDataSetID(dataSetId)
 
@@ -136,6 +136,14 @@ class DataSetRepository private constructor(
             listCredentials.add(credentialRepository.publicGetCredentialsID(it.credentialsId))
         }
         return dataSet.copy(credentials = listCredentials)
+    }
+
+    suspend fun privateGetAllCredentials(): List<Credentials> {
+        return credentialRepository.privateGetAllCredentials()
+    }
+
+    suspend fun publicInsertArrayCredentials(listCredentials: List<Credentials>): List<Long> {
+        return credentialRepository.publicInsertArrayCredentials(listCredentials)
     }
 
 

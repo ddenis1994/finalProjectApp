@@ -1,6 +1,5 @@
 package com.example.finalprojectapp.ui.credentials
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
@@ -13,20 +12,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.adapters.ServiceAdapter
-import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
-import com.example.finalprojectapp.data.model.DataSet
-import com.example.finalprojectapp.data.model.Service
+import com.example.finalprojectapp.credentialsDB.LocalDataBase
 import com.example.finalprojectapp.utils.InjectorUtils
-import com.example.finalprojectapp.workers.DBWorkerDecryption
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.MetadataChanges
-import com.google.firebase.firestore.ktx.toObject
 import kotlinx.android.synthetic.main.fragment_cre.*
 import kotlinx.android.synthetic.main.fragment_cre.view.*
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +34,7 @@ class CredentialsFragment : Fragment() {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private val db = FirebaseFirestore.getInstance()
-    private lateinit var localDB: CredentialsDataBase
+    private lateinit var localDB: LocalDataBase
     private val user = FirebaseAuth.getInstance().currentUser!!
 
 
@@ -62,7 +53,7 @@ class CredentialsFragment : Fragment() {
                 adapter=viewAdapter
             }
         })
-        localDB=CredentialsDataBase.getDatabase(requireContext())
+        localDB=LocalDataBase.getDatabase(requireContext())
         return root
     }
 

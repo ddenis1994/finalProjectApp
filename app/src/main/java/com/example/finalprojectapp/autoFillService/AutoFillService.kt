@@ -5,7 +5,7 @@ import android.os.CancellationSignal
 import android.service.autofill.*
 import com.example.finalprojectapp.autoFillService.adapters.DataSetAdapter
 import com.example.finalprojectapp.autoFillService.adapters.ResponseAdapter
-import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
+import com.example.finalprojectapp.credentialsDB.LocalDataBase
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.data.autoFilleService.ClientViewMetadataBuilder
@@ -34,7 +34,7 @@ class AutoFillService : AutofillService() {
         super.onCreate()
         coroutineScope=CoroutineScope(Job())
         mainRepository= ServiceRepository.getInstance(applicationContext)
-        notificationRepository=NotificationRepository.getInstance(CredentialsDataBase.getDatabase(this.applicationContext).notificationDao())
+        notificationRepository=NotificationRepository.getInstance(LocalDataBase.getDatabase(this.applicationContext).notificationDao())
 
     }
 

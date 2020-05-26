@@ -8,7 +8,7 @@ class CredentialRepository private constructor(
     context: Context
 ){
 
-    private val credentialsDao=CredentialsDataBase.getDatabase(context).credentialDAO()
+    private val credentialsDao=LocalDataBase.getDatabase(context).credentialDAO()
 
     fun deleteCredential(credentials: Credentials)=credentialsDao.deleteCredential(credentials)
 
@@ -60,6 +60,10 @@ class CredentialRepository private constructor(
 
     suspend fun deleteAllCredentials() {
         credentialsDao.deleteAllCredentials()
+    }
+
+    suspend fun privateGetAllCredentials(): List<Credentials> {
+        return credentialsDao.privateGetAllCredentials()
     }
 
 

@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.example.finalprojectapp.R
-import com.example.finalprojectapp.credentialsDB.CredentialsDataBase
+import com.example.finalprojectapp.credentialsDB.LocalDataBase
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
@@ -57,7 +57,7 @@ class SettingsFragment : Fragment() {
         mAutofillManager = getSystemService(requireContext(), AutofillManager::class.java)!!
         setting=SingleEncryptedSharedPreferences().getSharedPreference(this.requireContext())
         serviceRepository= ServiceRepository.getInstance(requireContext())
-        notificationRepository=NotificationRepository.getInstance(CredentialsDataBase.getDatabase(this.requireContext()).notificationDao())
+        notificationRepository=NotificationRepository.getInstance(LocalDataBase.getDatabase(this.requireContext()).notificationDao())
     }
 
     override fun onCreateView(
