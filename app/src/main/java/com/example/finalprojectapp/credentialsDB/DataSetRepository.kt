@@ -28,7 +28,7 @@ class DataSetRepository private constructor(
     fun publicGetAllHashCredentials()=
         dataSetDAO.publicGetAllHashCredentials()
 
-    suspend fun publicDeleteCredential(credentialID: Long, dataSetId: Long) {
+    fun publicDeleteCredential(credentialID: Long, dataSetId: Long) {
         dataSetDAO.deleteFromRelationshipCredential(credentialID,dataSetId)
         val result=dataSetDAO.privateGetRelationshipCredential(credentialID)
         if (result.isEmpty())
@@ -80,17 +80,13 @@ class DataSetRepository private constructor(
         return dataSetDAO.privateInsertCredentials(dataSetCredentialsManyToMany)
     }
 
-    fun deleteAllDataSets() {
+    suspend fun deleteAllDataSets() {
+        credentialRepository.deleteAllCredentials()
         dataSetDAO.deleteAllDataSets()
-    }
-
-    fun deleteAllR() {
         dataSetDAO.deleteAllR()
     }
 
-    suspend fun deleteAllCredentials() {
-        credentialRepository.deleteAllCredentials()
-    }
+
 
     suspend fun privateGetUnionDataSetAndCredentialsHash(it: Long, hint: String): Long? {
         return dataSetDAO.privateGetUnionDataSetAndCredentialsHash(it,hint)

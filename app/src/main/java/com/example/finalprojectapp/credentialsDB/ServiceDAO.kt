@@ -18,7 +18,7 @@ interface ServiceDAO {
     suspend fun privateGetServiceByName(name:String): ServiceToDataSet?
 
     @Query("Delete from service_")
-    fun deleteAllService()
+    suspend fun deleteAllService()
 
     @Query("select s.name serviceName,d.dataSetName dataSetName from dataSetCredentialsManyToMany r, dataSet_ d ,service_ s where d.serviceId = s.serviceId and d.dataSetId = r.dataSetId and r.credentialsId = :credentialID" )
     suspend fun publicFindServiceAndDataSet(credentialID: Long): List<LayoutDashBoardRepeatedPassword>

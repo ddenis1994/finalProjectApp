@@ -28,10 +28,10 @@ interface DataSetDAO {
 
 
     @Query("Delete from dataSetCredentialsManyToMany")
-    fun deleteAllR()
+    suspend fun deleteAllR()
 
     @Query("Delete from dataSet_")
-    fun deleteAllDataSets()
+    suspend fun deleteAllDataSets()
 
     @Query("DELETE FROM dataSetCredentialsManyToMany  WHERE dataSetId=:dataSetId")
     fun deleteFromRelationship(dataSetId: Long): Int

@@ -164,7 +164,8 @@ class LoginFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.title="PASCEMANGER"
         navView.setupWithNavController(navController)
-        requireView().findNavController().navigate(R.id.startMainApplication)
+        requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.startMainApplication)
+
 
 
 
