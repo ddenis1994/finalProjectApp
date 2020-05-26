@@ -5,12 +5,14 @@ import android.service.autofill.SaveCallback
 import androidx.lifecycle.LiveData
 import androidx.room.Transaction
 import com.example.finalprojectapp.data.model.Credentials
-import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class ServiceRepository private constructor(
     context: Context
@@ -29,8 +31,6 @@ class ServiceRepository private constructor(
         callback: SaveCallback
     ) {
         scope.launch {
-            val test=serviceRepositoryLocal.publicGetAllServiceSuspand()
-            val test2=serviceRepositoryLocal
             serviceRepositoryLocal.publicInsertService(service)
             serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(service, callback)
         }
@@ -58,10 +58,6 @@ class ServiceRepository private constructor(
         }
     }
 
-    private suspend fun deleteLocalCredential(credentialID: Long, dataSetId: Long) {
-        serviceRepositoryLocal.deleteLocalCredential(credentialID, dataSetId)
-    }
-
 
     //deleteDataSet
     suspend fun deleteDataSet(dataSetId: Long) {
@@ -78,7 +74,7 @@ class ServiceRepository private constructor(
         serviceRepositoryLocal.publicGetServiceByName(string)
 
 
-    suspend fun publicInsertService(service: Service): Pair<Long, List<Pair<Long, List<Long>>>> {
+    suspend fun publicInsertLocalService(service: Service): Pair<Long, List<Pair<Long, List<Long>>>> {
         return serviceRepositoryLocal.publicInsertService(service)
     }
 
@@ -96,17 +92,6 @@ class ServiceRepository private constructor(
     suspend fun publicGetAllServiceSuspend(): List<Service> =
         serviceRepositoryLocal.publicGetAllServiceSuspand()
 
-    fun publicGetServiceByNameLive(string: String): LiveData<Service?> =
-        serviceRepositoryLocal.publicGetServiceByNameLive(string)
-
-
-    fun deleteFullService(service: String): LiveData<Boolean> =
-        serviceRepositoryLocal.deleteFullService(service)
-
-    suspend fun publicInsertDataSet(
-        dataSet: DataSet,
-        serviceName: String
-    ): Pair<Long, List<Long>>? = serviceRepositoryLocal.publicInsertDataSet(dataSet, serviceName)
 
     fun getDataSetById(dataSetId: Long): LiveData<List<LayoutDataSetView>> =
         serviceRepositoryLocal.getDataSetById(dataSetId)
@@ -128,7 +113,6 @@ class ServiceRepository private constructor(
 
 
     companion object {
-        // For Singleton instantiation
         @Volatile
         private var instance: ServiceRepository? = null
         fun getInstance(context: Context) =

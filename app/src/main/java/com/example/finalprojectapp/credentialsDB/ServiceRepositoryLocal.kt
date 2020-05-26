@@ -12,7 +12,6 @@ import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
@@ -28,7 +27,7 @@ class ServiceRepositoryLocal(context: Context) {
         serviceDAO.deleteAllService()
     }
 
-    fun publicInsertService(service: Service):Pair<Long,List<Pair<Long,List<Long>>>> = runBlocking{
+    suspend fun publicInsertService(service: Service):Pair<Long,List<Pair<Long,List<Long>>>> {
         var result=serviceDAO.privateInsertService(service)
         if (result==-1L){
             result= privateGetServiceByName(service.name)!!.serviceId
@@ -37,7 +36,7 @@ class ServiceRepositoryLocal(context: Context) {
         service.dataSets?.forEach {
             dataSetRepository.publicInsertDataSet(it.copy(serviceId = result)).let { it1 -> list.add(it1) }
         }
-        return@runBlocking Pair(result,list)
+        return Pair(result,list)
     }
 
     fun getAllData() =
@@ -50,22 +49,9 @@ class ServiceRepositoryLocal(context: Context) {
 
     suspend fun findServiceAndDataSet(dataSetId: Long) = serviceDAO.publicFindServiceAndDataSet(dataSetId)
 
-    suspend fun deleteLocalCredential(credentialID: Long, dataSetId: Long){
-        dataSetRepository.publicDeleteCredential(credentialID,dataSetId)
-    }
-
-    suspend fun deleteDataSet(dataSetId:Long){
+    fun deleteDataSet(dataSetId:Long){
         dataSetRepository.deleteDataSetById(dataSetId)
     }
-
-    fun publicInsertServiceSuspend(toObject: Service): LiveData<Pair<Long, List<Pair<Long, List<Long>>>>> {
-        return liveData {
-            withContext(Dispatchers.IO) {
-                emit(publicInsertService(toObject))
-            }
-        }
-    }
-
 
 
     suspend fun publicGetServiceByName(string: String): Service?{
@@ -76,13 +62,6 @@ class ServiceRepositoryLocal(context: Context) {
             list.add(dataSetRepository.getDataSetByID(it.dataSetId))
         }
         return service.copy(dataSets = list)
-    }
-
-    fun publicGetAllService(): LiveData<List<Service>> {
-        return liveData {
-            emit(publicGetAllServiceSuspand())
-        }
-
     }
 
     suspend fun publicGetUnionServiceNameAndCredentialsHash(service: Service, oldCredentials: Credentials, newCredentials: Credentials): Int?{
@@ -114,15 +93,7 @@ class ServiceRepositoryLocal(context: Context) {
         return servicesList
     }
 
-    fun publicGetServiceByNameLive(string: String):LiveData<Service?>{
-        return liveData {
-            withContext(Dispatchers.IO) {
-                emit(privateGetServiceByName(string))
-            }
-        }
-    }
-
-    suspend fun privateGetServiceByName(string: String): Service?{
+    private suspend fun privateGetServiceByName(string: String): Service?{
         val service = serviceDAO.privateGetServiceByNameQuery(string) ?: return null
         val list = mutableListOf<DataSet>()
         service.dataSets.forEach {
@@ -149,31 +120,7 @@ class ServiceRepositoryLocal(context: Context) {
     }
 
 
-    suspend fun publicInsertDataSet(
-        dataSet: DataSet,
-        serviceName: String
-    ):Pair<Long,List<Long>>?{
-        return withContext(Dispatchers.IO){
-            val hashData: String? = dataSet.hashData ?: return@withContext null
-            val service=privateGetServiceByName(serviceName) ?: return@withContext null
 
-            if(dataSetRepository.privateFindByHashDataAndServiceId(hashData!!,service.serviceId)!=null) {
-                return@withContext null
-            }
-
-            var result=dataSetRepository.privateInsertDataSet(dataSet.copy(hashData = hashData,serviceId = service.serviceId))
-            if (result==-1L){
-                result=dataSetRepository.privateFindByHashData(hashData).dataSetId
-            }
-            val creList= mutableListOf<Long>()
-            dataSet.credentials?.forEach {
-                val insertResult=dataSetRepository.publicInsertCredentials(it)
-                dataSetRepository.privateInsertCredentials(DataSetCredentialsManyToMany(dataSetId=result,credentialsId = insertResult))
-                creList.add(insertResult)
-            }
-            return@withContext Pair(result,creList)
-        }
-    }
 
     fun getDataSetById(dataSetId: Long): LiveData<List<LayoutDataSetView>> {
         return dataSetRepository.getDataSetById(dataSetId)
@@ -214,7 +161,6 @@ class ServiceRepositoryLocal(context: Context) {
     }
 
     companion object {
-        // For Singleton instantiation
         @Volatile
         private var instance: ServiceRepositoryLocal? = null
         fun getInstance(context: Context) =

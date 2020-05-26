@@ -44,7 +44,7 @@ class ServiceRepositoryRemote(private val context: Context) {
                         }
                         val message: ByteArray = rawData.toByteArray()
                         val md = MessageDigest.getInstance("SHA-256")
-                        rawData = Base64.getEncoder().encodeToString(md.digest(message))
+                        rawData = Base64.getEncoder().encodeToString(md.digest(message)).replace("/","")
                     }
                     val toUpload = cry.remoteEncryption(dataSet.copy(hashData = rawData))!!
                     db.collection("users").document(user.uid)

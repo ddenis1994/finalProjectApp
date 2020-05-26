@@ -113,13 +113,13 @@ class DataBaseUnitTest {
         @Test
         @DisplayName("insert Service")
         fun insertDataSet()= runBlocking {
-           serverDAO.publicInsertService(
+           serverDAO.publicInsertLocalService(
                Service()
                    .copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "8"))))))
-            serverDAO.publicInsertService(
+            serverDAO.publicInsertLocalService(
                 Service()
                     .copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "2"),credentials.copy(data = "18"))))))
-            serverDAO.publicInsertService(
+            serverDAO.publicInsertLocalService(
                 Service()
                     .copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "3"))))))
             val allData=serverDAO.publicGetAllServiceSuspend()
@@ -129,7 +129,7 @@ class DataBaseUnitTest {
         @Test
         @DisplayName("insert single Service")
         fun insertSingleService()= runBlocking {
-            val result=serverDAO.publicInsertService(service)
+            val result=serverDAO.publicInsertLocalService(service)
             assertNotEquals(result.first,-1L)
             val allData=serverDAO.publicGetAllServiceSuspend()
             assertEquals(1,allData.size)
@@ -138,8 +138,8 @@ class DataBaseUnitTest {
         @Test
         @DisplayName("insert 2 same Service")
         fun insert2Service()= runBlocking {
-            serverDAO.publicInsertService(service)
-            serverDAO.publicInsertService(service)
+            serverDAO.publicInsertLocalService(service)
+            serverDAO.publicInsertLocalService(service)
             val allData=serverDAO.publicGetAllServiceSuspend()
             assertEquals(1,allData.size)
         }
@@ -148,8 +148,8 @@ class DataBaseUnitTest {
         @Test
         @DisplayName("insert 2 Different Service")
         fun insert2DifferentService()= runBlocking {
-            serverDAO.publicInsertService(service.copy(name = "test"))
-            serverDAO.publicInsertService(service)
+            serverDAO.publicInsertLocalService(service.copy(name = "test"))
+            serverDAO.publicInsertLocalService(service)
             val allData=serverDAO.publicGetAllServiceSuspend()
             assertEquals(2,allData.size)
         }
@@ -158,8 +158,8 @@ class DataBaseUnitTest {
         @Test
         @DisplayName("insert 1  Service with diffrent cradenitial")
         fun insertOneServiceWith2Diffrent()= runBlocking {
-            serverDAO.publicInsertService(service.copy())
-            serverDAO.publicInsertService(service.copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials.copy(data = "new")))) ))
+            serverDAO.publicInsertLocalService(service.copy())
+            serverDAO.publicInsertLocalService(service.copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials.copy(data = "new")))) ))
             val allData=serverDAO.publicGetAllServiceSuspend()
             assertEquals(1,allData.size)
             assertEquals(2,allData[0].dataSets!!.size)
@@ -174,8 +174,8 @@ class DataBaseUnitTest {
             val oldCredentials=credentials.copy(data = "old",hint = listOf("password"))
             val service2=service.copy(name = serviceName,dataSets = listOf(dataSet.copy(credentials = listOf(oldCredentials,credentials.copy(data = username)))))
             val newCredentials=oldCredentials.copy(data = "new")
-            serverDAO.publicInsertService(service2)
-            serverDAO.publicInsertService(service2.copy(name = "test"))
+            serverDAO.publicInsertLocalService(service2)
+            serverDAO.publicInsertLocalService(service2.copy(name = "test"))
             val t=serverDAO.publicGetUnionServiceNameAndCredentialsHash(service2,oldCredentials,newCredentials)
             val allData=serverDAO.publicGetAllServiceSuspend()
             assertEquals(2,allData.size)

@@ -60,23 +60,15 @@ class DataSetRepository private constructor(
         dataSetDAO.deleteFromRelationship(dataSetId)
     }
 
-    suspend fun privateFindByHashDataAndServiceId(hashData: String, serviceId: Long): DataSet? {
-        return dataSetDAO.privateFindByHashDataAndServiceId(hashData,serviceId)
-    }
-
-    suspend fun privateInsertDataSet(dataSet: DataSet): Long {
+    private suspend fun privateInsertDataSet(dataSet: DataSet): Long {
         return dataSetDAO.privateInsertDataSet(dataSet)
-    }
-
-    suspend fun privateFindByHashData(data: String): DataSet {
-        return dataSetDAO.privateFindByHashData(data)
     }
 
     suspend fun publicInsertCredentials(credentials: Credentials): Long {
         return credentialRepository.publicInsertCredentials(credentials)
     }
 
-    suspend fun privateInsertCredentials(dataSetCredentialsManyToMany: DataSetCredentialsManyToMany): Long {
+    private suspend fun privateInsertCredentials(dataSetCredentialsManyToMany: DataSetCredentialsManyToMany): Long {
         return dataSetDAO.privateInsertCredentials(dataSetCredentialsManyToMany)
     }
 
@@ -108,10 +100,11 @@ class DataSetRepository private constructor(
                 val message: ByteArray = hashData.toByteArray()
                 val md = MessageDigest.getInstance("SHA-256")
                 hashData= Base64.getEncoder().encodeToString(md.digest(message))
+                hashData=hashData.replace("/","")
             }
             var result=privateInsertDataSet(dataSet.copy(hashData = hashData))
             if (result==-1L){
-                result=dataSetDAO.privateGetDataSet(hashData!!).dataSetId
+                result=dataSetDAO.privateGetDataSet(hashData).dataSetId
             }
             val creList= mutableListOf<Long>()
             dataSet.credentials?.forEach {
