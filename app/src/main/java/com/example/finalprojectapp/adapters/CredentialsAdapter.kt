@@ -1,14 +1,10 @@
 package com.example.finalprojectapp.adapters
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
@@ -16,6 +12,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finalprojectapp.AppAuthActivity
 import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
@@ -37,11 +34,13 @@ class CredentialsAdapter(
         private val binding: LayoutCredentialBinding,
         private val viewLifecycleOwner: LifecycleOwner,
         private val mContext: CredentialInnerFragment
+
     ) : RecyclerView.ViewHolder(binding.root) {
+
+        private var bindingPotion: Int=0
+
         private lateinit var setting: SharedPreferences
 
-        private val biometricManager: BiometricManager =
-            BiometricManager.from(mContext.requireContext())
         private val executor: Executor = ContextCompat.getMainExecutor(mContext.requireContext())
         private val biometricPrompt: BiometricPrompt = BiometricPrompt(mContext, executor,
             object : BiometricPrompt.AuthenticationCallback() {
@@ -93,6 +92,11 @@ class CredentialsAdapter(
                 }
             }
             binding.setRevelCredentials {
+                val intent=Intent(mContext.context, AppAuthActivity::class.java).apply {
+                    putExtra("target", bindingPotion)
+                }
+                mContext.startActivityForResult(intent,9002)
+
                 setting =
                     SingleEncryptedSharedPreferences().getSharedPreference(mContext.requireContext())
                 when (setting.getBoolean("SecondFactorAuthentication", false)) {
@@ -131,7 +135,11 @@ class CredentialsAdapter(
             return cryptography.decryptLocalSingleCredentials(cre)!!
         }
 
-        fun bind(data: LayoutCredentialView) {
+        fun bind(
+            data: LayoutCredentialView,
+            position: Int
+        ) {
+            bindingPotion=position
             binding.apply {
                 credentialsData=data
             }
@@ -150,6 +158,6 @@ class CredentialsAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = children[position]
-        holder.bind(data)
+        holder.bind(data,position)
     }
 }

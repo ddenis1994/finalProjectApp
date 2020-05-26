@@ -1,5 +1,6 @@
 package com.example.finalprojectapp.ui.credentials.inner
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +27,7 @@ class CredentialInnerFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
+
 
     companion object {
         fun newInstance() =
@@ -77,5 +79,10 @@ class CredentialInnerFragment : Fragment() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val test = data?.getIntExtra("target",-1)
 
+
+    }
 }
