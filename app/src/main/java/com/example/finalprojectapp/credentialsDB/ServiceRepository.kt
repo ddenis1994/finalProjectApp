@@ -18,20 +18,20 @@ class ServiceRepository private constructor(
 
     private val serviceRepositoryLocal: ServiceRepositoryLocal = ServiceRepositoryLocal(context)
     private val serviceRepositoryRemote: ServiceRepositoryRemote = ServiceRepositoryRemote(context)
-    private val scope=CoroutineScope(Job())
+    private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
 
     @Transaction
-    suspend fun nukeALl() =serviceRepositoryLocal.nukeALl()
+    suspend fun nukeALl() = serviceRepositoryLocal.nukeALl()
 
-    suspend fun addService(
+    fun addService(
         service: Service,
         callback: SaveCallback
     ) {
         scope.launch {
-            withContext(Dispatchers.IO) {
-                serviceRepositoryLocal.publicInsertService(service)
-            }
+            val test=serviceRepositoryLocal.publicGetAllServiceSuspand()
+            val test2=serviceRepositoryLocal
+            serviceRepositoryLocal.publicInsertService(service)
             serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(service, callback)
         }
 
@@ -68,7 +68,7 @@ class ServiceRepository private constructor(
         val serviceName = serviceRepositoryLocal.getServiceByDataSetId(dataSetId)
         val dataSet = serviceRepositoryLocal.getDataSetByID(dataSetId)
         if (serviceName != null) {
-            serviceRepositoryRemote.deleteFromRemote(dataSetId,serviceName,dataSet)
+            serviceRepositoryRemote.deleteFromRemote(serviceName, dataSet)
         }
         serviceRepositoryLocal.deleteDataSetById(dataSetId)
     }

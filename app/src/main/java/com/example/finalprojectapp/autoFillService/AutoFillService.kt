@@ -32,27 +32,32 @@ class AutoFillService : AutofillService() {
 
     override fun onCreate() {
         super.onCreate()
-        coroutineScope=CoroutineScope(Job())
-        mainRepository= ServiceRepository.getInstance(applicationContext)
-        notificationRepository=NotificationRepository.getInstance(LocalDataBase.getDatabase(this.applicationContext).notificationDao())
+        coroutineScope = CoroutineScope(Job())
+        mainRepository = ServiceRepository.getInstance(applicationContext)
+        notificationRepository = NotificationRepository.getInstance(
+            LocalDataBase.getDatabase(this.applicationContext).notificationDao()
+        )
 
     }
 
-    override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal,
-                               callback: FillCallback) {
+    override fun onFillRequest(
+        request: FillRequest, cancellationSignal: CancellationSignal,
+        callback: FillCallback
+    ) {
         val context: List<FillContext> = request.fillContexts
         val structure: AssistStructure = context[context.size - 1].structure
 
-        val newParserV2=ClientParser(structure)
-        clientViewMetadata=
+        val newParserV2 = ClientParser(structure)
+        clientViewMetadata =
             ClientViewMetadataBuilder(
                 newParserV2
             ).buildClientViewMetadata()
-        dataSetAdapter= DataSetAdapter(
-                mainRepository,
-                structure.activityComponent.packageName,
-                coroutineScope)
-        responseAdapter= ResponseAdapter(
+        dataSetAdapter = DataSetAdapter(
+            mainRepository,
+            structure.activityComponent.packageName,
+            coroutineScope
+        )
+        responseAdapter = ResponseAdapter(
             this.applicationContext,
             dataSetAdapter,
             clientViewMetadata,
@@ -62,26 +67,26 @@ class AutoFillService : AutofillService() {
         coroutineScope.launch {
             responseAdapter.buildResponse()
         }
-        }
+    }
 
-        override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
-            val context = request.fillContexts
-            val structure = context[context.size - 1].structure
-            val newParserV2=ClientParser(structure)
-            clientViewSaveData =
-                ClientViewMetadataBuilder(
-                    newParserV2
-                ).buildClientSaveMetadata()
-            dataSetAdapter= DataSetAdapter(
-                mainRepository,
-                structure.activityComponent.packageName,
-                coroutineScope)
-            val service=dataSetAdapter.generatesServiceClass(clientViewSaveData)
-            GlobalScope.launch {
-                mainRepository.addService(service,callback)
-                notificationRepository.insert(Notification(0,"Inserted Credentials",service.name,DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
-            }
-        }
+    override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
+        val context = request.fillContexts
+        val structure = context[context.size - 1].structure
+        val newParserV2 = ClientParser(structure)
+        clientViewSaveData =
+            ClientViewMetadataBuilder(
+                newParserV2
+            ).buildClientSaveMetadata()
+        dataSetAdapter = DataSetAdapter(
+            mainRepository,
+            structure.activityComponent.packageName,
+            coroutineScope
+        )
+        val service = dataSetAdapter.generatesServiceClass(clientViewSaveData)
+
+        mainRepository.addService(service, callback)
+
+    }
 
 
 }

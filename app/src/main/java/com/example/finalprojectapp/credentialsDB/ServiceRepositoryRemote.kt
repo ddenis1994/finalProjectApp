@@ -4,16 +4,22 @@ import android.content.Context
 import android.service.autofill.SaveCallback
 import com.example.finalprojectapp.crypto.Cryptography
 import com.example.finalprojectapp.data.model.DataSet
+import com.example.finalprojectapp.data.model.Notification
 import com.example.finalprojectapp.data.model.Service
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.security.MessageDigest
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class ServiceRepositoryRemote(private val context: Context) {
 
     private val user = FirebaseAuth.getInstance().currentUser!!
     private val db = FirebaseFirestore.getInstance()
+    private val notificationRepository=NotificationRepository.getInstance(
+        LocalDataBase.getDatabase(context).notificationDao()
+    )
 
 
     internal fun addDataToRemoteWithSaveCallBack(
@@ -47,6 +53,8 @@ class ServiceRepositoryRemote(private val context: Context) {
                         .set(toUpload)
                         .addOnSuccessListener {
                             callback.onSuccess()
+                            notificationRepository.insert(Notification(0,"Inserted Credentials",service.name,
+                                DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
                         }
                 }
             }
@@ -57,14 +65,12 @@ class ServiceRepositoryRemote(private val context: Context) {
         val updates = hashMapOf<String, Any>(
             "credentials" to dataSet.credentials!!
         )
-        if (serviceName != null) {
-            dataSet.hashData?.let {
-                db.collection("users").document(user.uid)
-                    .collection("services").document(serviceName)
-                    .collection("dataSets").document(it)
-                    .update(updates)
+        dataSet.hashData?.let {
+            db.collection("users").document(user.uid)
+                .collection("services").document(serviceName)
+                .collection("dataSets").document(it)
+                .update(updates)
 
-            }
         }
 
     }
@@ -73,14 +79,17 @@ class ServiceRepositoryRemote(private val context: Context) {
 
 
 
-    fun deleteFromRemote(dataSetId: Long, serviceName: String, dataSet: DataSet) {
+    fun deleteFromRemote(
+        serviceName: String,
+        dataSet: DataSet
+    ) {
         dataSet.hashData?.let {
             db.collection("users").document(user.uid)
                 .collection("services").document(serviceName)
                 .collection("dataSets").document(it)
                 .delete()
                 .addOnSuccessListener {
-
+                    notificationRepository.insert(Notification(1,"Delete DataSet",serviceName,DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
                 }
         }
 

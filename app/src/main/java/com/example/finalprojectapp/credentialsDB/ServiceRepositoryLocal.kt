@@ -12,6 +12,7 @@ import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
@@ -27,16 +28,16 @@ class ServiceRepositoryLocal(context: Context) {
         serviceDAO.deleteAllService()
     }
 
-    suspend fun publicInsertService(service: Service):Pair<Long,List<Pair<Long,List<Long>>>>{
+    fun publicInsertService(service: Service):Pair<Long,List<Pair<Long,List<Long>>>> = runBlocking{
         var result=serviceDAO.privateInsertService(service)
         if (result==-1L){
             result= privateGetServiceByName(service.name)!!.serviceId
         }
         val list= mutableListOf<Pair<Long,List<Long>>>()
         service.dataSets?.forEach {
-            publicInsertDataSet(it.copy(serviceId = result),service.name)?.let { it1 -> list.add(it1) }
+            dataSetRepository.publicInsertDataSet(it.copy(serviceId = result)).let { it1 -> list.add(it1) }
         }
-        return Pair(result,list)
+        return@runBlocking Pair(result,list)
     }
 
     fun getAllData() =
