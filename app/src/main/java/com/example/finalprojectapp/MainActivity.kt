@@ -12,17 +12,19 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
+
     @Inject
     lateinit var serviceRepositoryLocal: ServiceRepositoryLocal
 
     lateinit var applicationComponent: MainComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
 
-        applicationComponent =DaggerMainComponent.builder().context(this).build()
-        //applicationComponent.inject(this)
-        //serviceRepositoryLocal.getAllData()
+        applicationComponent = (application as MainApplication).getComponent()
+        applicationComponent.inject(this)
+        serviceRepositoryLocal.getAllData()
 
 /*
         //TODO remove the firestore setting in the production
@@ -53,10 +55,8 @@ class MainActivity : AppCompatActivity() {
 
 
         supportActionBar?.hide()
-        //actionBar?.hide()
 
 
-        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
 

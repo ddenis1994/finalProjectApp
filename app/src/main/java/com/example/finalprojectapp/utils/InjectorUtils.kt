@@ -18,6 +18,7 @@ package com.example.finalprojectapp.utils
 
 import android.content.Context
 import androidx.fragment.app.Fragment
+import com.example.finalprojectapp.MainActivity
 import com.example.finalprojectapp.credentialsDB.*
 import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.crypto.LocalCryptography
@@ -72,6 +73,7 @@ object InjectorUtils {
 
     fun provideCredentialInnerViewModelFactory(fragment: Fragment):CredentialInnerViewModelFactory {
         val repository = getMainRepository(fragment.requireContext())
+
         return CredentialInnerViewModelFactory(repository)
     }
 }

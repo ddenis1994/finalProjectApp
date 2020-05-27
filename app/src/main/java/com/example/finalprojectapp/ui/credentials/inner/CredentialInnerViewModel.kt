@@ -19,6 +19,8 @@ class CredentialInnerViewModel @Inject constructor(
 
     var cryptography:LocalCryptography = LocalCryptography(HashBuilder())
 
+    @Inject lateinit var cryptography2:LocalCryptography
+
     fun firstTimeCredentials(dataSetId: Long) = mainRepository.getCredentialByDataSetID(dataSetId)
 
 

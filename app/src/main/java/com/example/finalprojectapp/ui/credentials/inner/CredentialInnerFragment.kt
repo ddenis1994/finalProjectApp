@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finalprojectapp.MainApplication
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.adapters.CredentialsAdapter
 import com.example.finalprojectapp.utils.InjectorUtils
@@ -58,6 +59,8 @@ class CredentialInnerFragment  : Fragment() {
         val root = inflater.inflate(R.layout.fragment_inner_credential, container, false)
         serviceName = args.serviceName
         dataSetName = args.dataSetName
+
+        (requireActivity().application as MainApplication).getComponent().inject(this)
 
         val temp = serviceName
             .replace(".", " ", false)
