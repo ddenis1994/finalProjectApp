@@ -2,7 +2,8 @@ package com.example.finalprojectapp.credentialsDB
 
 import android.content.Context
 import android.service.autofill.SaveCallback
-import com.example.finalprojectapp.crypto.Cryptography
+import com.example.finalprojectapp.crypto.LocalCryptography
+import com.example.finalprojectapp.crypto.RemoteCryptography
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Notification
 import com.example.finalprojectapp.data.model.Service
@@ -31,7 +32,7 @@ class ServiceRepositoryRemote(private val context: Context) {
             .collection("services").document(service.name)
             .set(service.copy(dataSets = null))
             .addOnSuccessListener {
-                val cry = Cryptography(context)
+                val cry = RemoteCryptography(context)
                 service.dataSets?.forEach { dataSet ->
                     var rawData = dataSet.hashData
                     if (rawData.isNullOrEmpty()) {

@@ -108,7 +108,7 @@ class DataSetRepository private constructor(
             }
             val creList= mutableListOf<Long>()
             dataSet.credentials?.forEach {
-                val insertResult=publicInsertCredentials(it)
+                val insertResult=credentialRepository.publicInsertCredentials(it)
                 privateInsertCredentials(DataSetCredentialsManyToMany(dataSetId=result,credentialsId = insertResult))
                 creList.add(insertResult)
             }

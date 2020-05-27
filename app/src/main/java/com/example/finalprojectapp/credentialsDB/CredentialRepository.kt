@@ -1,7 +1,8 @@
 package com.example.finalprojectapp.credentialsDB
 
 import android.content.Context
-import com.example.finalprojectapp.crypto.Cryptography
+import com.example.finalprojectapp.DaggerApplicationComponent
+import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.Credentials
 
 class CredentialRepository private constructor(
@@ -24,16 +25,19 @@ class CredentialRepository private constructor(
 
     suspend fun publicGetCredentialsID(dataSet: Long): Credentials {
         val result=credentialsDao.privateGetCredentialsID(dataSet)
-        val cryptography= Cryptography(null)
-        return if (cryptography.localDecryptCredentials(result)==null)
+        val applicationComponent=DaggerApplicationComponent.create()
+        val cryptography:LocalCryptography=applicationComponent.getLocalLocalCryptography()
+        return if (cryptography.localDecryption(result)==null)
             Credentials()
         else
-            cryptography.localDecryptCredentials(result)!!
+            cryptography.localDecryption(result)!!
     }
 
     suspend fun publicInsertCredentials(credentials: Credentials):Long{
         return kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-            val cryptography = Cryptography(null)
+            val applicationComponent=DaggerApplicationComponent.create()
+            val cryptography:LocalCryptography=applicationComponent.getLocalLocalCryptography()
+            //val cryptography = LocalCryptography(null)
             var hashData = credentials.innerHashValue
             if (hashData == null) {
                 val message: ByteArray = (credentials.data + credentials.hint).toByteArray()
@@ -45,7 +49,7 @@ class CredentialRepository private constructor(
                 credentialsDao.privateInsertCredentials(credentials.copy(innerHashValue = hashData!!))
             else
                 credentialsDao.privateInsertCredentials(
-                    cryptography.localEncryptCredentials(
+                    cryptography.localEncrypt(
                         credentials.copy(
                             innerHashValue = hashData!!
                         )

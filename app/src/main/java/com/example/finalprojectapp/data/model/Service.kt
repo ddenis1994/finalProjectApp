@@ -11,6 +11,7 @@ import com.google.firebase.firestore.ServerTimestamp
 @Entity(tableName = "service_",indices = [Index(value = ["name"],unique = true)])
 data class Service (
     var name:String,
+    var hash:String,
     @Ignore
     @ServerTimestamp
     val time: Timestamp?,
@@ -24,12 +25,14 @@ data class Service (
 ){
     constructor(name: String,dataSets: List<DataSet>?) : this(
         name,
+        "",
         null,
         null,
         dataSets
     )
 
     constructor() : this(
+        "",
         "",
         null,
         null,

@@ -1,12 +1,7 @@
 package com.example.finalprojectapp
 
 import android.os.Bundle
-import android.view.View
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
-import com.example.finalprojectapp.crypto.Cryptography
-import com.example.finalprojectapp.data.model.Credentials
-import com.example.finalprojectapp.data.model.DataSet
 import com.google.firebase.firestore.FirebaseFirestore
 
 import com.google.firebase.firestore.FirebaseFirestoreSettings

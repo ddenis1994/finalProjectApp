@@ -3,8 +3,9 @@ package com.example.finalprojectapp.ui.credentials.inner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.finalprojectapp.DaggerApplicationComponent
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
-import com.example.finalprojectapp.crypto.Cryptography
+import com.example.finalprojectapp.crypto.LocalCryptography
 
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
@@ -33,8 +34,9 @@ class CredentialInnerViewModel internal constructor(
     }
 
     private fun decrepitCredentials(cre: Credentials): Credentials {
-        val cryptography = Cryptography(null)
-        return cryptography.decryptLocalSingleCredentials(cre)!!
+        val applicationComponent= DaggerApplicationComponent.create()
+        val cryptography:LocalCryptography=applicationComponent.getLocalLocalCryptography()
+        return cryptography.localDecryption(cre)!!
     }
 
     fun setData(data: List<LayoutCredentialView>) {
