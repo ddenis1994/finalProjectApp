@@ -18,9 +18,10 @@ package com.example.finalprojectapp.utils
 
 import android.content.Context
 import androidx.fragment.app.Fragment
-import com.example.finalprojectapp.credentialsDB.LocalDataBase
-import com.example.finalprojectapp.credentialsDB.NotificationRepository
-import com.example.finalprojectapp.credentialsDB.ServiceRepository
+import com.example.finalprojectapp.credentialsDB.*
+import com.example.finalprojectapp.crypto.HashBuilder
+import com.example.finalprojectapp.crypto.LocalCryptography
+
 import com.example.finalprojectapp.ui.credentials.CredentialsViewModelFactory
 import com.example.finalprojectapp.ui.credentials.inner.CredentialInnerViewModelFactory
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModelFactory
@@ -33,7 +34,12 @@ import com.example.finalprojectapp.ui.notifications.NotificationViewModelFactory
 object InjectorUtils {
 
     private fun getMainRepository(context: Context): ServiceRepository {
-        return ServiceRepository.getInstance(context)
+        return ServiceRepository(context, ServiceRepositoryLocal( LocalDataBase.getDatabase(context.applicationContext).serviceDao(),
+            DataSetRepository(CredentialRepository(LocalDataBase.getDatabase(context.applicationContext).credentialDAO(),
+                LocalCryptography(HashBuilder())
+            ),LocalDataBase.getDatabase(context.applicationContext).dataSetDAO(),LocalCryptography(HashBuilder()
+        ))))
+
     }
 
     private fun getNotificationRepository(context: Context): NotificationRepository {

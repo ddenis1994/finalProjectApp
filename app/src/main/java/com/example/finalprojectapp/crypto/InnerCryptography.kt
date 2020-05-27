@@ -3,9 +3,9 @@ package com.example.finalprojectapp.crypto
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
-import java.security.MessageDigest
+import javax.inject.Inject
 
-open class InnerCryptography {
+open class InnerCryptography @Inject constructor() {
     private val hashBuilder=HashBuilder()
 
 

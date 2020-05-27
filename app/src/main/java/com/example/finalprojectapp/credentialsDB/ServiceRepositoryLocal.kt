@@ -1,6 +1,5 @@
 package com.example.finalprojectapp.credentialsDB
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.room.Transaction
@@ -15,11 +14,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import javax.inject.Inject
 
-class ServiceRepositoryLocal(context: Context) {
-
-    private val dataSetRepository=DataSetRepository.getInstance(context)
-    private val serviceDAO=LocalDataBase.getDatabase(context).serviceDao()
+class ServiceRepositoryLocal @Inject constructor (
+    private val serviceDAO: ServiceDAO,
+    private val dataSetRepository: DataSetRepository
+) {
 
     @Transaction
     suspend fun nukeALl() {
@@ -27,16 +27,21 @@ class ServiceRepositoryLocal(context: Context) {
         serviceDAO.deleteAllService()
     }
 
-    suspend fun publicInsertService(service: Service):Pair<Long,List<Pair<Long,List<Long>>>> {
-        var result=serviceDAO.privateInsertService(service)
-        if (result==-1L){
-            result= privateGetServiceByName(service.name)!!.serviceId
+    suspend fun publicInsertService(service: Service): Pair<Long, List<Pair<Long, List<Long>>>> {
+        var result = serviceDAO.privateInsertService(service)
+        if (result == -1L) {
+            result = privateGetServiceByName(service.name)!!.serviceId
         }
-        val list= mutableListOf<Pair<Long,List<Long>>>()
+        val list = mutableListOf<Pair<Long, List<Long>>>()
         service.dataSets?.forEach {
-            dataSetRepository.publicInsertDataSet(it.copy(serviceId = result)).let { it1 -> list.add(it1) }
+            dataSetRepository.publicInsertDataSet(it.copy(serviceId = result))
+                .let { it1 ->
+                    if (it1 != null) {
+                        list.add(it1)
+                    }
+                }
         }
-        return Pair(result,list)
+        return Pair(result, list)
     }
 
     fun getAllData() =
@@ -46,44 +51,50 @@ class ServiceRepositoryLocal(context: Context) {
         serviceDAO.publicGetNumOfServices()
 
 
+    suspend fun findServiceAndDataSet(dataSetId: Long) =
+        serviceDAO.publicFindServiceAndDataSet(dataSetId)
 
-    suspend fun findServiceAndDataSet(dataSetId: Long) = serviceDAO.publicFindServiceAndDataSet(dataSetId)
-
-    fun deleteDataSet(dataSetId:Long){
+    fun deleteDataSet(dataSetId: Long) {
         dataSetRepository.deleteDataSetById(dataSetId)
     }
 
 
-    suspend fun publicGetServiceByName(string: String): Service?{
-        val service= privateGetServiceByName(string) ?: return null
+    suspend fun publicGetServiceByName(string: String): Service? {
+        val service = privateGetServiceByName(string) ?: return null
 
-        val list= mutableListOf<DataSet>()
+        val list = mutableListOf<DataSet>()
         service.dataSets?.forEach {
             list.add(dataSetRepository.getDataSetByID(it.dataSetId))
         }
         return service.copy(dataSets = list)
     }
 
-    suspend fun publicGetUnionServiceNameAndCredentialsHash(service: Service, oldCredentials: Credentials, newCredentials: Credentials): Int?{
-        val credentialsInner=dataSetRepository.publicInsertCredentials(oldCredentials)
-        val dataSet=serviceDAO.privateGetUnionServiceNameAndCredentialsHash(service.name,credentialsInner)
+    suspend fun publicGetUnionServiceNameAndCredentialsHash(
+        service: Service,
+        oldCredentials: Credentials,
+        newCredentials: Credentials
+    ): Int? {
+        val credentialsInner = dataSetRepository.publicInsertCredentials(oldCredentials)
+        val dataSet =
+            serviceDAO.privateGetUnionServiceNameAndCredentialsHash(service.name, credentialsInner)
         val json = Json(JsonConfiguration.Stable)
         val data = newCredentials.hint.let {
             Converters.Data(it)
         }
-        val hint=json.stringify(Converters.Data.serializer(), data)
-        val manyId= dataSet?.let {
-            dataSetRepository.privateGetUnionDataSetAndCredentialsHash(it,hint)
+        val hint = json.stringify(Converters.Data.serializer(), data)
+        val manyId = dataSet?.let {
+            dataSetRepository.privateGetUnionDataSetAndCredentialsHash(it, hint)
         }
-        val newCre=dataSetRepository.publicInsertCredentials(newCredentials)
-        return dataSet?.let { manyId?.let { it1 -> DataSetCredentialsManyToMany(it,newCre, it1) } }?.let { dataSetRepository.privateUpdateNewCre(it) }
+        val newCre = dataSetRepository.publicInsertCredentials(newCredentials)
+        return dataSet?.let { manyId?.let { it1 -> DataSetCredentialsManyToMany(it, newCre, it1) } }
+            ?.let { dataSetRepository.privateUpdateNewCre(it) }
     }
 
-    suspend fun publicGetAllServiceSuspand():List<Service>{
-        val service= serviceDAO.privateGetAllService()
-        val servicesList= mutableListOf<Service>()
-        service.forEach {ser->
-            val list= mutableListOf<DataSet>()
+    suspend fun publicGetAllServiceSuspand(): List<Service> {
+        val service = serviceDAO.privateGetAllService()
+        val servicesList = mutableListOf<Service>()
+        service.forEach { ser ->
+            val list = mutableListOf<DataSet>()
             ser.dataSets.forEach {
                 list.add(dataSetRepository.getDataSetByID(it.dataSetId))
             }
@@ -93,7 +104,7 @@ class ServiceRepositoryLocal(context: Context) {
         return servicesList
     }
 
-    private suspend fun privateGetServiceByName(string: String): Service?{
+    private suspend fun privateGetServiceByName(string: String): Service? {
         val service = serviceDAO.privateGetServiceByNameQuery(string) ?: return null
         val list = mutableListOf<DataSet>()
         service.dataSets.forEach {
@@ -102,11 +113,11 @@ class ServiceRepositoryLocal(context: Context) {
         return service.service.copy(dataSets = list)
     }
 
-    fun deleteFullService(service: String):LiveData<Boolean>{
+    fun deleteFullService(service: String): LiveData<Boolean> {
         return liveData {
             withContext(Dispatchers.IO) {
                 val serviceLocal = privateGetServiceByName(service)
-                if (serviceLocal==null) {
+                if (serviceLocal == null) {
                     emit(false)
                     return@withContext
                 }
@@ -118,8 +129,6 @@ class ServiceRepositoryLocal(context: Context) {
             }
         }
     }
-
-
 
 
     fun getDataSetById(dataSetId: Long): LiveData<List<LayoutDataSetView>> {
@@ -160,18 +169,6 @@ class ServiceRepositoryLocal(context: Context) {
         return dataSetRepository.getDataSetByID(dataSetId)
     }
 
-    companion object {
-        @Volatile
-        private var instance: ServiceRepositoryLocal? = null
-        fun getInstance(context: Context) =
-            instance ?: synchronized(this) {
-                instance
-                    ?: ServiceRepositoryLocal(
-                        context
-                    )
-                        .also { instance = it }
-            }
-    }
 
 
 }

@@ -13,26 +13,26 @@ import org.junit.jupiter.api.TestInstance
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 internal class CryptographyTest{
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val cre = LocalCryptography(context)
+
     private val credentials = Credentials(
         data = "test",
         hint = listOf()
     )
+
+    private val hashBuilder= HashBuilder()
+
+    private val cre = LocalCryptography(hashBuilder)
+
     private val dataSet= DataSet().copy(credentials = listOf(credentials))
     private val service=Service().copy(dataSets = listOf(dataSet))
-
-
-
-
-
-
-
-
 
 
     @DisplayName("test encrypt Credentials")
     @Test
     fun testCredentialEncrypt() = runBlocking {
+
+
+        hashBuilder.makeHash(Credentials())
         val result=cre.localEncrypt(credentials.copy())
         if (result != null) {
             assertNotEquals(credentials.data,result.data)

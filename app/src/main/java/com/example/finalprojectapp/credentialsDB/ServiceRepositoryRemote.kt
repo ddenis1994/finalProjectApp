@@ -14,7 +14,7 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class ServiceRepositoryRemote(private val context: Context) {
+internal class ServiceRepositoryRemote(private val context: Context) {
 
     private val user = FirebaseAuth.getInstance().currentUser!!
     private val db = FirebaseFirestore.getInstance()

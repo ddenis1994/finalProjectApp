@@ -9,19 +9,16 @@ import com.example.finalprojectapp.credentialsDB.LocalDataBase
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.data.autoFilleService.ClientViewMetadataBuilder
-import com.example.finalprojectapp.data.model.Notification
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
 
 class AutoFillService : AutofillService() {
 
 
-    private lateinit var mainRepository: ServiceRepository
+    @Inject lateinit var mainRepository: ServiceRepository
     private lateinit var notificationRepository: NotificationRepository
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var clientViewMetadata: List<AutofillFieldMetadata>
@@ -33,7 +30,6 @@ class AutoFillService : AutofillService() {
     override fun onCreate() {
         super.onCreate()
         coroutineScope = CoroutineScope(Job())
-        mainRepository = ServiceRepository.getInstance(applicationContext)
         notificationRepository = NotificationRepository.getInstance(
             LocalDataBase.getDatabase(this.applicationContext).notificationDao()
         )

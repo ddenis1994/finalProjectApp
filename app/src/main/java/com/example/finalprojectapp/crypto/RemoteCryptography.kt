@@ -7,7 +7,6 @@ import androidx.security.crypto.MasterKeys
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
-import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.*
 import javax.crypto.Cipher
@@ -15,8 +14,9 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
+import javax.inject.Inject
 
-class RemoteCryptography(context: Context?):InnerCryptography() {
+class RemoteCryptography @Inject constructor(context: Context?) : InnerCryptography() {
 
     private val password: String = "password"
     private val hashBuilder = HashBuilder()
@@ -53,22 +53,24 @@ class RemoteCryptography(context: Context?):InnerCryptography() {
         val secretBytes: ByteArray = keyFactory.generateSecret(keySpec).encoded
         val key = SecretKeySpec(secretBytes, "AES")
         val ivSpec = IvParameterSpec(massageDecoder.decode(new.iv))
-        cipher.init(Cipher.DECRYPT_MODE,key,ivSpec)
+        cipher.init(Cipher.DECRYPT_MODE, key, ivSpec)
         val tempData =
             cipher.doFinal(massageDecoder.decode(new.data.toByteArray(Charsets.UTF_8)))
                 .toString(Charsets.UTF_8)
         return new.copy(
             data = tempData,
             iv = null,
-            salt = null)
+            salt = null
+        )
     }
-
 
 
     private fun remoteEncryptCredential(credentials: Credentials?): Credentials? {
         var newCredentials: Credentials = credentials ?: return null
         if (credentials.innerHashValue.isNullOrEmpty())
             newCredentials = hashBuilder.makeHash(credentials) as Credentials
+        if (!newCredentials.iv.isNullOrEmpty())
+            return newCredentials
         val salt = ByteArray(16)
         SecureRandom().nextBytes(salt)
         val iv = ByteArray(16)
@@ -78,14 +80,18 @@ class RemoteCryptography(context: Context?):InnerCryptography() {
         val key = SecretKeySpec(secretBytes, "AES")
         cipher.init(Cipher.ENCRYPT_MODE, key, IvParameterSpec(iv))
         return newCredentials.copy(
-            data = massageEncoder.encodeToString(cipher.doFinal(newCredentials.data.toByteArray(Charsets.UTF_8))),
+            data = massageEncoder.encodeToString(
+                cipher.doFinal(
+                    newCredentials.data.toByteArray(
+                        Charsets.UTF_8
+                    )
+                )
+            ),
             iv = massageEncoder.encodeToString(iv),
             salt = massageEncoder.encodeToString(salt)
         )
 
     }
-
-
 
 
     @Suppress("UNCHECKED_CAST")
@@ -102,7 +108,7 @@ class RemoteCryptography(context: Context?):InnerCryptography() {
     @Suppress("UNCHECKED_CAST")
     fun <T> remoteDecryption(target: T): T? {
         return when (target) {
-            is Credentials ->  remoteDecryptSingle(target) as T
+            is Credentials -> remoteDecryptSingle(target) as T
             is DataSet -> this.decryption(target) as T
             is Service -> this.decryption(target) as T
             else -> null

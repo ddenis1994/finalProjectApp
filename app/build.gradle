@@ -130,6 +130,8 @@ dependencies {
     testImplementation 'androidx.test:core:1.2.0'
     // Optional -- Mockito framework
     testImplementation 'org.mockito:mockito-core:2.25.0'
+    testImplementation "io.mockk:mockk:1.10.0"
+    androidTestImplementation  "io.mockk:mockk:1.10.0"
 
     // (Required) Writing and executing Unit Tests on the JUnit Platform
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.1"

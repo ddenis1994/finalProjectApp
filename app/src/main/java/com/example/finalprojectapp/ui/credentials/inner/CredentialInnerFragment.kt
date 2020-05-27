@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.fragment_inner_credential.view.*
 import java.util.*
 
 
-class CredentialInnerFragment : Fragment() {
+class CredentialInnerFragment  : Fragment() {
     private val requestCodeDecryptCredential = 3000
     private val requestCodeDeleteCredential = 3100
     private val requestCodeCopyCredential = 3010

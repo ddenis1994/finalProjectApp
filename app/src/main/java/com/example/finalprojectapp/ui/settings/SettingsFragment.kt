@@ -56,7 +56,7 @@ class SettingsFragment : Fragment() {
         }
         mAutofillManager = getSystemService(requireContext(), AutofillManager::class.java)!!
         setting=SingleEncryptedSharedPreferences().getSharedPreference(this.requireContext())
-        serviceRepository= ServiceRepository.getInstance(requireContext())
+        //serviceRepository= ServiceRepository.getInstance(requireContext())
         notificationRepository=NotificationRepository.getInstance(LocalDataBase.getDatabase(this.requireContext()).notificationDao())
     }
 

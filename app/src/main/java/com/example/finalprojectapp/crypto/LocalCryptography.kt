@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 class LocalCryptography @Inject constructor(//private var instance: SharedPreferences? = null
     private val hashBuilder: HashBuilder
-) :InnerCryptography() {
+) : InnerCryptography() {
 
     private val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
     private val massageEncoder = Base64.getEncoder()
@@ -46,15 +46,12 @@ class LocalCryptography @Inject constructor(//private var instance: SharedPrefer
     }
 
 
-
-
-
-
     private fun localEncryptCredentials(credentials: Credentials?): Credentials? {
         var newCredentials: Credentials = credentials ?: return null
-
         if (credentials.innerHashValue.isNullOrEmpty())
             newCredentials = hashBuilder.makeHash(credentials) as Credentials
+        if (!newCredentials.iv.isNullOrEmpty())
+            return newCredentials
 
         cipher.init(Cipher.ENCRYPT_MODE, getKey())
         val encryptedData = cipher.doFinal(newCredentials.data.toByteArray())
@@ -63,9 +60,6 @@ class LocalCryptography @Inject constructor(//private var instance: SharedPrefer
             iv = massageEncoder.encodeToString(cipher.iv)
         )
     }
-
-
-
 
 
     @Suppress("UNCHECKED_CAST")

@@ -13,12 +13,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ServiceRepository private constructor(
-    context: Context
+class ServiceRepository @Inject constructor(
+    context: Context,
+    private val serviceRepositoryLocal: ServiceRepositoryLocal
 ) {
 
-    private val serviceRepositoryLocal: ServiceRepositoryLocal = ServiceRepositoryLocal(context)
     private val serviceRepositoryRemote: ServiceRepositoryRemote = ServiceRepositoryRemote(context)
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
@@ -31,6 +32,7 @@ class ServiceRepository private constructor(
         callback: SaveCallback
     ) {
         scope.launch {
+            val toInsertService=
             serviceRepositoryLocal.publicInsertService(service)
             serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(service, callback)
         }
@@ -112,16 +114,5 @@ class ServiceRepository private constructor(
         serviceRepositoryLocal.publicInsertArrayCredentials(listCredentials)
 
 
-    companion object {
-        @Volatile
-        private var instance: ServiceRepository? = null
-        fun getInstance(context: Context) =
-            instance ?: synchronized(this) {
-                instance
-                    ?: ServiceRepository(
-                        context
-                    )
-                        .also { instance = it }
-            }
-    }
+
 }
