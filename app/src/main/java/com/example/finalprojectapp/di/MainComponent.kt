@@ -2,6 +2,7 @@ package com.example.finalprojectapp.di
 
 import android.app.Application
 import android.content.Context
+import android.service.autofill.AutofillService
 import com.example.finalprojectapp.MainActivity
 
 import com.example.finalprojectapp.di.modules.MainDaoModule
@@ -18,6 +19,7 @@ interface MainComponent {
 
     fun inject(mainActivity: MainActivity)
     fun inject(credentialInnerFragment: CredentialInnerFragment)
+    fun inject(credentialInnerFragment: AutofillService)
 
 
 

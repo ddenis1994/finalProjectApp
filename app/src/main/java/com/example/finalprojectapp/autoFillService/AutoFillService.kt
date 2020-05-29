@@ -3,6 +3,7 @@ package com.example.finalprojectapp.autoFillService
 import android.app.assist.AssistStructure
 import android.os.CancellationSignal
 import android.service.autofill.*
+import com.example.finalprojectapp.MainApplication
 import com.example.finalprojectapp.autoFillService.adapters.DataSetAdapter
 import com.example.finalprojectapp.autoFillService.adapters.ResponseAdapter
 import com.example.finalprojectapp.credentialsDB.LocalDataBase
@@ -33,6 +34,8 @@ class AutoFillService : AutofillService() {
         notificationRepository = NotificationRepository.getInstance(
             LocalDataBase.getDatabase(this.applicationContext).notificationDao()
         )
+        //Todo fix main reposotory injection
+        (application as MainApplication).appComponent.inject(this)
 
     }
 
