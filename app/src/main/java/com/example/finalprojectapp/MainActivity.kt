@@ -3,8 +3,7 @@ package com.example.finalprojectapp
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.finalprojectapp.credentialsDB.ServiceRepositoryLocal
-import com.example.finalprojectapp.dagger2.DaggerMainComponent
-import com.example.finalprojectapp.dagger2.MainComponent
+import com.example.finalprojectapp.di.MainComponent
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import javax.inject.Inject

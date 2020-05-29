@@ -12,7 +12,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,9 +25,10 @@ import com.example.finalprojectapp.utils.InjectorUtils
 import kotlinx.android.synthetic.main.fragment_inner_credential.*
 import kotlinx.android.synthetic.main.fragment_inner_credential.view.*
 import java.util.*
+import javax.inject.Inject
 
 
-class CredentialInnerFragment  : Fragment() {
+class CredentialInnerFragment : Fragment() {
     private val requestCodeDecryptCredential = 3000
     private val requestCodeDeleteCredential = 3100
     private val requestCodeCopyCredential = 3010
@@ -44,10 +47,19 @@ class CredentialInnerFragment  : Fragment() {
     }
 
     private val args: CredentialInnerFragmentArgs by navArgs()
-    private val viewModel: CredentialInnerViewModel by activityViewModels {
-        InjectorUtils.provideCredentialInnerViewModelFactory(this)
-    }
 
+    @Inject
+    lateinit var viewModel: CredentialInnerViewModel
+
+
+//    private val viewModel: CredentialInnerViewModel by activityViewModels {
+//        InjectorUtils.provideCredentialInnerViewModelFactory(this)
+//    }
+
+    override fun onAttach(context: Context) {
+        (requireActivity().application as MainApplication).appComponent.inject(this)
+        super.onAttach(context)
+    }
 
     @ExperimentalStdlibApi
     override fun onCreateView(
@@ -112,13 +124,15 @@ class CredentialInnerFragment  : Fragment() {
 
                 }
                 requestCodeCopyCredential -> {
-                    val myClipboard =requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val myClip = ClipData.newPlainText("user name", viewModel.data.value?.get(target)?.data)
+                    val myClipboard =
+                        requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val myClip =
+                        ClipData.newPlainText("user name", viewModel.data.value?.get(target)?.data)
                     myClipboard.setPrimaryClip(myClip)
                     Toast.makeText(requireContext(), "copy user", Toast.LENGTH_SHORT).show()
                 }
-                requestCodeDeleteCredential ->{
-                    viewModel.deleteCredential(viewModel.data.value?.get(target)?.id,dataSetId)
+                requestCodeDeleteCredential -> {
+                    viewModel.deleteCredential(viewModel.data.value?.get(target)?.id, dataSetId)
                 }
             }
 

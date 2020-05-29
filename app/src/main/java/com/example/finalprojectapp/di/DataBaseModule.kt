@@ -1,0 +1,40 @@
+package com.example.finalprojectapp.di
+
+import android.content.Context
+import com.example.finalprojectapp.credentialsDB.CredentialDAO
+import com.example.finalprojectapp.credentialsDB.DataSetDAO
+import com.example.finalprojectapp.credentialsDB.LocalDataBase
+import com.example.finalprojectapp.credentialsDB.ServiceDAO
+import dagger.Module
+import dagger.Provides
+import javax.inject.Singleton
+
+@Module
+class DataBaseModule {
+
+
+    @Singleton
+    @Provides
+    fun provideDataBase(context: Context): LocalDataBase{
+        return LocalDataBase.getDatabase(context)
+    }
+
+
+    @Provides
+    fun credentialsDao(dataBase: LocalDataBase): CredentialDAO {
+        return dataBase.credentialDAO()
+    }
+
+
+    @Provides
+    fun dataSetDao(dataBase: LocalDataBase): DataSetDAO {
+        return dataBase.dataSetDAO()
+    }
+
+
+    @Provides
+    fun serviceDao(dataBase: LocalDataBase): ServiceDAO {
+        return dataBase.serviceDao()
+    }
+
+}
