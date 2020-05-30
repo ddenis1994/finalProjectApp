@@ -51,7 +51,7 @@ interface DataSetDAO {
     @Query("SELECT * FROM dataSetCredentialsManyToMany Where dataSetId =:num ")
     suspend fun privateGetDataSetToCredentials(num:Long): List<DataSetCredentialsManyToMany>
 
-    @Query("SELECT * FROM dataSetCredentialsManyToMany  Where :dataSetId like DataSetCredentialsManyToManyID")
+    @Query("SELECT * FROM dataSetCredentialsManyToMany  Where :dataSetId like dataSetId")
     fun findAllRelationshipToDataSet(vararg dataSetId:Long):List<DataSetCredentialsManyToMany>
 
     @Delete
@@ -78,5 +78,8 @@ interface DataSetDAO {
 
     @Query("SELECT * FROM dataSetCredentialsManyToMany  Where credentialsId=:credentialID")
     fun privateGetRelationshipCredential(credentialID: Long): List<DataSetCredentialsManyToMany>
+
+    @Query("SELECT * FROM dataSet_")
+    fun publicGetAllDataSet():List<DataSet>
 
 }

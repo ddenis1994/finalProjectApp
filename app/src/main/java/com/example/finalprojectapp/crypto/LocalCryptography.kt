@@ -11,6 +11,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.inject.Inject
 
+@Suppress("UNCHECKED_CAST")
 class LocalCryptography @Inject constructor(//private var instance: SharedPreferences? = null
     private val hashBuilder: HashBuilder
 ) : InnerCryptography() {
@@ -57,7 +58,7 @@ class LocalCryptography @Inject constructor(//private var instance: SharedPrefer
             iv = massageEncoder.encodeToString(cipher.iv)
         )
     }
-    @Suppress("UNCHECKED_CAST")
+
     override fun <T> encrypt(target: T): T? {
         return when (target) {
             is Credentials -> localEncryptCredentials(target) as T
@@ -86,17 +87,16 @@ class LocalCryptography @Inject constructor(//private var instance: SharedPrefer
         )
     }
 
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T> localDecryption(target: T): T? {
-
+    override fun <T> decryption(target: T): T? {
         return when (target) {
             is Credentials -> localDecryptCredential(target) as T
-            is DataSet -> this.decryption(target) as T
-            is Service -> this.decryption(target) as T
+            is DataSet -> decryptDataSet(target) as T
+            is Service -> decryptService(target) as T
             else -> null
         }
     }
+
+
 
 
 }

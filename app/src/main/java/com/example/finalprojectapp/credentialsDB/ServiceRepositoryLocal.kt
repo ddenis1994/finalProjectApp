@@ -1,7 +1,7 @@
 package com.example.finalprojectapp.credentialsDB
 
+import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
 import androidx.room.Transaction
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.Credentials
@@ -31,24 +31,30 @@ class ServiceRepositoryLocal @Inject constructor(
     }
 
     suspend fun publicInsertService(service: Service): Pair<Long?, List<Pair<Long, List<Long>>>?> {
-        val localService: Service =
+        var localService: Service =
             privateGetServiceByName(service.name) ?: Service().copy(serviceId = -1L)
-        var target=service
-        if (localService.serviceId!=-1L) {
+        var target = service
+        if (localService.serviceId != -1L) {
+            localService =
+                localCryptography.decryption(localService) ?: Service().copy(serviceId = -1L)
             val newDataSetList = mutableListOf<DataSet>()
             service.dataSets?.let { newDataSetList.addAll(it) }
             localService.dataSets?.let { newDataSetList.addAll(it) }
             target = target.copy(dataSets = newDataSetList)
-            deleteFullService(localService.name)
+            deleteFullServiceByID(localService)
+            val data=dataSetRepository.getAllData()
+            val test=serviceDAO.privateGetAllService()
+            Log.d("etst", "publicInsertService: ")
+
+
         }
         target = localCryptography.encrypt(target)!!
         if (localService.hash == target.hash) return Pair(localService.serviceId, null)
 
 
-
         val result = target.let { serviceDAO.privateInsertService(it) }
         val list = mutableListOf<Pair<Long, List<Long>>>()
-        service.dataSets?.forEach {
+        target.dataSets?.forEach {
             dataSetRepository.publicInsertDataSet(it.copy(serviceId = result))
                 .let { it1 ->
                     if (it1 != null) {
@@ -58,6 +64,7 @@ class ServiceRepositoryLocal @Inject constructor(
         }
         return Pair(result, list)
     }
+
 
     fun getAllData() =
         serviceDAO.publicGetAllServiceName()
@@ -128,20 +135,15 @@ class ServiceRepositoryLocal @Inject constructor(
         return service.service.copy(dataSets = list)
     }
 
-    fun deleteFullService(service: String): LiveData<Boolean> {
-        return liveData {
+    private suspend fun deleteFullServiceByID(service: Service) {
+
             withContext(Dispatchers.IO) {
-                val serviceLocal = privateGetServiceByName(service)
-                if (serviceLocal == null) {
-                    emit(false)
-                    return@withContext
-                }
-                serviceLocal.dataSets?.forEach {
+                service.dataSets?.forEach {
                     dataSetRepository.privateDeleteDataSet(it)
                 }
-                serviceDAO.privateDeleteService(serviceLocal)
-                emit(true)
-            }
+                serviceDAO.privateDeleteService(service)
+
+
         }
     }
 

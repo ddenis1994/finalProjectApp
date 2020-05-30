@@ -22,7 +22,7 @@ class ServiceRepositoryRemote @Inject constructor(
     private val remoteCryptography: RemoteCryptography
 ) {
 
-    private val user = FirebaseAuth.getInstance().currentUser!!
+    private val user = FirebaseAuth.getInstance().currentUser
     private val db = FirebaseFirestore.getInstance()
 
 
@@ -31,29 +31,31 @@ class ServiceRepositoryRemote @Inject constructor(
         callback: SaveCallback
     ) {
         val toUpload = remoteCryptography.encrypt(service)
-        db.collection("users").document(user.uid)
-            .collection("services").document(service.name)
-            .set(service.copy(dataSets = null))
-            .addOnSuccessListener {
-                toUpload?.dataSets?.forEach {dataSet->
-                    dataSet.hashData?.let { dataSetHash ->
-                        db.collection("users").document(user.uid)
-                            .collection("services").document(service.name)
-                            .collection("dataSets").document(dataSetHash)
-                            .set(dataSet)
-                            .addOnSuccessListener {
-                                callback.onSuccess()
+        if (user != null) {
+            db.collection("users").document(user.uid)
+                .collection("services").document(service.name)
+                .set(service.copy(dataSets = null))
+                .addOnSuccessListener {
+                    toUpload?.dataSets?.forEach {dataSet->
+                        dataSet.hashData?.let { dataSetHash ->
+                            db.collection("users").document(user.uid)
+                                .collection("services").document(service.name)
+                                .collection("dataSets").document(dataSetHash)
+                                .set(dataSet)
+                                .addOnSuccessListener {
+                                    callback.onSuccess()
 
-                                notificationRepository.insert(
-                                    Notification(
-                                        0, "Inserted Credentials", service.name,
-                                        DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+                                    notificationRepository.insert(
+                                        Notification(
+                                            0, "Inserted Credentials", service.name,
+                                            DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+                                        )
                                     )
-                                )
-                            }
+                                }
+                        }
                     }
                 }
-            }
+        }
     }
 
 
@@ -67,10 +69,12 @@ private suspend fun deleteRemoteCredential(
         "credentials" to dataSet.credentials!!
     )
     dataSet.hashData?.let {
-        db.collection("users").document(user.uid)
-            .collection("services").document(serviceName)
-            .collection("dataSets").document(it)
-            .update(updates)
+        user?.uid?.let { it1 ->
+            db.collection("users").document(it1)
+                .collection("services").document(serviceName)
+                .collection("dataSets").document(it)
+                .update(updates)
+        }
 
     }
 
@@ -81,21 +85,23 @@ fun deleteFromRemote(
     serviceName: String,
     dataSet: DataSet
 ) {
-    dataSet.hashData?.let {
-        db.collection("users").document(user.uid)
-            .collection("services").document(serviceName)
-            .collection("dataSets").document(it)
-            .delete()
-            .addOnSuccessListener {
-                notificationRepository.insert(
-                    Notification(
-                        1,
-                        "Delete DataSet",
-                        serviceName,
-                        DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+    if (user != null) {
+        dataSet.hashData?.let {
+            db.collection("users").document(user.uid)
+                .collection("services").document(serviceName)
+                .collection("dataSets").document(it)
+                .delete()
+                .addOnSuccessListener {
+                    notificationRepository.insert(
+                        Notification(
+                            1,
+                            "Delete DataSet",
+                            serviceName,
+                            DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+                        )
                     )
-                )
-            }
+                }
+        }
     }
 
 }
@@ -103,23 +109,25 @@ fun deleteFromRemote(
 @ExperimentalCoroutinesApi
 private fun setOnUpdate() {
 
-    db.collection("users").document(user.uid)
-        .collection("services").get()
-        .addOnSuccessListener { result ->
-            coroutineScope.launch {
-                for (dc in result.documents) {
-                    val service = dc.toObject<Service>() ?: continue
-                    coroutineScope.launch {
-                        val target = remoteCryptography.decryption(service)
-                        if (target != null) {
-                            serviceRepositoryLocal.publicInsertService(target)
+    if (user != null) {
+        db.collection("users").document(user.uid)
+            .collection("services").get()
+            .addOnSuccessListener { result ->
+                coroutineScope.launch {
+                    for (dc in result.documents) {
+                        val service = dc.toObject<Service>() ?: continue
+                        coroutineScope.launch {
+                            val target = remoteCryptography.decryption(service)
+                            if (target != null) {
+                                serviceRepositoryLocal.publicInsertService(target)
+                            }
                         }
+
                     }
 
                 }
-
             }
-        }
+    }
 }
 
 

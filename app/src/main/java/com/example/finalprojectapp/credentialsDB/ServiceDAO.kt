@@ -50,6 +50,9 @@ interface ServiceDAO {
     @Delete
     fun privateDeleteService(vararg service: Service)
 
+    @Query("delete from service_ where serviceId=:id")
+    suspend fun privateDeleteServiceByID(id:Long)
+
     @Transaction
     @Query("Select * from service_")
     fun privateGetService():List<ServiceToDataSet>

@@ -38,7 +38,7 @@ open class InnerCryptography @Inject constructor() {
 
 
 
-    private fun decryptDataSet(dataSet: DataSet?): DataSet? {
+    internal  fun decryptDataSet(dataSet: DataSet?): DataSet? {
         val newDataSet: DataSet = dataSet?.copy() ?: return null
         val newCredentials = mutableListOf<Credentials>()
         newDataSet.credentials?.forEach { cre ->
@@ -48,7 +48,7 @@ open class InnerCryptography @Inject constructor() {
         return newDataSet.copy(credentials = newCredentials)
     }
 
-    private fun decryptService(target: Service?): Service? {
+    internal  fun decryptService(target: Service?): Service? {
         val new = target?.copy() ?: return null
 
         val newDecryptList = mutableListOf<DataSet>()
@@ -73,7 +73,7 @@ open class InnerCryptography @Inject constructor() {
 
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> decryption(target: T): T? {
+    open fun <T> decryption(target: T): T? {
         return when (target) {
             is DataSet -> decryptDataSet(target) as T
             is Service -> decryptService(target) as T

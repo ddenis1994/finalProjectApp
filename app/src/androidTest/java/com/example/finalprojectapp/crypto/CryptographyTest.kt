@@ -48,7 +48,7 @@ internal class CryptographyTest{
     @DisplayName("test decrypt Credentials")
     @Test
     fun testCredentialDecrypt() = runBlocking {
-        val result=cre.localDecryption(cre.encrypt(credentials.copy()))
+        val result=cre.decryption(cre.encrypt(credentials.copy()))
         assertNotNull(result)
         assertEquals(credentials.data,result!!.data)
         assertFalse(result.innerHashValue.isNullOrEmpty())
@@ -71,7 +71,7 @@ internal class CryptographyTest{
     @DisplayName("test local decryption data set")
     @Test
     fun testDataSetDecryption() = runBlocking {
-        val result=cre.localDecryption(cre.encrypt(dataSet.copy()))
+        val result=cre.decryption(cre.encrypt(dataSet.copy()))
         assertNotNull(result)
         assertNotNull(result!!.credentials)
         for ( i:Int in result.credentials!!.indices){

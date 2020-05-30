@@ -52,6 +52,9 @@ class DataSetRepository @Inject constructor(
         rel.forEach {
             dataSetDAO.deleteDataSetRelationship(it)
         }
+        dataSet.credentials?.forEach {
+            credentialRepository.deleteCredential(it)
+        }
         dataSetDAO.deleteDataSet(dataSet)
     }
 
@@ -140,6 +143,10 @@ class DataSetRepository @Inject constructor(
 
     suspend fun publicInsertArrayCredentials(listCredentials: List<Credentials>): List<Long> {
         return credentialRepository.publicInsertArrayCredentials(listCredentials)
+    }
+
+    fun getAllData(): List<DataSet> {
+        return dataSetDAO.publicGetAllDataSet()
     }
 
 

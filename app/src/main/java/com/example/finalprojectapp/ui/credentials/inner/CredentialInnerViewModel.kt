@@ -36,7 +36,7 @@ class CredentialInnerViewModel @Inject constructor(
     }
 
     private fun decrepitCredentials(cre: Credentials): Credentials {
-        return cryptography.localDecryption(cre)!!
+        return cryptography.decryption(cre)!!
     }
 
     fun setData(data: List<LayoutCredentialView>) {

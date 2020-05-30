@@ -39,10 +39,10 @@ class CredentialRepository @Inject constructor(
 
     suspend fun publicGetCredentialsID(dataSet: Long): Credentials? {
         val result = credentialsDao.privateGetCredentialsID(dataSet)
-        return if (localCryptography.localDecryption(result) == null)
+        return if (localCryptography.decryption(result) == null)
             null
         else
-            localCryptography.localDecryption(result)!!
+            localCryptography.decryption(result)!!
     }
 
 
