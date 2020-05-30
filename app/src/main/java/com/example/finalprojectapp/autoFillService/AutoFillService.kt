@@ -6,12 +6,11 @@ import android.service.autofill.*
 import com.example.finalprojectapp.MainApplication
 import com.example.finalprojectapp.autoFillService.adapters.DataSetAdapter
 import com.example.finalprojectapp.autoFillService.adapters.ResponseAdapter
-import com.example.finalprojectapp.credentialsDB.LocalDataBase
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
+import com.example.finalprojectapp.credentialsDB.ServiceRepositoryLocal
 import com.example.finalprojectapp.data.autoFilleService.ClientViewMetadataBuilder
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,9 +18,10 @@ import javax.inject.Inject
 class AutoFillService : AutofillService() {
 
 
-    @Inject lateinit var mainRepository: ServiceRepository
-    private lateinit var notificationRepository: NotificationRepository
-    private lateinit var coroutineScope: CoroutineScope
+    private lateinit var mainRepository: ServiceRepository
+    @Inject lateinit var mainRepositoryLocal: ServiceRepositoryLocal
+    @Inject lateinit var notificationRepository: NotificationRepository
+    @Inject lateinit var coroutineScope: CoroutineScope
     private lateinit var clientViewMetadata: List<AutofillFieldMetadata>
     private lateinit var dataSetAdapter: DataSetAdapter
     private lateinit var responseAdapter: ResponseAdapter
@@ -29,13 +29,12 @@ class AutoFillService : AutofillService() {
 
 
     override fun onCreate() {
+        (applicationContext as MainApplication).appComponent.autoFillServiceComponent().create().inject(this)
         super.onCreate()
-        coroutineScope = CoroutineScope(Job())
-        notificationRepository = NotificationRepository.getInstance(
-            LocalDataBase.getDatabase(this.applicationContext).notificationDao()
-        )
-        //Todo fix main reposotory injection
-        (application as MainApplication).appComponent.inject(this)
+
+
+        mainRepository= ServiceRepository(this, mainRepositoryLocal)
+
 
     }
 
@@ -51,6 +50,7 @@ class AutoFillService : AutofillService() {
             ClientViewMetadataBuilder(
                 newParserV2
             ).buildClientViewMetadata()
+
         dataSetAdapter = DataSetAdapter(
             mainRepository,
             structure.activityComponent.packageName,

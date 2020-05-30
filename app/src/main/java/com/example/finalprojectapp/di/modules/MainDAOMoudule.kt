@@ -12,7 +12,7 @@ class MainDaoModule {
     @Provides
     @Inject
     fun context(context: Application): Context {
-        return context
+        return context.applicationContext
     }
 
 

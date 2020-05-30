@@ -5,13 +5,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
-class NotificationRepository(
-    private val notificationDAO: NotificationDAO
+class NotificationRepository @Inject constructor(
+    private val notificationDAO: NotificationDAO,
+    private val coroutineScope:CoroutineScope
 ) {
     private val db=Firebase.firestore
     private val user = FirebaseAuth.getInstance().currentUser
-    private val coroutineScope= CoroutineScope(Job())
+
 
     val allNotification = notificationDAO.getAllNotification()
 
@@ -51,11 +53,12 @@ class NotificationRepository(
     companion object {
         // For Singleton instantiation
         @Volatile private var instance: NotificationRepository? = null
-        fun getInstance(notificationDAO: NotificationDAO) =
+        fun getInstance(notificationDAO: NotificationDAO,coroutineScope:CoroutineScope) =
             instance ?: synchronized(this) {
                 instance
                     ?: NotificationRepository(
-                        notificationDAO
+                        notificationDAO,
+                        coroutineScope
                     )
                         .also { instance = it }
             }

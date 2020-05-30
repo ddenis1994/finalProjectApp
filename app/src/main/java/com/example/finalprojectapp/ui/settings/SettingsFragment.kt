@@ -26,6 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_settings.view.*
 import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -57,7 +58,8 @@ class SettingsFragment : Fragment() {
         mAutofillManager = getSystemService(requireContext(), AutofillManager::class.java)!!
         setting=SingleEncryptedSharedPreferences().getSharedPreference(this.requireContext())
         //serviceRepository= ServiceRepository.getInstance(requireContext())
-        notificationRepository=NotificationRepository.getInstance(LocalDataBase.getDatabase(this.requireContext()).notificationDao())
+        notificationRepository=NotificationRepository.getInstance(LocalDataBase.getDatabase(this.requireContext()).notificationDao(),
+            this.lifecycleScope)
     }
 
     override fun onCreateView(

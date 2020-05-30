@@ -27,6 +27,8 @@ import com.example.finalprojectapp.ui.credentials.CredentialsViewModelFactory
 import com.example.finalprojectapp.ui.credentials.inner.CredentialInnerViewModelFactory
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModelFactory
 import com.example.finalprojectapp.ui.notifications.NotificationViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 
 
 /**
@@ -44,8 +46,11 @@ object InjectorUtils {
     }
 
     private fun getNotificationRepository(context: Context): NotificationRepository {
+
+        //TODO fix injection
         return NotificationRepository.getInstance(
-            LocalDataBase.getDatabase(context.applicationContext).notificationDao()
+            LocalDataBase.getDatabase(context.applicationContext).notificationDao(), CoroutineScope(
+                Job())
         )
     }
 

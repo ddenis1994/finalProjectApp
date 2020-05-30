@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.service.autofill.AutofillService
 import com.example.finalprojectapp.MainActivity
+import com.example.finalprojectapp.autoFillService.di.AutoFIllServiceComponent
+import com.example.finalprojectapp.autoFillService.di.AutoFillServiceModule
 
 import com.example.finalprojectapp.di.modules.MainDaoModule
 import com.example.finalprojectapp.ui.credentials.inner.CredentialInnerFragment
@@ -13,13 +15,15 @@ import dagger.Component
 import dagger.Module
 import javax.inject.Singleton
 
+
+@Component(modules = [MainDaoModule::class, DataBaseModule::class,SubComponentsModule::class])
 @Singleton
-@Component(modules = [MainDaoModule::class, DataBaseModule::class,SubcomponentsModule::class])
 interface MainComponent {
 
     fun inject(mainActivity: MainActivity)
     fun inject(credentialInnerFragment: CredentialInnerFragment)
-    fun inject(credentialInnerFragment: AutofillService)
+
+    fun autoFillServiceComponent(): AutoFIllServiceComponent.Factory
 
 
 
@@ -37,5 +41,5 @@ interface MainComponent {
     val context:Context
 }
 
-@Module(subcomponents = [CredentialInnerComponent::class])
-object SubcomponentsModule
+@Module(subcomponents = [CredentialInnerComponent::class,AutoFIllServiceComponent::class])
+object SubComponentsModule

@@ -1,15 +1,13 @@
 package com.example.finalprojectapp.di
 
 import android.content.Context
-import com.example.finalprojectapp.credentialsDB.CredentialDAO
-import com.example.finalprojectapp.credentialsDB.DataSetDAO
-import com.example.finalprojectapp.credentialsDB.LocalDataBase
-import com.example.finalprojectapp.credentialsDB.ServiceDAO
+import com.example.finalprojectapp.credentialsDB.*
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 @Module
+
 class DataBaseModule {
 
 
@@ -35,6 +33,11 @@ class DataBaseModule {
     @Provides
     fun serviceDao(dataBase: LocalDataBase): ServiceDAO {
         return dataBase.serviceDao()
+    }
+
+    @Provides
+    fun providerNotificationDAO(dataBase: LocalDataBase): NotificationDAO {
+        return dataBase.notificationDao()
     }
 
 }
