@@ -2,8 +2,9 @@ package com.example.finalprojectapp.ui.notifications
 
 import androidx.lifecycle.ViewModel
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
+import javax.inject.Inject
 
-class NotificationsViewModel(
+class NotificationsViewModel @Inject constructor(
      private val notificationRepository: NotificationRepository
 ) : ViewModel() {
 

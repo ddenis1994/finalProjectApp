@@ -4,8 +4,9 @@ import com.example.finalprojectapp.ui.credentials.di.CredentialsFragmentComponen
 import com.example.finalprojectapp.ui.credentials.inner.di.CredentialInnerComponent
 import com.example.finalprojectapp.ui.dashboard.di.DashBoardFragmentComponent
 import com.example.finalprojectapp.ui.dashboard.di.DashBoardFragmentModule
+import com.example.finalprojectapp.ui.notifications.di.NotificationFragmentComponent
 import com.example.finalprojectapp.ui.settings.di.SettingsComponent
 import dagger.Module
 
-@Module(subcomponents = [CredentialsFragmentComponent::class,SettingsComponent::class, DashBoardFragmentComponent::class])
+@Module(subcomponents = [CredentialsFragmentComponent::class,SettingsComponent::class, DashBoardFragmentComponent::class,NotificationFragmentComponent::class])
 class UIModule

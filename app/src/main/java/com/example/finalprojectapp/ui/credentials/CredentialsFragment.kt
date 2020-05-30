@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -19,9 +18,6 @@ import com.example.finalprojectapp.MainApplication
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.adapters.ServiceAdapter
 import com.example.finalprojectapp.credentialsDB.LocalDataBase
-import com.example.finalprojectapp.utils.InjectorUtils
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_cre.*
 import kotlinx.android.synthetic.main.fragment_cre.view.*
 import kotlinx.coroutines.Dispatchers
@@ -38,9 +34,7 @@ class CredentialsFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private val db = FirebaseFirestore.getInstance()
     private lateinit var localDB: LocalDataBase
-    private val user = FirebaseAuth.getInstance().currentUser!!
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
