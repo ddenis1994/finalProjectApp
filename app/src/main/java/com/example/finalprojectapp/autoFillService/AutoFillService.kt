@@ -18,7 +18,7 @@ import javax.inject.Inject
 class AutoFillService : AutofillService() {
 
 
-    private lateinit var mainRepository: ServiceRepository
+    @Inject lateinit var mainRepository: ServiceRepository
     @Inject lateinit var mainRepositoryLocal: ServiceRepositoryLocal
     @Inject lateinit var notificationRepository: NotificationRepository
     @Inject lateinit var coroutineScope: CoroutineScope
@@ -33,7 +33,7 @@ class AutoFillService : AutofillService() {
         super.onCreate()
 
 
-        mainRepository= ServiceRepository(this, mainRepositoryLocal)
+        //mainRepository= ServiceRepository(this, mainRepositoryLocal)
 
 
     }

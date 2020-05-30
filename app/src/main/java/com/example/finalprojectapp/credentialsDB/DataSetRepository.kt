@@ -100,14 +100,19 @@ class DataSetRepository @Inject constructor(
                 val creList = mutableListOf<Long>()
                 dataSet.credentials?.forEach {
                     val insertResult = credentialRepository.publicInsertCredentials(it)
-                    //Todo fix the type
-                    privateInsertCredentials(
+                    insertResult?.let { it1 ->
                         DataSetCredentialsManyToMany(
                             dataSetId = result,
-                            credentialsId = insertResult!!
+                            credentialsId = it1
                         )
-                    )
-                    creList.add(insertResult)
+                    }?.let { it2 ->
+                        privateInsertCredentials(
+                            it2
+                        )
+                    }
+                    if (insertResult != null) {
+                        creList.add(insertResult)
+                    }
                 }
                 return@withContext Pair(result, creList)
             }

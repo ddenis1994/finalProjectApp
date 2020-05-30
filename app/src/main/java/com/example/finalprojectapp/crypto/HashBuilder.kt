@@ -2,6 +2,7 @@ package com.example.finalprojectapp.crypto
 
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
+import com.example.finalprojectapp.data.model.Notification
 import com.example.finalprojectapp.data.model.Service
 import java.security.MessageDigest
 import java.util.*
@@ -64,7 +65,18 @@ class HashBuilder @Inject constructor(
             is DataSet -> generateDataSetHash(target) as T
             is Credentials -> generateCredentialsHash(target) as T
             is Service -> generateServiceHash(target) as T
+            is Notification -> generateServiceNotification(target) as T
             else -> null
         }
+    }
+
+    private fun generateServiceNotification(target: Notification?): Notification? {
+        if (target == null) return null
+        var hashData = target.hash
+        if (hashData.isEmpty()){
+            val message: ByteArray = (target.mainMassage + target.secondMassage + target.time).toByteArray()
+            hashData = Base64.getEncoder().encodeToString(messageDigest.digest(message))
+        }
+        return target.copy(hash = hashData)
     }
 }

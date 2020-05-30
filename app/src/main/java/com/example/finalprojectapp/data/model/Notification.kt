@@ -11,6 +11,7 @@ data class Notification(
     var type:Int,
     var mainMassage:String="",
     var secondMassage:String="",
+    var hash:String="",
     var time:String?=null,
     @Ignore
     var timestamp: ServerTimestamp?=null,

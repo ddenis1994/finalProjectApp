@@ -17,10 +17,11 @@ import javax.inject.Inject
 
 class ServiceRepository @Inject constructor(
     context: Context,
-    private val serviceRepositoryLocal: ServiceRepositoryLocal
+    private val serviceRepositoryLocal: ServiceRepositoryLocal,
+    notificationRepository: NotificationRepository
 ) {
 
-    private val serviceRepositoryRemote: ServiceRepositoryRemote = ServiceRepositoryRemote(context)
+    private val serviceRepositoryRemote: ServiceRepositoryRemote = ServiceRepositoryRemote(context,notificationRepository)
     private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
 
@@ -32,9 +33,10 @@ class ServiceRepository @Inject constructor(
         callback: SaveCallback
     ) {
         scope.launch {
-            val toInsertService=
-            serviceRepositoryLocal.publicInsertService(service)
             serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(service, callback)
+        }
+        scope.launch {
+            serviceRepositoryLocal.publicInsertService(service)
         }
 
     }

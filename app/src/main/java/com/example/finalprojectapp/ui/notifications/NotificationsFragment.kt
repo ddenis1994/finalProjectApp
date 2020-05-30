@@ -42,6 +42,7 @@ class NotificationsFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         setHasOptionsMenu(true)
+        notificationsViewModel.syncNotification()
         viewManager = LinearLayoutManager(context)
         recyclerView = notification_RecyclerView.apply {
             setHasFixedSize(true)

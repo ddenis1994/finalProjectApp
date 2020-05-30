@@ -1,5 +1,6 @@
 package com.example.finalprojectapp.ui.settings
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -13,54 +14,35 @@ import android.widget.Button
 import android.widget.CompoundButton
 import android.widget.Switch
 import android.widget.TextView
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
+import com.example.finalprojectapp.MainApplication
 import com.example.finalprojectapp.R
-import com.example.finalprojectapp.credentialsDB.LocalDataBase
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
-import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_settings.view.*
 import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
+import javax.inject.Inject
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [SettingsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SettingsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-    private lateinit var mAutofillManager:AutofillManager
+
     private val REQUEST_CODE_SET_DEFAULT = 1
-    private lateinit var setting:SharedPreferences
-    private lateinit var serviceRepository: ServiceRepository
-    private lateinit var notificationRepository: NotificationRepository
+    @Inject lateinit var mAutoFillManager:AutofillManager
+    @Inject lateinit var setting:SharedPreferences
+    @Inject lateinit var serviceRepository: ServiceRepository
+    @Inject lateinit var notificationRepository: NotificationRepository
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-            arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-        mAutofillManager = getSystemService(requireContext(), AutofillManager::class.java)!!
-        setting=SingleEncryptedSharedPreferences().getSharedPreference(this.requireContext())
-        //serviceRepository= ServiceRepository.getInstance(requireContext())
-        notificationRepository=NotificationRepository.getInstance(LocalDataBase.getDatabase(this.requireContext()).notificationDao(),
-            this.lifecycleScope)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (requireActivity().application as MainApplication).appComponent.uiComponent().create().settingsComponent().create().inject(this)
     }
+
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,7 +54,7 @@ class SettingsFragment : Fragment() {
             root.settingsSetServiceContainer,
             R.id.settingsSetServiceLabel,
             R.id.settingsSetServiceSwitch,
-            mAutofillManager.hasEnabledAutofillServices(),
+            mAutoFillManager.hasEnabledAutofillServices(),
             CompoundButton.OnCheckedChangeListener { _: CompoundButton?, serviceSet: Boolean ->
                 setService(serviceSet)
             }
@@ -83,7 +65,7 @@ class SettingsFragment : Fragment() {
             root.settingsSetCheckRepeatedPasswords,
             R.id.settingsSetRepeatedPasswordsLabel,
             R.id.settingsSetRepeatedPasswordsSwitch,
-            mAutofillManager.hasEnabledAutofillServices(),
+            mAutoFillManager.hasEnabledAutofillServices(),
             CompoundButton.OnCheckedChangeListener { _: CompoundButton?, serviceSet: Boolean ->
                 setting.edit().putBoolean("RepeatedPasswords",serviceSet).apply()
             }
@@ -122,7 +104,6 @@ class SettingsFragment : Fragment() {
         this.lifecycleScope.launch {
             serviceRepository.nukeALl()
             notificationRepository.nukeAllNotification()
-            //Firebase.firestore.clearPersistence()
             FirebaseAuth.getInstance().signOut()
             setting.edit().clear().apply()
             requireActivity().findViewById<BottomNavigationView>(R.id.my_nav_view).visibility=View.GONE
@@ -135,25 +116,7 @@ class SettingsFragment : Fragment() {
     }
 
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SettingsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SettingsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
+
 
     private fun setupSettingsSwitch(
         containerId: ViewGroup, labelId: Int, switchId: Int, checked: Boolean,
@@ -178,7 +141,7 @@ class SettingsFragment : Fragment() {
     }
 
     private fun startEnableService() {
-        if (!mAutofillManager.hasEnabledAutofillServices()) {
+        if (!mAutoFillManager.hasEnabledAutofillServices()) {
             val intent = Intent(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE)
             intent.data = Uri.parse("package:com.example.android.autofill.service")
             startActivityForResult(
@@ -189,8 +152,8 @@ class SettingsFragment : Fragment() {
     }
 
     private fun disableService() {
-        if (mAutofillManager.hasEnabledAutofillServices())
-            mAutofillManager.disableAutofillServices()
+        if (mAutoFillManager.hasEnabledAutofillServices())
+            mAutoFillManager.disableAutofillServices()
     }
 
 }

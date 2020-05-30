@@ -49,16 +49,16 @@ class CredentialInnerFragment : Fragment() {
     private val args: CredentialInnerFragmentArgs by navArgs()
 
     @Inject
-    lateinit var viewModel: CredentialInnerViewModel
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val viewModel by viewModels<CredentialInnerViewModel> {
+        viewModelFactory }
 
 
-//    private val viewModel: CredentialInnerViewModel by activityViewModels {
-//        InjectorUtils.provideCredentialInnerViewModelFactory(this)
-//    }
 
     override fun onAttach(context: Context) {
-        (requireActivity().application as MainApplication).appComponent.inject(this)
         super.onAttach(context)
+        (requireActivity().application as MainApplication).appComponent.credentialInnerViewModelComponent().create().inject(this)
     }
 
     @ExperimentalStdlibApi
@@ -72,7 +72,6 @@ class CredentialInnerFragment : Fragment() {
         serviceName = args.serviceName
         dataSetName = args.dataSetName
 
-        (requireActivity().application as MainApplication).getComponent().inject(this)
 
         val temp = serviceName
             .replace(".", " ", false)

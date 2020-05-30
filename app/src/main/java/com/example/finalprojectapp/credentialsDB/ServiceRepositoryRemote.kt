@@ -15,11 +15,12 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
-internal class ServiceRepositoryRemote @Inject constructor(private val context: Context) {
+internal class ServiceRepositoryRemote @Inject constructor(private val context: Context,
+                                                           notificationRepository: NotificationRepository) {
 
     private val user = FirebaseAuth.getInstance().currentUser!!
     private val db = FirebaseFirestore.getInstance()
-    @Inject lateinit var notificationRepository:NotificationRepository
+    private val notificationRepository:NotificationRepository= notificationRepository
 
 
     internal fun addDataToRemoteWithSaveCallBack(

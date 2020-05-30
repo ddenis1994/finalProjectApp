@@ -1,5 +1,6 @@
 package com.example.finalprojectapp.ui.credentials
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
@@ -7,11 +8,14 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finalprojectapp.MainApplication
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.adapters.ServiceAdapter
 import com.example.finalprojectapp.credentialsDB.LocalDataBase
@@ -23,19 +27,31 @@ import kotlinx.android.synthetic.main.fragment_cre.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 
 class CredentialsFragment : Fragment() {
-    private val credentialsViewModel: CredentialsViewModel by activityViewModels {
-        InjectorUtils.provideCredentialsViewModelFactory(this)
-
-    }
+//    private val credentialsViewModel: CredentialsViewModel by activityViewModels {
+//        InjectorUtils.provideCredentialsViewModelFactory(this)
+//
+//    }
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private val db = FirebaseFirestore.getInstance()
     private lateinit var localDB: LocalDataBase
     private val user = FirebaseAuth.getInstance().currentUser!!
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val credentialsViewModel by viewModels<CredentialsViewModel> {
+        viewModelFactory }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (requireActivity().application as MainApplication).appComponent.credentialViewModelComponent().create().inject(this)
+    }
 
 
 

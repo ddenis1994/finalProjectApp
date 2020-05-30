@@ -5,6 +5,7 @@ import com.example.finalprojectapp.autoFillService.AutoFillService
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -32,9 +33,6 @@ import javax.inject.Singleton
         return this.packageName
     }
 
-    @Provides
-    fun provideScope(): CoroutineScope {
-        return CoroutineScope(Job())
-    }
+
 
 }

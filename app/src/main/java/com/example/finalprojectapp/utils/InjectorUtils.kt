@@ -28,6 +28,7 @@ import com.example.finalprojectapp.ui.credentials.inner.CredentialInnerViewModel
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModelFactory
 import com.example.finalprojectapp.ui.notifications.NotificationViewModelFactory
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 
 
@@ -41,7 +42,8 @@ object InjectorUtils {
             DataSetRepository(CredentialRepository(LocalDataBase.getDatabase(context.applicationContext).credentialDAO(),
                 LocalCryptography(HashBuilder())
             ),LocalDataBase.getDatabase(context.applicationContext).dataSetDAO(),LocalCryptography(HashBuilder()
-        ))))
+        ))),NotificationRepository(LocalDataBase.getDatabase(context.applicationContext).notificationDao(),
+            CoroutineScope(Job()+Dispatchers.Default)))
 
     }
 
@@ -52,13 +54,6 @@ object InjectorUtils {
             LocalDataBase.getDatabase(context.applicationContext).notificationDao(), CoroutineScope(
                 Job())
         )
-    }
-
-    fun provideCredentialsViewModelFactory(
-        fragment: Fragment
-    ): CredentialsViewModelFactory {
-        val repository = getMainRepository(fragment.requireContext())
-        return CredentialsViewModelFactory(repository)
     }
 
     fun provideDashboardViewModelFactory(
@@ -76,9 +71,4 @@ object InjectorUtils {
         return NotificationViewModelFactory(repository)
     }
 
-    fun provideCredentialInnerViewModelFactory(fragment: Fragment):CredentialInnerViewModelFactory {
-        val repository = getMainRepository(fragment.requireContext())
-
-        return CredentialInnerViewModelFactory(repository)
-    }
 }

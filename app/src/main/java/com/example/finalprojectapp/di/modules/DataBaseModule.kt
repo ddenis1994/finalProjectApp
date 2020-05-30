@@ -1,4 +1,4 @@
-package com.example.finalprojectapp.di
+package com.example.finalprojectapp.di.modules
 
 import android.content.Context
 import com.example.finalprojectapp.credentialsDB.*

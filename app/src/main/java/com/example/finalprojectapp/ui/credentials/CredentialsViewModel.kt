@@ -5,9 +5,10 @@ import androidx.lifecycle.ViewModel
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
 
 import com.example.finalprojectapp.data.model.adpters.LayoutServiceView
+import javax.inject.Inject
 
 
-class CredentialsViewModel internal constructor(
+class CredentialsViewModel @Inject constructor(
     private val mainRepository: ServiceRepository
     ) : ViewModel() {
 

@@ -17,4 +17,7 @@ interface NotificationDAO {
     suspend fun deleteNotifications(notifications: List<Notification>)
     @Query("Delete from notification")
     suspend fun nukeAll()
+
+    @Query("Select * from notification where hash like :notification")
+    suspend fun checkForNotification(notification: String): Notification?
 }

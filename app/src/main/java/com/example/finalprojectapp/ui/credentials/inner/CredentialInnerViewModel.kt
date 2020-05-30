@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
-import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
@@ -17,9 +16,8 @@ class CredentialInnerViewModel @Inject constructor(
     private var _data = MutableLiveData<List<LayoutCredentialView>>()
     val data: LiveData<List<LayoutCredentialView>> = _data
 
-    var cryptography:LocalCryptography = LocalCryptography(HashBuilder())
 
-    @Inject lateinit var cryptography2:LocalCryptography
+    @Inject lateinit var cryptography:LocalCryptography
 
     fun firstTimeCredentials(dataSetId: Long) = mainRepository.getCredentialByDataSetID(dataSetId)
 
