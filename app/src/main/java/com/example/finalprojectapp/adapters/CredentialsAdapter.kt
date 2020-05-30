@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalprojectapp.AppAuthActivity
+import com.example.finalprojectapp.ui.auth.AppAuthActivity
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import com.example.finalprojectapp.databinding.LayoutCredentialBinding
 import com.example.finalprojectapp.ui.credentials.inner.CredentialInnerFragment

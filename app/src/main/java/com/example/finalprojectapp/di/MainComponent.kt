@@ -40,7 +40,7 @@ interface MainComponent {
 
 
     }
-    val context:Context
+
 }
 
 @Module(subcomponents = [AutoFIllServiceComponent::class, UIComponent::class])

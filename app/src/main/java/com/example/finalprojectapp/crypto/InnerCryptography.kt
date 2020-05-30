@@ -9,7 +9,7 @@ open class InnerCryptography @Inject constructor() {
     private val hashBuilder=HashBuilder()
 
 
-    private fun encryptDataSet(dataSet: DataSet?): DataSet? {
+    internal fun encryptDataSet(dataSet: DataSet?): DataSet? {
         var newDataSet = dataSet ?: return null
         if (newDataSet.hashData.isNullOrEmpty())
             newDataSet = hashBuilder.makeHash(newDataSet) as DataSet
@@ -23,7 +23,7 @@ open class InnerCryptography @Inject constructor() {
         return newDataSet.copy(credentials = newEncryptedCredentials)
     }
 
-    private fun encryptService(target: Service?): Service? {
+    internal fun encryptService(target: Service?): Service? {
         var new = target ?: return null
 
         if (new.hash.isEmpty())
@@ -62,10 +62,11 @@ open class InnerCryptography @Inject constructor() {
 
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> encrypt(target: T): T? {
+    open fun <T> encrypt(target: T): T? {
         return when (target) {
             is DataSet -> encryptDataSet(target) as T
             is Service -> encryptService(target) as T
+
             else -> null
         }
     }

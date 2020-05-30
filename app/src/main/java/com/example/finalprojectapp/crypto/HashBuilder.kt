@@ -34,11 +34,14 @@ class HashBuilder @Inject constructor(
     }
 
     private fun generateCredentialsHash(credentials: Credentials): Credentials {
-        var hashData = credentials.innerHashValue
-        if (hashData == null) {
-            val message: ByteArray = (credentials.data + credentials.hint).toByteArray()
-            hashData = Base64.getEncoder().encodeToString(messageDigest.digest(message))
+        credentials.iv?.let {
+            if (it.isNotEmpty())
+                return credentials
         }
+
+        val hashData: String?
+        val message: ByteArray = (credentials.data + credentials.hint).toByteArray()
+        hashData = Base64.getEncoder().encodeToString(messageDigest.digest(message))
         return credentials.copy(innerHashValue = hashData)
 
     }
@@ -73,8 +76,9 @@ class HashBuilder @Inject constructor(
     private fun generateServiceNotification(target: Notification?): Notification? {
         if (target == null) return null
         var hashData = target.hash
-        if (hashData.isEmpty()){
-            val message: ByteArray = (target.mainMassage + target.secondMassage + target.time).toByteArray()
+        if (hashData.isEmpty()) {
+            val message: ByteArray =
+                (target.mainMassage + target.secondMassage + target.time).toByteArray()
             hashData = Base64.getEncoder().encodeToString(messageDigest.digest(message))
         }
         return target.copy(hash = hashData)

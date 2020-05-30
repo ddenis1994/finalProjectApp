@@ -1,4 +1,4 @@
-package com.example.finalprojectapp
+package com.example.finalprojectapp.ui.auth
 
 import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +11,7 @@ import android.widget.Toast
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import com.example.finalprojectapp.adapters.CredentialsAdapter
+import com.example.finalprojectapp.R
 import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import java.util.concurrent.Executor
 

@@ -3,6 +3,7 @@ package com.example.finalprojectapp.credentialsDB
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.room.Transaction
+import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
@@ -16,11 +17,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import javax.inject.Inject
 
-class ServiceRepositoryLocal @Inject constructor (
+class ServiceRepositoryLocal @Inject constructor(
     private val serviceDAO: ServiceDAO,
-    private val dataSetRepository: DataSetRepository
+    private val dataSetRepository: DataSetRepository,
+    private val localCryptography: LocalCryptography
 ) {
-
 
 
     @Transaction
@@ -29,11 +30,23 @@ class ServiceRepositoryLocal @Inject constructor (
         serviceDAO.deleteAllService()
     }
 
-    suspend fun publicInsertService(service: Service): Pair<Long, List<Pair<Long, List<Long>>>> {
-        var result = serviceDAO.privateInsertService(service)
-        if (result == -1L) {
-            result = privateGetServiceByName(service.name)!!.serviceId
+    suspend fun publicInsertService(service: Service): Pair<Long?, List<Pair<Long, List<Long>>>?> {
+        val localService: Service =
+            privateGetServiceByName(service.name) ?: Service().copy(serviceId = -1L)
+        var target=service
+        if (localService.serviceId!=-1L) {
+            val newDataSetList = mutableListOf<DataSet>()
+            service.dataSets?.let { newDataSetList.addAll(it) }
+            localService.dataSets?.let { newDataSetList.addAll(it) }
+            target = target.copy(dataSets = newDataSetList)
+            deleteFullService(localService.name)
         }
+        target = localCryptography.encrypt(target)!!
+        if (localService.hash == target.hash) return Pair(localService.serviceId, null)
+
+
+
+        val result = target.let { serviceDAO.privateInsertService(it) }
         val list = mutableListOf<Pair<Long, List<Long>>>()
         service.dataSets?.forEach {
             dataSetRepository.publicInsertDataSet(it.copy(serviceId = result))
@@ -170,7 +183,6 @@ class ServiceRepositoryLocal @Inject constructor (
     suspend fun getDataSetByID(dataSetId: Long): DataSet {
         return dataSetRepository.getDataSetByID(dataSetId)
     }
-
 
 
 }

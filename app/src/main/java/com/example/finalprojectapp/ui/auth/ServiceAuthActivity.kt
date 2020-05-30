@@ -1,4 +1,4 @@
-package com.example.finalprojectapp
+package com.example.finalprojectapp.ui.auth
 
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
@@ -9,9 +9,10 @@ import android.widget.Toast
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import com.example.finalprojectapp.R
 import java.util.concurrent.Executor
 
-class AuthActivity : AppCompatActivity() {
+class ServiceAuthActivity : AppCompatActivity() {
     private lateinit var biometricManager:BiometricManager
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt

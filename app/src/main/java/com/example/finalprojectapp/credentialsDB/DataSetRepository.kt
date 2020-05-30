@@ -98,8 +98,8 @@ class DataSetRepository @Inject constructor(
                     result = dataSetDAO.privateGetDataSet(it.hashData!!).dataSetId
                 }
                 val creList = mutableListOf<Long>()
-                dataSet.credentials?.forEach {
-                    val insertResult = credentialRepository.publicInsertCredentials(it)
+                dataSet.credentials?.forEach {cre->
+                    val insertResult = credentialRepository.publicInsertCredentials(cre)
                     insertResult?.let { it1 ->
                         DataSetCredentialsManyToMany(
                             dataSetId = result,

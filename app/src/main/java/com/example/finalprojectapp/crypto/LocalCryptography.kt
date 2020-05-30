@@ -1,8 +1,5 @@
 package com.example.finalprojectapp.crypto
 
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
@@ -60,18 +57,18 @@ class LocalCryptography @Inject constructor(//private var instance: SharedPrefer
             iv = massageEncoder.encodeToString(cipher.iv)
         )
     }
-
-
     @Suppress("UNCHECKED_CAST")
-    fun <T> localEncrypt(target: T): T? {
-
+    override fun <T> encrypt(target: T): T? {
         return when (target) {
             is Credentials -> localEncryptCredentials(target) as T
-            is DataSet -> this.encrypt(target) as T
-            is Service -> this.encrypt(target) as T
+            is DataSet -> encryptDataSet(target) as T
+            is Service -> encryptService(target) as T
             else -> null
         }
     }
+
+
+
 
     private fun localDecryptCredential(credentials: Credentials?): Credentials? {
         var newCredential = credentials ?: return null

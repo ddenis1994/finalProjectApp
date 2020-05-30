@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finalprojectapp.AuthActivity
+import com.example.finalprojectapp.ui.auth.ServiceAuthActivity
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.databinding.LayoutListDataSetsBinding
@@ -34,7 +34,7 @@ class DataSetAdapter(
 
             binding.setDeleteDataSet {
                 val deleteAuthActivity =
-                    Intent(mContext.requireContext(), AuthActivity::class.java).apply {
+                    Intent(mContext.requireContext(), ServiceAuthActivity::class.java).apply {
                         putExtra("dataSetId", binding.dataSetCard?.dataSetId?.toInt())
                     }
 

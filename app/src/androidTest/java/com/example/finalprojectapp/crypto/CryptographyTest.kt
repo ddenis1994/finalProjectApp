@@ -33,7 +33,7 @@ internal class CryptographyTest{
 
 
         hashBuilder.makeHash(Credentials())
-        val result=cre.localEncrypt(credentials.copy())
+        val result=cre.encrypt(credentials.copy())
         if (result != null) {
             assertNotEquals(credentials.data,result.data)
         }
@@ -48,7 +48,7 @@ internal class CryptographyTest{
     @DisplayName("test decrypt Credentials")
     @Test
     fun testCredentialDecrypt() = runBlocking {
-        val result=cre.localDecryption(cre.localEncrypt(credentials.copy()))
+        val result=cre.localDecryption(cre.encrypt(credentials.copy()))
         assertNotNull(result)
         assertEquals(credentials.data,result!!.data)
         assertFalse(result.innerHashValue.isNullOrEmpty())
@@ -58,7 +58,7 @@ internal class CryptographyTest{
     @DisplayName("test local encryption data set")
     @Test
     fun testDataSetEncrypt() = runBlocking {
-        val result=cre.localEncrypt(dataSet.copy())
+        val result=cre.encrypt(dataSet.copy())
         assertNotNull(result)
         assertNotNull(result!!.credentials)
         for ( i:Int in result.credentials!!.indices){
@@ -71,7 +71,7 @@ internal class CryptographyTest{
     @DisplayName("test local decryption data set")
     @Test
     fun testDataSetDecryption() = runBlocking {
-        val result=cre.localDecryption(cre.localEncrypt(dataSet.copy()))
+        val result=cre.localDecryption(cre.encrypt(dataSet.copy()))
         assertNotNull(result)
         assertNotNull(result!!.credentials)
         for ( i:Int in result.credentials!!.indices){

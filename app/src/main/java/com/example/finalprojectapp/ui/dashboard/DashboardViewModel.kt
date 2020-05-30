@@ -7,8 +7,9 @@ import com.example.finalprojectapp.adapters.DashBoardRecyclerRepeatedPasswordAda
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.data.model.DashBoardData
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DashboardViewModel internal constructor(
+class DashboardViewModel @Inject constructor(
     private val mainRepository: ServiceRepository
 ) : ViewModel() {
 

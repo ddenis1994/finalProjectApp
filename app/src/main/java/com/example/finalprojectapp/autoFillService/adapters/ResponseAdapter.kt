@@ -15,7 +15,7 @@ import android.view.View
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillValue
 import android.widget.RemoteViews
-import com.example.finalprojectapp.AuthActivity
+import com.example.finalprojectapp.ui.auth.ServiceAuthActivity
 import com.example.finalprojectapp.autoFillService.AutofillFieldMetadata
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.Service
@@ -116,7 +116,7 @@ class ResponseAdapter(
             setTextViewText(R.id.text1, "requires authentication")
         }
 
-        val authIntent = Intent(context, AuthActivity::class.java).apply {
+        val authIntent = Intent(context, ServiceAuthActivity::class.java).apply {
             putExtra("response",normalResponseMake)
         }
         val intentSender: IntentSender = PendingIntent.getActivity(

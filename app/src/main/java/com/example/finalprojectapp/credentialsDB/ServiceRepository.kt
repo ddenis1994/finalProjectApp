@@ -1,6 +1,5 @@
 package com.example.finalprojectapp.credentialsDB
 
-import android.content.Context
 import android.service.autofill.SaveCallback
 import androidx.lifecycle.LiveData
 import androidx.room.Transaction
@@ -10,19 +9,14 @@ import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ServiceRepository @Inject constructor(
-    context: Context,
     private val serviceRepositoryLocal: ServiceRepositoryLocal,
-    notificationRepository: NotificationRepository
+    private val serviceRepositoryRemote: ServiceRepositoryRemote,
+    private val scope: CoroutineScope
 ) {
-
-    private val serviceRepositoryRemote: ServiceRepositoryRemote = ServiceRepositoryRemote(context,notificationRepository)
-    private val scope = CoroutineScope(Job() + Dispatchers.Default)
 
 
     @Transaction
@@ -32,12 +26,11 @@ class ServiceRepository @Inject constructor(
         service: Service,
         callback: SaveCallback
     ) {
-        scope.launch {
-            serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(service, callback)
-        }
-        scope.launch {
-            serviceRepositoryLocal.publicInsertService(service)
-        }
+        serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(service, callback)
+        scope.launch { serviceRepositoryLocal.publicInsertService(service) }
+    }
+
+    fun sync() {
 
     }
 
@@ -78,7 +71,7 @@ class ServiceRepository @Inject constructor(
         serviceRepositoryLocal.publicGetServiceByName(string)
 
 
-    suspend fun publicInsertLocalService(service: Service): Pair<Long, List<Pair<Long, List<Long>>>> {
+    suspend fun publicInsertLocalService(service: Service): Pair<Long?, List<Pair<Long, List<Long>>>?> {
         return serviceRepositoryLocal.publicInsertService(service)
     }
 
@@ -114,7 +107,6 @@ class ServiceRepository @Inject constructor(
 
     suspend fun publicInsertArrayCredentials(listCredentials: List<Credentials>): List<Long> =
         serviceRepositoryLocal.publicInsertArrayCredentials(listCredentials)
-
 
 
 }
