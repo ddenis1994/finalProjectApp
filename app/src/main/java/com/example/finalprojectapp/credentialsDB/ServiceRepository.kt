@@ -9,6 +9,7 @@ import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,8 +27,14 @@ class ServiceRepository @Inject constructor(
         service: Service,
         callback: SaveCallback
     ) {
-        serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(service, callback)
-        scope.launch { serviceRepositoryLocal.publicInsertService(service) }
+        scope.launch {
+            val localInsert=scope.async {
+                serviceRepositoryLocal.publicInsertService(service)
+            }
+            localInsert.await()?.let { serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(it, callback) }
+
+
+        }
     }
 
     fun sync() {
@@ -71,8 +78,8 @@ class ServiceRepository @Inject constructor(
         serviceRepositoryLocal.publicGetServiceByName(string)
 
 
-    suspend fun publicInsertLocalService(service: Service): Pair<Long?, List<Pair<Long, List<Long>>>?> {
-        return serviceRepositoryLocal.publicInsertService(service)
+    suspend fun publicInsertLocalService(service: Service): Service {
+        return serviceRepositoryLocal.publicInsertService(service)!!
     }
 
 

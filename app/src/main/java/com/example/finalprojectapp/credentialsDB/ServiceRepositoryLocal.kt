@@ -1,6 +1,5 @@
 package com.example.finalprojectapp.credentialsDB
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Transaction
 import com.example.finalprojectapp.crypto.LocalCryptography
@@ -30,7 +29,7 @@ class ServiceRepositoryLocal @Inject constructor(
         serviceDAO.deleteAllService()
     }
 
-    suspend fun publicInsertService(service: Service): Pair<Long?, List<Pair<Long, List<Long>>>?> {
+    suspend fun publicInsertService(service: Service): Service? {
         var localService: Service =
             privateGetServiceByName(service.name) ?: Service().copy(serviceId = -1L)
         var target = service
@@ -42,14 +41,9 @@ class ServiceRepositoryLocal @Inject constructor(
             localService.dataSets?.let { newDataSetList.addAll(it) }
             target = target.copy(dataSets = newDataSetList)
             deleteFullServiceByID(localService)
-            val data=dataSetRepository.getAllData()
-            val test=serviceDAO.privateGetAllService()
-            Log.d("etst", "publicInsertService: ")
-
-
         }
         target = localCryptography.encrypt(target)!!
-        if (localService.hash == target.hash) return Pair(localService.serviceId, null)
+        if (localService.hash == target.hash) return localService
 
 
         val result = target.let { serviceDAO.privateInsertService(it) }
@@ -62,7 +56,8 @@ class ServiceRepositoryLocal @Inject constructor(
                     }
                 }
         }
-        return Pair(result, list)
+
+        return localCryptography.decryption(target)
     }
 
 
@@ -137,11 +132,11 @@ class ServiceRepositoryLocal @Inject constructor(
 
     private suspend fun deleteFullServiceByID(service: Service) {
 
-            withContext(Dispatchers.IO) {
-                service.dataSets?.forEach {
-                    dataSetRepository.privateDeleteDataSet(it)
-                }
-                serviceDAO.privateDeleteService(service)
+        withContext(Dispatchers.IO) {
+            service.dataSets?.forEach {
+                dataSetRepository.privateDeleteDataSet(it)
+            }
+            serviceDAO.privateDeleteService(service)
 
 
         }

@@ -16,6 +16,7 @@ import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
+@Suppress("UNCHECKED_CAST")
 class RemoteCryptography @Inject constructor(context: Context?) : InnerCryptography() {
 
     private val password: String = "password"
@@ -105,12 +106,22 @@ class RemoteCryptography @Inject constructor(context: Context?) : InnerCryptogra
     }
 
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T> remoteDecryption(target: T): T? {
+    override fun <T> encrypt(target: T): T? {
         return when (target) {
-            is Credentials -> remoteDecryptSingle(target) as T
-            is DataSet -> this.decryption(target) as T
-            is Service -> this.decryption(target) as T
+            is Credentials -> remoteEncryptCredential(target) as T
+            is DataSet -> encryptDataSet(target) as T
+            is Service -> encryptService(target) as T
+            else -> null
+        }
+    }
+
+
+
+    override fun <T> decryption(target: T): T? {
+        return when (target) {
+            is Credentials -> remoteEncryptCredential(target) as T
+            is DataSet -> decryptDataSet(target) as T
+            is Service -> decryptService(target) as T
             else -> null
         }
     }
