@@ -119,7 +119,7 @@ class RemoteCryptography @Inject constructor(context: Context?) : InnerCryptogra
 
     override fun <T> decryption(target: T): T? {
         return when (target) {
-            is Credentials -> remoteEncryptCredential(target) as T
+            is Credentials -> remoteDecryptSingle(target) as T
             is DataSet -> decryptDataSet(target) as T
             is Service -> decryptService(target) as T
             else -> null

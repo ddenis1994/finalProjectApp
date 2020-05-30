@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <variable
             name="MyData"
             type="com.example.finalprojectapp.data.model.DashBoardData" />
@@ -15,155 +16,168 @@
     </data>
 
 
-<LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:onClick="@{()-> (MyData.serviceCount >0) ? MyViewModel.showListServices() : null }"
         android:orientation="vertical">
+
         <TextView
             style="@style/Credentials.Header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="My status"/>
-        <LinearLayout
-        style="@style/Credentials.Container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <LinearLayout
+            android:text="My status" />
+
+        <RelativeLayout
+            style="@style/Credentials.Container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                style="@style/Credentials.text"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="No of stored Services :" />
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <TextView
-                style="@style/Credentials.text"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="start"
-
-                android:text="@{String.valueOf(MyData.serviceCount)}" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-
-                android:layout_height="wrap_content"
-                />
-
-        </LinearLayout>
-
-
-
-
-    </LinearLayout>
-        <LinearLayout
-        style="@style/Credentials.Container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:visibility="@{MyData.serviceCount > 0 ? View.GONE : View.VISIBLE}"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal">
+
                 <TextView
-                    style="@style/Credentials.text"
+                    style="@style/Credentials.text.big"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:text="Security Risks : " />
+                    android:layout_height="match_parent"
+                    android:text="No of stored Services :" />
+
                 <TextView
-                    style="@style/Credentials.text"
+                    style="@style/Credentials.text.big"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textColor="@color/colorBad"
-                    android:text="@{String.valueOf(MyData.securityRisks)}"/>
-            </LinearLayout>
-        <ProgressBar
-            android:id="@+id/repeatCheck"
-            style="?android:attr/progressBarStyle"
-            android:visibility="@{MyData.serviceCount!=-1 ? View.GONE :View.VISIBLE}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+                    android:gravity="center"
 
-    </LinearLayout>
+                    android:text="@{String.valueOf(MyData.serviceCount)}" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
         <LinearLayout
             style="@style/Credentials.Container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{MyData.repeatedPassport > 0 ? View.VISIBLE : View.GONE}"
             android:orientation="vertical">
-            <TextView
-                style="@style/Credentials.text"
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textColor="@color/colorBad"
-                android:text="Repeated Password"/>
+                android:orientation="horizontal">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/repeatedPasswordRecyclerView"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:visibility="@{MyData.serviceCount > 0 ? View.GONE : View.VISIBLE}">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        style="@style/Credentials.text.big"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:text="@string/security_risks" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        style="@style/Credentials.text.big"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@{String.valueOf(MyData.securityRisks)}"
+                        android:textColor="@color/colorBad" />
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/repeatCheck"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{MyData.serviceCount!=-1 ? View.GONE :View.VISIBLE}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/Credentials.Container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="@{MyData.repeatedPassport > 0 ? View.VISIBLE : View.GONE}">
+
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/Credentials.text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/repeated_password"
+                    android:textColor="@color/colorBad" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/repeatedPasswordRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/Credentials.Container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/Credentials.text.big"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="start"
+                android:text="Connection to remote : " />
+
+            <TextView
+                style="@style/Credentials.text.big"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                android:gravity="center"
+                android:text="@{String.valueOf(MyData.connectionToRemote)}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/Credentials.Container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> MyViewModel.click()}"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/Credentials.text.big"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="start"
+                android:text="Secret Password : " />
+
+            <TextView
+                style="@style/Credentials.text.big"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                android:gravity="center"
+                android:text="@{String.valueOf(MyData.passwordStrange)}" />
+
         </LinearLayout>
 
     </LinearLayout>
-        <LinearLayout
-    style="@style/Credentials.Container"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
-
-    <TextView
-        style="@style/Credentials.text"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="start"
-        android:text="Connection to remote : " />
-    <TextView
-        style="@style/Credentials.text"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:background="@color/colorPrimary"
-        android:text="@{String.valueOf(MyData.connectionToRemote)}" />
-
-</LinearLayout>
-        <LinearLayout
-        style="@style/Credentials.Container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="@{() -> MyViewModel.click()}"
-        android:orientation="horizontal">
-
-        <TextView
-            style="@style/Credentials.text"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="start"
-            android:text="Secret Password : " />
-
-        <TextView
-            style="@style/Credentials.text"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@color/colorPrimary"
-            android:gravity="center"
-            android:text="@{String.valueOf(MyData.passwordStrange)}" />
-
-    </LinearLayout>
-
-</LinearLayout>
 </layout>

@@ -37,8 +37,8 @@ class ServiceRepository @Inject constructor(
         }
     }
 
-    fun sync() {
-
+    suspend fun sync() {
+        serviceRepositoryRemote.sync()
     }
 
 
@@ -55,8 +55,8 @@ class ServiceRepository @Inject constructor(
     fun deleteCredential(credentialID: Long?, dataSetId: Long) {
         if (credentialID != null) {
             scope.launch {
-//                deleteLocalCredential(credentialID,dataSetId)
-                //deleteRemoteCredential(dataSetId)
+//                serviceRepositoryLocal.deleteLocalCredential(credentialID,dataSetId)
+//                serviceRepositoryRemote.deleteRemoteCredential(dataSetId,)
             }
 
         }
@@ -117,3 +117,4 @@ class ServiceRepository @Inject constructor(
 
 
 }
+

@@ -69,6 +69,8 @@ class ServiceAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val data = myDataSet[position]
         holder.bind(data)
+
+
         val localData=data.dataSetId?.let { credentialsViewModel.getDataSet(it) }
         localData?.observe(viewLifecycleOwner, Observer {
             holder.recyclerView.apply {

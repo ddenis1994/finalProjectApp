@@ -1,11 +1,11 @@
 package com.example.finalprojectapp.ui.credentials
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.MainApplication
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.adapters.ServiceAdapter
-import com.example.finalprojectapp.credentialsDB.LocalDataBase
 import kotlinx.android.synthetic.main.fragment_cre.*
 import kotlinx.android.synthetic.main.fragment_cre.view.*
 import kotlinx.coroutines.Dispatchers
@@ -27,14 +26,11 @@ import javax.inject.Inject
 
 
 class CredentialsFragment : Fragment() {
-//    private val credentialsViewModel: CredentialsViewModel by activityViewModels {
-//        InjectorUtils.provideCredentialsViewModelFactory(this)
-//
-//    }
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var localDB: LocalDataBase
+
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -63,13 +59,18 @@ class CredentialsFragment : Fragment() {
                 adapter=viewAdapter
             }
         })
-        localDB=LocalDataBase.getDatabase(requireContext())
+        this.lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                credentialsViewModel.sync()
+            }
+        }
         return root
     }
 
     override fun onStart() {
         super.onStart()
-//        setOnUpdate()
+
+
         setHasOptionsMenu(true)
         viewManager = LinearLayoutManager(context)
         recyclerView = list_recycle_view_services.apply {

@@ -37,7 +37,7 @@ interface DataSetDAO {
     fun deleteFromRelationship(dataSetId: Long): Int
 
     @Query("Select d.dataSetName,d.dataSetId from dataSet_ d where d.serviceId=:serviceId ")
-    fun publicGetAllDataSetsByServiceId(serviceId:Long):LiveData<List<LayoutDataSetView>>
+     fun publicGetAllDataSetsByServiceId(serviceId:Long):LiveData<List<LayoutDataSetView>>
 
     @Query("Select c.iv,c.data,c.hint,c.credentialsId from dataSetCredentialsManyToMany r,credentials_ c where r.dataSetId=:dataSetId and r.credentialsId = c.credentialsId")
     fun publicGetAllCredentialsByDataSetID(dataSetId:Long):LiveData<List<LayoutCredentialView>>

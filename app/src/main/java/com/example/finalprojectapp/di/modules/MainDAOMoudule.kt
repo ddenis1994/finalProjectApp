@@ -21,7 +21,6 @@ class AppMainModule {
     }
 
     @Provides
-    @Singleton
     fun provideScope(): CoroutineScope {
         return CoroutineScope(Job() + Dispatchers.IO)
     }

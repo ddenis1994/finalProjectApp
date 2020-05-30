@@ -33,6 +33,7 @@ class ServiceRepositoryLocal @Inject constructor(
         var localService: Service =
             privateGetServiceByName(service.name) ?: Service().copy(serviceId = -1L)
         var target = service
+        if (localService.hash == target.hash) return localService
         if (localService.serviceId != -1L) {
             localService =
                 localCryptography.decryption(localService) ?: Service().copy(serviceId = -1L)
@@ -43,7 +44,7 @@ class ServiceRepositoryLocal @Inject constructor(
             deleteFullServiceByID(localService)
         }
         target = localCryptography.encrypt(target)!!
-        if (localService.hash == target.hash) return localService
+
 
 
         val result = target.let { serviceDAO.privateInsertService(it) }

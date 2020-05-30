@@ -41,4 +41,6 @@
     <string name="register_repeat_password">Repeat Password</string>
     <string name="register">Register</string>
     <string name="user_name">User Name</string>
+    <string name="security_risks">Security Risks :</string>
+    <string name="repeated_password">Repeated Password</string>
 </resources>
