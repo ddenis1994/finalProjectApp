@@ -98,7 +98,7 @@ class DataSetRepository @Inject constructor(
             target.let {
                 var result = privateInsertDataSet(it)
                 if (result == -1L) {
-                    result = dataSetDAO.privateGetDataSet(it.hashData!!).dataSetId
+                    result = dataSetDAO.privateGetDataSet(it.hashData).dataSetId
                 }
                 val creList = mutableListOf<Long>()
                 dataSet.credentials?.forEach {cre->

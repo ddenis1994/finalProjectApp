@@ -31,7 +31,8 @@ class ServiceRepository @Inject constructor(
             val localInsert=scope.async {
                 serviceRepositoryLocal.publicInsertService(service)
             }
-            localInsert.await()?.let { serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(it, callback) }
+            localInsert.await().let {
+                serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(it, callback) }
 
 
         }
@@ -52,23 +53,26 @@ class ServiceRepository @Inject constructor(
         serviceRepositoryLocal.findServiceAndDataSet(dataSetId)
 
 
-    fun deleteCredential(credentialID: Long?, dataSetId: Long) {
-        if (credentialID != null) {
-            scope.launch {
-//                serviceRepositoryLocal.deleteLocalCredential(credentialID,dataSetId)
-//                serviceRepositoryRemote.deleteRemoteCredential(dataSetId,)
-            }
-
+    fun deleteCredential(
+        serviceName: String,
+        dataSetId: Long,
+        credentialID: Long
+    ) {
+        scope.launch {
+            val result=this.async { serviceRepositoryLocal.deleteLocalCredential(serviceName,credentialID,dataSetId) }
+            val dataSet=this.async { serviceRepositoryLocal.getDataSetByID(dataSetId) }
+            serviceRepositoryRemote.deleteRemoteCredential(result.await(),dataSet.await())
         }
     }
 
 
     //deleteDataSet
     suspend fun deleteDataSet(dataSetId: Long) {
-        val serviceName = serviceRepositoryLocal.getServiceByDataSetId(dataSetId)
-        val dataSet = serviceRepositoryLocal.getDataSetByID(dataSetId)
-        if (serviceName != null) {
-            serviceRepositoryRemote.deleteFromRemote(serviceName, dataSet)
+        val serviceName = serviceRepositoryLocal.publicGetServiceNameByDataSetID(dataSetId)
+        val service=serviceRepositoryLocal.publicGetServiceByName(serviceName)
+        serviceRepositoryLocal.getDataSetByID(dataSetId)
+        if (service != null) {
+            serviceRepositoryRemote.deleteRemoteDataSet(service,dataSetId)
         }
         serviceRepositoryLocal.deleteDataSetById(dataSetId)
     }
@@ -114,6 +118,10 @@ class ServiceRepository @Inject constructor(
 
     suspend fun publicInsertArrayCredentials(listCredentials: List<Credentials>): List<Long> =
         serviceRepositoryLocal.publicInsertArrayCredentials(listCredentials)
+
+    fun updateRemotePassword(hash: String?) :Boolean {
+        TODO("Not yet implemented")
+    }
 
 
 }

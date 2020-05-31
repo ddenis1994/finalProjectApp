@@ -15,7 +15,7 @@ class HashBuilder @Inject constructor(
 
 
     private val messageDigest = MessageDigest.getInstance("SHA-256")
-
+    private val encoder=Base64.getEncoder()
 
     private fun generateDataSetHash(dataSet: DataSet?): DataSet {
         var rawData = String()
@@ -51,8 +51,8 @@ class HashBuilder @Inject constructor(
         var hashData = service.hash
         service.dataSets.let {
             it?.forEach { dataSet ->
-                if (dataSet.hashData.isNullOrEmpty())
-                    dataSet.hashData = makeHash(dataSet)?.hashData
+                if (dataSet.hashData.isEmpty())
+                    dataSet.hashData = makeHash(dataSet)?.hashData ?: return null
                 hashData += dataSet.hashData
             }
         }
@@ -68,9 +68,16 @@ class HashBuilder @Inject constructor(
             is DataSet -> generateDataSetHash(target) as T
             is Credentials -> generateCredentialsHash(target) as T
             is Service -> generateServiceHash(target) as T
+            is String -> generateStringHash(target) as T
             is Notification -> generateServiceNotification(target) as T
             else -> null
         }
+    }
+
+    private fun generateStringHash(target: String?): String? {
+        var hash=target ?: return null
+        return encoder.encodeToString(messageDigest.digest(hash.toByteArray()))
+
     }
 
     private fun generateServiceNotification(target: Notification?): Notification? {

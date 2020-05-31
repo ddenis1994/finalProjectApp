@@ -129,7 +129,7 @@ class CredentialInnerFragment : Fragment() {
                     Toast.makeText(requireContext(), "copy user", Toast.LENGTH_SHORT).show()
                 }
                 requestCodeDeleteCredential -> {
-                    viewModel.deleteCredential(viewModel.data.value?.get(target)?.id, dataSetId)
+                    viewModel.data.value?.get(target)?.id?.let { viewModel.deleteCredential(serviceName,dataSetId,it) }
                 }
             }
 

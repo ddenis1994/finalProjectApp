@@ -12,7 +12,7 @@ import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
 
 
-@Database(entities = [Notification::class,Service::class, Credentials::class, DataSet::class, DataSetCredentialsManyToMany::class], version = 8, exportSchema = false)
+@Database(entities = [Notification::class,Service::class, Credentials::class, DataSet::class, DataSetCredentialsManyToMany::class], version = 10, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class LocalDataBase: RoomDatabase() {
 

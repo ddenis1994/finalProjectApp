@@ -55,52 +55,50 @@ class ServiceRepositoryRemote @Inject constructor(
         }
     }
 
-
-    internal suspend fun deleteRemoteCredential(
-        dataSetId: Long,
-        serviceName: String,
-        dataSet: DataSet
+    //new version
+    internal fun deleteRemoteDataSet(
+        service: Service,
+        dataSetId: Long
     ) {
-        val updates = hashMapOf<String, Any>(
-            "credentials" to dataSet.credentials!!
+        var dataSet: DataSet
+        service.dataSets?.forEach { dataSetSearch ->
+            if (dataSetSearch.serviceId == dataSetId) {
+                dataSet = dataSetSearch.copy()
+                user?.uid?.let { it1 ->
+                    db.collection("users").document(it1)
+                        .collection("services").document(service.name)
+                        .collection("dataSets").document(dataSet.hashData)
+                        .delete().addOnSuccessListener {
+                            updateAfterDeleteDataSet(service)
+                        }
+                }
+            }
+        }
+
+
+    }
+
+    private fun updateAfterDeleteDataSet(service: Service) {
+        val newHashService = service.hash
+        val update = mapOf(
+            "hash" to newHashService
         )
-        dataSet.hashData?.let {
-            user?.uid?.let { it1 ->
-                db.collection("users").document(it1)
-                    .collection("services").document(serviceName)
-                    .collection("dataSets").document(it)
-                    .update(updates)
-            }
-
-        }
-
-    }
-
-
-    fun deleteFromRemote(
-        serviceName: String,
-        dataSet: DataSet
-    ) {
-        if (user != null) {
-            dataSet.hashData?.let {
-                db.collection("users").document(user.uid)
-                    .collection("services").document(serviceName)
-                    .collection("dataSets").document(it)
-                    .delete()
-                    .addOnSuccessListener {
-                        notificationRepository.insert(
-                            Notification(
-                                1,
-                                "Delete DataSet",
-                                serviceName,
-                                DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-                            )
+        user?.uid?.let { it1 ->
+            db.collection("users").document(it1)
+                .collection("services").document(service.name)
+                .update(update).addOnSuccessListener {
+                    notificationRepository.insert(
+                        Notification(
+                            1,
+                            "Delete DataSet",
+                            service.name,
+                            DateTimeFormatter.ISO_INSTANT.format(Instant.now())
                         )
-                    }
-            }
+                    )
+                }
         }
-
     }
+
 
     @ExperimentalCoroutinesApi
     private fun setOnUpdate() {
@@ -153,6 +151,22 @@ class ServiceRepositoryRemote @Inject constructor(
                                 }
                             }
                     }
+                }
+        }
+    }
+
+    fun deleteRemoteCredential(service: Service, dataSet: DataSet) {
+
+        val update = mapOf(
+            "credentials" to dataSet.credentials
+        )
+        user?.uid?.let { it1 ->
+            db.collection("users").document(it1)
+                .collection("services").document(service.name)
+                .collection("dataSets").document(dataSet.hashData)
+                .update(update)
+                .addOnSuccessListener {
+                    updateAfterDeleteDataSet(service)
                 }
         }
     }

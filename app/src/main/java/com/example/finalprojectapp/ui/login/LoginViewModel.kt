@@ -16,12 +16,12 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private val _loginForm = MutableLiveData(
         LoginFormState()
     )
+
     val loginFormState: LiveData<LoginFormState> = _loginForm
+
 
     private var _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
-
-    var loginInPageState=0
 
     fun login(username: String, password: String): LiveData<Result<LoggedInUser>> {
         return loginRepository.login(username, password)

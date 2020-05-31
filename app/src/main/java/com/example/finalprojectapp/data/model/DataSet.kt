@@ -10,7 +10,7 @@ import com.google.firebase.firestore.Exclude
 data class DataSet (
     @Ignore
     var credentials: List<Credentials>?=null,
-    var hashData:String?=null,
+    var hashData:String="",
     var dataSetName:String="",
     @PrimaryKey(autoGenerate = true)
     @Exclude

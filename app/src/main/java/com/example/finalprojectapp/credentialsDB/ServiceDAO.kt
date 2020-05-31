@@ -15,7 +15,7 @@ interface ServiceDAO {
 
     @Transaction
     @Query("SELECT * FROM service_  Where :name like name")
-    suspend fun privateGetServiceByName(name:String): ServiceToDataSet?
+    suspend fun privateGetServiceByName(name:String): Service?
 
     @Query("Delete from service_")
     suspend fun deleteAllService()

@@ -29,7 +29,7 @@ class ServiceRepositoryLocal @Inject constructor(
         serviceDAO.deleteAllService()
     }
 
-    suspend fun publicInsertService(service: Service): Service? {
+    suspend fun publicInsertService(service: Service): Service {
         var localService: Service =
             privateGetServiceByName(service.name) ?: Service().copy(serviceId = -1L)
         var target = service
@@ -58,7 +58,7 @@ class ServiceRepositoryLocal @Inject constructor(
                 }
         }
 
-        return localCryptography.decryption(target)
+        return localCryptography.decryption(target)?: Service()
     }
 
 
@@ -180,6 +180,21 @@ class ServiceRepositoryLocal @Inject constructor(
 
     suspend fun getDataSetByID(dataSetId: Long): DataSet {
         return dataSetRepository.getDataSetByID(dataSetId)
+    }
+
+    suspend fun deleteLocalCredential(
+        serviceName: String,
+        credentialID: Long,
+        dataSetId: Long
+    ): Service {
+        return withContext(Dispatchers.IO) {
+            dataSetRepository.publicDeleteCredential(credentialID, dataSetId)
+            return@withContext serviceDAO.privateGetServiceByName(serviceName)?: Service()
+        }
+    }
+
+    fun publicGetServiceNameByDataSetID(dataSetId: Long): String {
+        return serviceDAO.getServiceByDataSetId(dataSetId)?: ""
     }
 
 

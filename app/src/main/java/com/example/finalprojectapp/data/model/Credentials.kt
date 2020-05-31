@@ -11,6 +11,8 @@ import com.google.firebase.firestore.ServerTimestamp
 data class Credentials (
     var hint:List<String>,
     var data:String,
+    var encryptPasswordHash:String?=null,
+    var encryptType:String="",
     var innerHashValue:String?=null,
     var iv:String?=null,
     var salt:String?=null,
