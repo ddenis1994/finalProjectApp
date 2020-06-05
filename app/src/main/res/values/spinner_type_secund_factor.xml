@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="second_factor">
+        <item name="none">None</item>
+        <item name="pin">PIN</item>
+        <item name="password">Device Password</item>
+        <item name="finger_print">Finger Print</item>
+        <item name="camera">Camera</item>
+    </string-array>
+</resources>

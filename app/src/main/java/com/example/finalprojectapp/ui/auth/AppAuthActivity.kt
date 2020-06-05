@@ -37,6 +37,7 @@ class AppAuthActivity : AppCompatActivity() {
 
         setting =
             SingleEncryptedSharedPreferences().getSharedPreference(this)
+
         when (setting.getBoolean("SecondFactorAuthentication", false)) {
             true -> {
 

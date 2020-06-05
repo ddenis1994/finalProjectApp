@@ -98,6 +98,50 @@
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
                 android:layout_marginStart="16dp"/>
+            <Spinner
+                android:id="@+id/second_factor_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:visibility="gone"
+            android:id="@+id/second_factor_confirm_button"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:text="confirm"/>
+
+
+
+        <TextView
+            style="@style/Settings.Header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Change Encryption"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Warning: may impact performance"
+            android:textColor="#FF0000" />
+        <LinearLayout
+           android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Settings.Container"
+            >
+            <TextView
+                style="@style/Settings.Label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="choose encryption " />
+
+            <Spinner
+                android:id="@+id/encryption_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
 
         </LinearLayout>
 

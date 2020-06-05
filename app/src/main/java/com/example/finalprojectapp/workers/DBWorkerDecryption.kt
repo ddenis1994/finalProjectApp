@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class DBWorkerDecryption(appContext: Context, workerParams: WorkerParameters)
     : CoroutineWorker(appContext, workerParams) {
-    @Inject lateinit var localCryptography:LocalCryptography
+    lateinit var localCryptography:LocalCryptography
     override suspend  fun doWork(): Result  {
         val localDB= LocalDataBase.getDatabase(applicationContext)
         val test = localDB.credentialDAO().getAllEncryptedCredentials()

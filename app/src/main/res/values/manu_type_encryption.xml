@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="encryption_array">
+    <item name="aes_128">AES 128</item>
+    <item name="aes_256">AES 256</item>
+    <item name="aes_512">AES 512</item>
+    </string-array>
+</resources>
+

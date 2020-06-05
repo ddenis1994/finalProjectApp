@@ -44,6 +44,8 @@ class RemoteCryptography @Inject constructor(context: Context?) : InnerCryptogra
 
     private fun remoteDecryptSingle(credentials: Credentials?): Credentials? {
         var new = credentials ?: return null
+        if (credentials.salt.isNullOrEmpty())
+            return credentials
         new = new.copy()
         val keySpec = PBEKeySpec(
             password.toCharArray(),

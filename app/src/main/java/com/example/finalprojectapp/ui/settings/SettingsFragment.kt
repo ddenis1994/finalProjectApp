@@ -6,14 +6,12 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.autofill.AutofillManager
-import android.widget.Button
-import android.widget.CompoundButton
-import android.widget.Switch
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -24,31 +22,43 @@ import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_settings.view.*
+import kotlinx.android.synthetic.main.fragment_settings.view.encryption_spinner
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-class SettingsFragment : Fragment() {
+@Suppress("PrivatePropertyName")
+class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
+    private val TAG: String = "settings_fragment"
     private val REQUEST_CODE_SET_DEFAULT = 1
-    @Inject lateinit var mAutoFillManager:AutofillManager
-    @Inject lateinit var setting:SharedPreferences
-    @Inject lateinit var serviceRepository: ServiceRepository
-    @Inject lateinit var notificationRepository: NotificationRepository
+
+    @Inject
+    lateinit var mAutoFillManager: AutofillManager
+
+    @Inject
+    lateinit var setting: SharedPreferences
+
+    @Inject
+    lateinit var serviceRepository: ServiceRepository
+
+    @Inject
+    lateinit var notificationRepository: NotificationRepository
+
+    lateinit var root: View
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        (requireActivity().application as MainApplication).appComponent.uiComponent().create().settingsComponent().create().inject(this)
+        (requireActivity().application as MainApplication).appComponent.uiComponent().create()
+            .settingsComponent().create().inject(this)
     }
-
-
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root=inflater.inflate(R.layout.fragment_settings, container, false)
+        root = inflater.inflate(R.layout.fragment_settings, container, false)
 
         setupSettingsSwitch(
             root.settingsSetServiceContainer,
@@ -61,13 +71,17 @@ class SettingsFragment : Fragment() {
         )
 
 
+
+
+
+
         setupSettingsSwitch(
             root.settingsSetCheckRepeatedPasswords,
             R.id.settingsSetRepeatedPasswordsLabel,
             R.id.settingsSetRepeatedPasswordsSwitch,
             mAutoFillManager.hasEnabledAutofillServices(),
             CompoundButton.OnCheckedChangeListener { _: CompoundButton?, serviceSet: Boolean ->
-                setting.edit().putBoolean("RepeatedPasswords",serviceSet).apply()
+                setting.edit().putBoolean("RepeatedPasswords", serviceSet).apply()
             }
         )
 
@@ -75,24 +89,52 @@ class SettingsFragment : Fragment() {
             root.settingsSetSecondFactorAuthenticationContainer,
             R.id.settingsSetSecondFactorAuthentication,
             R.id.settingsSetSecondFactorAuthenticationSwitch,
-            setting.getBoolean("SecondFactorAuthentication",false),
+            setting.getBoolean("SecondFactorAuthentication", false),
             CompoundButton.OnCheckedChangeListener { _: CompoundButton?, serviceSet: Boolean ->
-                setting.edit().putBoolean("SecondFactorAuthentication",serviceSet).apply()
+                setting.edit().putBoolean("SecondFactorAuthentication", serviceSet).apply()
             }
         )
+//set spinner for encryption
+        val encryptionSpinner: Spinner = root.encryption_spinner
+        ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.encryption_array,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            encryptionSpinner.adapter = adapter
+        }
+        encryptionSpinner.onItemSelectedListener = this
+
+        //set spinner for second factor
+        val secondFactorSpinner: Spinner = root.second_factor_spinner
+        ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.second_factor,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            secondFactorSpinner.adapter = adapter
+        }
+        secondFactorSpinner.onItemSelectedListener = this
+
 
         setUpSettingsButton(
             root.disconnectButton,
             ::disconnectButton
         )
 
-        // Inflate the layout for this fragment
+
         return root
     }
 
     private fun setUpSettingsButton(
         button: Button?,
-        func: ()->Unit
+        func: () -> Unit
     ) {
         button?.setOnClickListener {
             func()
@@ -100,27 +142,29 @@ class SettingsFragment : Fragment() {
     }
 
 
-    private fun disconnectButton(){
+    private fun disconnectButton() {
         this.lifecycleScope.launch {
             serviceRepository.nukeALl()
             notificationRepository.nukeAllNotification()
             FirebaseAuth.getInstance().signOut()
             setting.edit().clear().apply()
-            requireActivity().findViewById<BottomNavigationView>(R.id.my_nav_view).visibility=View.GONE
-            this@SettingsFragment.parentFragmentManager.popBackStack(null,FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            requireActivity().findViewById<BottomNavigationView>(R.id.my_nav_view).visibility =
+                View.GONE
+            this@SettingsFragment.parentFragmentManager.popBackStack(
+                null,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
 
-         }
-
+        }
 
 
     }
 
 
-
-
     private fun setupSettingsSwitch(
         containerId: ViewGroup, labelId: Int, switchId: Int, checked: Boolean,
-        checkedChangeListener: CompoundButton.OnCheckedChangeListener) {
+        checkedChangeListener: CompoundButton.OnCheckedChangeListener
+    ) {
         val container: ViewGroup = containerId
         val switchLabel =
             (container.findViewById<View>(labelId) as TextView).text.toString()
@@ -154,6 +198,27 @@ class SettingsFragment : Fragment() {
     private fun disableService() {
         if (mAutoFillManager.hasEnabledAutofillServices())
             mAutoFillManager.disableAutofillServices()
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        root.second_factor_confirm_button?.visibility = View.GONE
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        val selected = parent?.getItemAtPosition(position)
+        when (parent?.id) {
+            R.id.encryption_spinner -> {
+                Log.e(TAG, "onItemSelected: $selected")
+
+            }
+            R.id.second_factor_spinner -> {
+                Log.e(TAG, "onItemSelected: $selected")
+                root.second_factor_confirm_button?.visibility = View.VISIBLE
+            }
+            else -> Log.e(TAG, "onItemSelected: cannot detrninate")
+
+        }
+
     }
 
 }
