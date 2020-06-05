@@ -205,6 +205,7 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        // TODO: 05/06/2020 contine the settitngs spiiner
         val selected = parent?.getItemAtPosition(position)
         when (parent?.id) {
             R.id.encryption_spinner -> {
