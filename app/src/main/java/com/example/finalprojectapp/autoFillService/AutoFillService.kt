@@ -31,11 +31,6 @@ class AutoFillService : AutofillService() {
     override fun onCreate() {
         (applicationContext as MainApplication).appComponent.autoFillServiceComponent().create().inject(this)
         super.onCreate()
-
-
-        //mainRepository= ServiceRepository(this, mainRepositoryLocal)
-
-
     }
 
     override fun onFillRequest(

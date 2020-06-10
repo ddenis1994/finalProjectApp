@@ -1,94 +1,34 @@
 package com.example.finalprojectapp.ui.auth
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.service.autofill.FillResponse
 import android.view.autofill.AutofillManager.EXTRA_AUTHENTICATION_RESULT
-import android.widget.Toast
-import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricPrompt
-import androidx.core.content.ContextCompat
-import com.example.finalprojectapp.R
-import java.util.concurrent.Executor
+import androidx.appcompat.app.AppCompatActivity
 
 class ServiceAuthActivity : AppCompatActivity() {
-    private lateinit var biometricManager:BiometricManager
-    private lateinit var executor: Executor
-    private lateinit var biometricPrompt: BiometricPrompt
-    private lateinit var promptInfo: BiometricPrompt.PromptInfo
+    private var structure: FillResponse?=null
+    private val requestCodeForDelete:Int=3001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_auth)
+        structure = intent.getParcelableExtra("response")
+        val intent = Intent(this, AppAuthActivity::class.java)
+        startActivityForResult(intent,requestCodeForDelete)
 
-        val structure: FillResponse? = intent.getParcelableExtra("response")
-        val dataSetId = intent.getIntExtra("dataSetId",-1)
+    }
 
-        biometricManager = BiometricManager.from(this)
-        executor = ContextCompat.getMainExecutor(this)
-        biometricPrompt = BiometricPrompt(this, executor,
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationError(errorCode: Int,
-                                                   errString: CharSequence) {
-                    super.onAuthenticationError(errorCode, errString)
-                    Toast.makeText(applicationContext,
-                        "Authentication error: $errString", Toast.LENGTH_SHORT)
-                        .show()
-                    finish()
-                }
-
-                override fun onAuthenticationSucceeded(
-                    result: BiometricPrompt.AuthenticationResult) {
-                    super.onAuthenticationSucceeded(result)
-                    val replyIntent = Intent().apply {
-                        // Send the data back to the service.
-                        if(dataSetId !=-1)
-                            putExtra("dataSetId",dataSetId)
-                        else
-                            putExtra(EXTRA_AUTHENTICATION_RESULT, structure)
-                    }
-                    setResult(RESULT_OK, replyIntent)
-                    Toast.makeText(applicationContext,
-                        "Authentication succeeded!", Toast.LENGTH_SHORT)
-                        .show()
-                    finish()
-                }
-
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
-                    val replyIntent = Intent().apply {
-                        // Send the data back to the service.
-                    }
-                    setResult(RESULT_CANCELED, replyIntent)
-                    Toast.makeText(applicationContext, "Authentication failed",
-                        Toast.LENGTH_SHORT)
-                        .show()
-                    finish()
-                }
-            })
-
-        promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Biometric login for my app")
-            .setSubtitle("Log in using your biometric credential")
-            .setNegativeButtonText("Use account password")
-            .build()
-
-
-
-
-        when (biometricManager.canAuthenticate()) {
-            BiometricManager.BIOMETRIC_SUCCESS ->
-                biometricPrompt.authenticate(promptInfo)
-            else->{
-                setResult(RESULT_CANCELED)
-                Toast.makeText(applicationContext, "Authentication failed",
-                    Toast.LENGTH_SHORT)
-                    .show()
-                finish()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            val replyIntent = Intent().apply {
+                putExtra(EXTRA_AUTHENTICATION_RESULT, structure)
             }
-        }
+            setResult(RESULT_OK, replyIntent)
+            finish()
 
+        }
     }
 
 

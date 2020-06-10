@@ -4,8 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.service.autofill.FillResponse
-import android.view.autofill.AutofillManager.EXTRA_AUTHENTICATION_RESULT
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
@@ -25,7 +23,6 @@ class AppAuthActivity : AppCompatActivity() {
     lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
-    private var structure: FillResponse? = null
 
     @Inject
     lateinit var setting: SharedPreferences
@@ -38,7 +35,6 @@ class AppAuthActivity : AppCompatActivity() {
         applicationComponent.uiComponent().create().authActivityComponent().create().inject(this)
         setContentView(R.layout.activity_auth)
 
-        structure = intent.getParcelableExtra("response")
 
         target = intent.getIntExtra("target", -1)
 
@@ -143,8 +139,6 @@ class AppAuthActivity : AppCompatActivity() {
         val replyIntent = Intent().apply {
             if (target != -1)
                 putExtra("target", target)
-            else
-                putExtra(EXTRA_AUTHENTICATION_RESULT, structure)
         }
         Toast.makeText(
             applicationContext,
