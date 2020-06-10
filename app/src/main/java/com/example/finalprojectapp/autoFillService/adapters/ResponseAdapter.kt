@@ -56,7 +56,7 @@ class ResponseAdapter(
 
     private fun withLocalData(service:Service, fillResponse: FillResponse.Builder) {
         val secondFactor=setting.getString("SecondFactorAuthentication","")
-        if (!secondFactor.isNullOrBlank())
+        if (!secondFactor.isNullOrBlank() && secondFactor!="None")
             fillResponseWith2Factor(service, fillResponse)
         else
             normalResponse(service, fillResponse)
