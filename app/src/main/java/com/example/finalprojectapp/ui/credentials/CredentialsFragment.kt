@@ -84,9 +84,8 @@ class CredentialsFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode==2) {
             when (resultCode ){
-                AppCompatActivity.RESULT_CANCELED->Log.i("test","test321")
                 AppCompatActivity.RESULT_OK-> if (data != null) {
-                    deleteDataSet(data.getIntExtra("dataSetId",-1).toLong())
+                    deleteDataSet(data.getIntExtra("target",-1).toLong())
                 }
             }
         }

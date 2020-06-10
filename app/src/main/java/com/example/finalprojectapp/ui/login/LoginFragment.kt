@@ -38,14 +38,15 @@ import java.io.IOException
 
 class LoginFragment : Fragment() {
 
-    private val TAG ="loginFragment"
+    private val TAG = "loginFragment"
 
-    private  val loginViewModel: LoginViewModel by activityViewModels{
+    private val loginViewModel: LoginViewModel by activityViewModels {
         LoginViewModelFactory(requireActivity())
     }
     private lateinit var mGoogleSignInClient: GoogleSignInClient
-    private val RC_SIGN_IN:Int = 9001
+    private val RC_SIGN_IN: Int = 9001
     private lateinit var auth: FirebaseAuth
+    private var firstTimeLogin: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,7 +67,8 @@ class LoginFragment : Fragment() {
         mGoogleSignInClient = GoogleSignIn.getClient(requireContext().applicationContext, gso)
         auth = FirebaseAuth.getInstance()
 
-        root.google_sigh_in.setOnClickListener{
+        root.google_sigh_in.setOnClickListener {
+            firstTimeLogin = true
             loading.visibility = View.VISIBLE
             singInGoogle()
         }
@@ -78,39 +80,37 @@ class LoginFragment : Fragment() {
                 login.text = getString(R.string.action_sign_in)
                 login.isEnabled = loginState.isDataValid
 
-            }
-            else {
+            } else {
                 login.text = getString(R.string.action_register)
                 login.isEnabled = true
             }
 
 
             if (loginState.usernameError != null) {
-                root.username.helperText=getString(loginState.usernameError)
-            }
-            else
-                root.username.helperText=getString(R.string.action_sign_in)
+                root.username.helperText = getString(loginState.usernameError)
+            } else
+                root.username.helperText = getString(R.string.action_sign_in)
             if (loginState.passwordError != null) {
-                root.password.helperText=getString(loginState.passwordError)
-            }
-            else
-                root.password.helperText=""
+                root.password.helperText = getString(loginState.passwordError)
+            } else
+                root.password.helperText = ""
         })
 
         loginViewModel.loginResult.observe(viewLifecycleOwner, Observer {
             val loginResult = it ?: return@Observer
             loading.visibility = View.GONE
-            if (loginResult.error != null) {
-                showLoginFailed(loginResult.error)
-            }
-            if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
-            }
+            if (firstTimeLogin)
+                when {
+                    loginResult.success != null -> updateUiWithUser(loginResult.success)
+                    loginResult.error != null -> showLoginFailed(loginResult.error)
+                    else -> showLoginFailed(R.string.default_error_msg)
+                }
+
             activity?.setResult(AppCompatActivity.RESULT_OK)
         })
         username.afterTextChanged {
-            if(it.isNotEmpty())
-                root.password.isEnabled=true
+            if (it.isNotEmpty())
+                root.password.isEnabled = true
             loginViewModel.loginDataChanged(
                 username.text.toString(),
                 password.text.toString()
@@ -126,12 +126,13 @@ class LoginFragment : Fragment() {
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(username.text.toString(),password.text.toString())
+                        loginViewModel.login(username.text.toString(), password.text.toString())
                 }
                 false
             }
 
             login.setOnClickListener {
+                firstTimeLogin = true
                 if (loginViewModel.loginFormState.value?.signIn!!) {
                     loading.visibility = View.VISIBLE
                     loginViewModel.login(username.text.toString(), password.text.toString())
@@ -139,10 +140,12 @@ class LoginFragment : Fragment() {
                             Observer {
                                 loginViewModel.updateResult(it)
                             })
-                }
-                else{
-                    val userNamePassword=username.text.toString()
-                    val action =LoginFragmentDirections.actionLoginFragmentToNavigationFragmentRegisterUserName(userNamePassword)
+                } else {
+                    val userNamePassword = username.text.toString()
+                    val action =
+                        LoginFragmentDirections.actionLoginFragmentToNavigationFragmentRegisterUserName(
+                            userNamePassword
+                        )
                     requireView().findNavController().navigate(action)
 
                 }
@@ -158,13 +161,16 @@ class LoginFragment : Fragment() {
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName
 
-        requireActivity().findViewById<BottomNavigationView>(R.id.my_nav_view).visibility=View.VISIBLE
-        val navView: BottomNavigationView =requireActivity().findViewById(R.id.my_nav_view)
-        val navController: NavController = requireActivity().findNavController(R.id.nav_host_fragment)
+        requireActivity().findViewById<BottomNavigationView>(R.id.my_nav_view).visibility =
+            View.VISIBLE
+        val navView: BottomNavigationView = requireActivity().findViewById(R.id.my_nav_view)
+        val navController: NavController =
+            requireActivity().findNavController(R.id.nav_host_fragment)
         (activity as AppCompatActivity).supportActionBar?.show()
-        (activity as AppCompatActivity).supportActionBar?.title="PASCEMANGER"
+        (activity as AppCompatActivity).supportActionBar?.title = "PASCEMANGER"
         navView.setupWithNavController(navController)
-        requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.startMainApplication)
+        requireActivity().findNavController(R.id.nav_host_fragment)
+            .navigate(R.id.startMainApplication)
 
 
 
@@ -184,12 +190,15 @@ class LoginFragment : Fragment() {
         super.onStart()
 
         val currentUser = auth.currentUser
-        if(currentUser!= null) {
-            val user = LoggedInUser(java.util.UUID.randomUUID().toString(), currentUser.displayName.toString())
-            val res= Result.Success(user)
+        if (currentUser != null) {
+            firstTimeLogin = true
+            val user = LoggedInUser(
+                java.util.UUID.randomUUID().toString(),
+                currentUser.displayName.toString()
+            )
+            val res = Result.Success(user)
             loginViewModel.updateResult(res)
-        }
-        else
+        } else
             loginViewModel.updateResult(Result.Error(Exception("do not have user logged in")))
     }
 
@@ -205,6 +214,7 @@ class LoginFragment : Fragment() {
             handleSignInResult(task)
         }
     }
+
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
             val account = completedTask.getResult(ApiException::class.java)
@@ -222,29 +232,37 @@ class LoginFragment : Fragment() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this.requireActivity()) { task ->
                 if (task.isSuccessful) {
-                    val user = LoggedInUser(java.util.UUID.randomUUID().toString(), acct.displayName.toString())
-                    val res= Result.Success(user)
+                    val user = LoggedInUser(
+                        java.util.UUID.randomUUID().toString(),
+                        acct.displayName.toString()
+                    )
+                    val res = Result.Success(user)
                     loginViewModel.updateResult(res)
-                }
-                else {
+                } else {
                     auth.createUserWithEmailAndPassword(acct.email.toString(), "test5656")
                         .addOnCompleteListener(this.requireActivity()) { LoginTask ->
                             if (LoginTask.isSuccessful) {
-                                val user = LoggedInUser(java.util.UUID.randomUUID().toString(), acct.displayName.toString())
-                                val res= Result.Success(user)
+                                val user = LoggedInUser(
+                                    java.util.UUID.randomUUID().toString(),
+                                    acct.displayName.toString()
+                                )
+                                val res = Result.Success(user)
                                 loginViewModel.updateResult(res)
                             } else {
-                                val res= Result.Error(IOException("Error logging in", LoginTask.exception))
+                                val res = Result.Error(
+                                    IOException(
+                                        "Error logging in",
+                                        LoginTask.exception
+                                    )
+                                )
                                 loginViewModel.updateResult(res)
-                                Log.w(TAG, "createUserWithEmail:failure",LoginTask.exception)
+                                Log.w(TAG, "createUserWithEmail:failure", LoginTask.exception)
                             }
 
                         }
                 }
             }
     }
-
-
 
 
 }
@@ -262,8 +280,6 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
     })
-
-
 
 
 }

@@ -15,14 +15,19 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.example.finalprojectapp.MainApplication
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
+import com.example.finalprojectapp.workers.ChangeEncryptionWorker
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_settings.view.*
 import kotlinx.android.synthetic.main.fragment_settings.view.encryption_spinner
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,7 +50,18 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
     @Inject
     lateinit var notificationRepository: NotificationRepository
 
+    @Inject
+    lateinit var scope: CoroutineScope
+
     lateinit var root: View
+
+    private var secondFactorMethod = ""
+
+    private var encryptionMethod = ""
+
+    private var tempSecondFactorMethod:String = ""
+
+    private var tempEncryptionMethod:String = ""
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -69,10 +85,9 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 setService(serviceSet)
             }
         )
-
-
-
-
+        //get values
+        secondFactorMethod = setting.getString("SecondFactorAuthentication", "None") ?: ""
+        encryptionMethod = setting.getString("encryptionMethod", "AES 128") ?: ""
 
 
         setupSettingsSwitch(
@@ -85,15 +100,15 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
             }
         )
 
-        setupSettingsSwitch(
-            root.settingsSetSecondFactorAuthenticationContainer,
-            R.id.settingsSetSecondFactorAuthentication,
-            R.id.settingsSetSecondFactorAuthenticationSwitch,
-            setting.getBoolean("SecondFactorAuthentication", false),
-            CompoundButton.OnCheckedChangeListener { _: CompoundButton?, serviceSet: Boolean ->
-                setting.edit().putBoolean("SecondFactorAuthentication", serviceSet).apply()
-            }
-        )
+//        setupSettingsSwitch(
+//            root.settingsSetSecondFactorAuthenticationContainer,
+//            R.id.settingsSetSecondFactorAuthentication,
+//            R.id.settingsSetSecondFactorAuthenticationSwitch,
+//            setting.getBoolean("SecondFactorAuthentication", false),
+//            CompoundButton.OnCheckedChangeListener { _: CompoundButton?, serviceSet: Boolean ->
+//                setting.edit().putBoolean("SecondFactorAuthentication", serviceSet).apply()
+//            }
+//        )
 //set spinner for encryption
         val encryptionSpinner: Spinner = root.encryption_spinner
         ArrayAdapter.createFromResource(
@@ -128,6 +143,15 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
             ::disconnectButton
         )
 
+        setUpSettingsButton(
+            root.second_factor_confirm_button,
+            ::change2FactorMethod
+        )
+        setUpSettingsButton(
+            root.change_encryption_confirm_button,
+            ::changeEncryptionType
+        )
+
 
         return root
     }
@@ -160,6 +184,24 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     }
 
+    private fun changeEncryptionType() {
+        val newEncryptionType=tempEncryptionMethod
+        setting.edit().putBoolean("changeEncryptionType",true).apply()
+        val newEncryption= workDataOf("encryptionType" to newEncryptionType)
+        val changeEncryptionWorker= OneTimeWorkRequestBuilder<ChangeEncryptionWorker>()
+            .setInputData(newEncryption)
+            .addTag("ChangeEncryptionWorker")
+            .build()
+        WorkManager.getInstance(requireContext()).enqueue(changeEncryptionWorker)
+    }
+
+    private fun change2FactorMethod() {
+        setting.edit().putString("SecondFactorAuthentication",tempSecondFactorMethod).apply()
+        secondFactorMethod=tempSecondFactorMethod
+        root.second_factor_confirm_button.visibility=View.GONE
+        tempSecondFactorMethod=""
+
+    }
 
     private fun setupSettingsSwitch(
         containerId: ViewGroup, labelId: Int, switchId: Int, checked: Boolean,
@@ -201,20 +243,37 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        root.second_factor_confirm_button?.visibility = View.GONE
+
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        // TODO: 05/06/2020 contine the settitngs spiiner
+
         val selected = parent?.getItemAtPosition(position)
         when (parent?.id) {
             R.id.encryption_spinner -> {
+                val confirm = root.change_encryption_confirm_button
+                if (selected != encryptionMethod) {
+                    confirm.visibility = View.VISIBLE
+                    tempEncryptionMethod=selected.toString()
+                }
+                else {
+                    confirm.visibility = View.GONE
+                    tempEncryptionMethod=""
+                }
+
                 Log.e(TAG, "onItemSelected: $selected")
 
             }
             R.id.second_factor_spinner -> {
-                Log.e(TAG, "onItemSelected: $selected")
-                root.second_factor_confirm_button?.visibility = View.VISIBLE
+                val confirm = root.second_factor_confirm_button
+                if (selected != secondFactorMethod) {
+                    confirm.visibility = View.VISIBLE
+                    tempSecondFactorMethod=selected.toString()
+                }
+                else {
+                    confirm.visibility = View.GONE
+                    tempSecondFactorMethod=""
+                }
             }
             else -> Log.e(TAG, "onItemSelected: cannot detrninate")
 

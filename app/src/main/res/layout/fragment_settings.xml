@@ -14,12 +14,11 @@
         android:paddingBottom="@dimen/spacing_large">
 
         <TextView
-            style="@style/Settings.Header"
             android:id="@+id/textView"
+            style="@style/Settings.Header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/settings_enable_header"
-        />
+            android:text="@string/settings_enable_header" />
 
         <LinearLayout
             android:id="@+id/settingsSetServiceContainer"
@@ -28,20 +27,20 @@
             android:layout_height="wrap_content">
 
             <TextView
-            android:id="@+id/settingsSetServiceLabel"
-            style="@style/Settings.Label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/set_default_autofill_service" />
+                android:id="@+id/settingsSetServiceLabel"
+                style="@style/Settings.Label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/set_default_autofill_service" />
 
             <Switch
                 android:id="@+id/settingsSetServiceSwitch"
                 style="@style/Settings.Switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:layout_marginStart="16dp"/>
+                android:layout_marginStart="16dp"
+                android:minHeight="48dp" />
 
 
         </LinearLayout>
@@ -65,25 +64,25 @@
                 style="@style/Settings.Switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:layout_marginStart="16dp"/>
+                android:layout_marginStart="16dp"
+                android:minHeight="48dp" />
 
 
         </LinearLayout>
 
         <TextView
-            style="@style/Settings.Header"
             android:id="@+id/textView2"
+            style="@style/Settings.Header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/_2_factor_authentication"
-            />
+            android:text="@string/_2_factor_authentication" />
+
         <LinearLayout
             android:id="@+id/settingsSetSecondFactorAuthenticationContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             style="@style/Settings.Container"
-            >
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
             <TextView
                 android:id="@+id/settingsSetSecondFactorAuthentication"
                 style="@style/Settings.Label"
@@ -91,46 +90,40 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/activate_second_factor_authentication" />
-            <Switch
-                android:id="@+id/settingsSetSecondFactorAuthenticationSwitch"
-                style="@style/Settings.Switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:layout_marginStart="16dp"/>
+
             <Spinner
                 android:id="@+id/second_factor_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
 
         </LinearLayout>
+
         <com.google.android.material.button.MaterialButton
-            android:visibility="gone"
             android:id="@+id/second_factor_confirm_button"
             android:layout_width="wrap_content"
-            android:layout_gravity="center"
             android:layout_height="wrap_content"
-            android:text="confirm"/>
-
+            android:layout_gravity="right"
+            android:text="@string/confirm"
+            android:visibility="gone" />
 
 
         <TextView
             style="@style/Settings.Header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Change Encryption"
-            />
+            android:text="Change Encryption" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Warning: may impact performance"
             android:textColor="#FF0000" />
+
         <LinearLayout
-           android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             style="@style/Settings.Container"
-            >
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
             <TextView
                 style="@style/Settings.Label"
                 android:layout_width="0dp"
@@ -145,23 +138,32 @@
 
         </LinearLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/change_encryption_confirm_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/confirm"
+            android:visibility="gone" />
+
         <LinearLayout
             android:id="@+id/settings_disconnect_layout"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical"
-            android:layout_height="wrap_content">
+            android:orientation="vertical">
+
             <Button
                 android:id="@+id/disconnectButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/settings_disconnect_button"
-                />
+                android:text="@string/settings_disconnect_button" />
+
             <com.google.android.material.textview.MaterialTextView
                 style="@style/Settings.Label"
                 android:layout_width="wrap_content"
-                android:text="@string/settings_disconnect_label"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:text="@string/settings_disconnect_label" />
 
         </LinearLayout>
 

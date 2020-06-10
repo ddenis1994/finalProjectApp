@@ -9,6 +9,7 @@ import com.example.finalprojectapp.ui.auth.ServiceAuthActivity
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.databinding.LayoutListDataSetsBinding
+import com.example.finalprojectapp.ui.auth.AppAuthActivity
 import com.example.finalprojectapp.ui.credentials.CredentialsFragment
 import com.example.finalprojectapp.ui.credentials.CredentialsFragmentDirections
 
@@ -34,8 +35,8 @@ class DataSetAdapter(
 
             binding.setDeleteDataSet {
                 val deleteAuthActivity =
-                    Intent(mContext.requireContext(), ServiceAuthActivity::class.java).apply {
-                        putExtra("dataSetId", binding.dataSetCard?.dataSetId?.toInt())
+                    Intent(mContext.requireContext(), AppAuthActivity::class.java).apply {
+                        putExtra("target", binding.dataSetCard?.dataSetId?.toInt())
                     }
 
                 mContext.startActivityForResult(deleteAuthActivity, forDeleteCode)

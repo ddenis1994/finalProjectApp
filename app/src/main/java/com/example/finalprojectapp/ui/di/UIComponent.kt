@@ -2,6 +2,7 @@ package com.example.finalprojectapp.ui.di
 
 import com.example.finalprojectapp.MainActivity
 import com.example.finalprojectapp.autoFillService.di.AutoFIllServiceComponent
+import com.example.finalprojectapp.ui.auth.di.AuthComponent
 import com.example.finalprojectapp.ui.credentials.di.CredentialsFragmentComponent
 import com.example.finalprojectapp.ui.dashboard.di.DashBoardFragmentComponent
 import com.example.finalprojectapp.ui.notifications.di.NotificationFragmentComponent
@@ -19,6 +20,7 @@ interface UIComponent {
     fun credentialViewModelComponent(): CredentialsFragmentComponent.Factory
     fun dashBoardFragmentComponent(): DashBoardFragmentComponent.Factory
     fun notificationFragmentComponent(): NotificationFragmentComponent.Factory
+    fun authActivityComponent(): AuthComponent.Factory
 
     fun inject(fragment: MainActivity)
 
