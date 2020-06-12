@@ -1,5 +1,6 @@
 package com.example.finalprojectapp.crypto
 
+import android.view.View
 import androidx.security.crypto.MasterKeys
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
@@ -51,6 +52,10 @@ class LocalCryptography @Inject constructor(//private var instance: SharedPrefer
         if (!newCredentials.iv.isNullOrEmpty())
             return newCredentials
 
+        //TODO fix encrypt only if sensative data
+//        val h=credentials.hint.filter { it == View.AUTOFILL_HINT_CREDIT_CARD_NUMBER || it == View.AUTOFILL_HINT_PASSWORD  }
+//        if (h.isEmpty())
+//            return newCredentials
         cipher.init(Cipher.ENCRYPT_MODE, getKey())
         val encryptedData = cipher.doFinal(newCredentials.data.toByteArray())
         return newCredentials.copy(

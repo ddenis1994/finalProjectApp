@@ -83,7 +83,6 @@ class ResponseAdapter constructor(
                             AutofillValue.forText(hashLocal[hint]?.data),
                             presentation
                         )
-
                     }
                 }
             }
