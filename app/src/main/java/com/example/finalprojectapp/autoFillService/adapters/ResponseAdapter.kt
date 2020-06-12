@@ -20,7 +20,9 @@ import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.ui.auth.ServiceAuthActivity
 import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
+import kotlinx.coroutines.isActive
 import java.security.SecureRandom
+import kotlin.coroutines.coroutineContext
 
 class ResponseAdapter constructor(
     private val context: Context,
