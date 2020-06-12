@@ -1,7 +1,11 @@
 package com.example.finalprojectapp.autoFillService.di
 
 
-import com.example.finalprojectapp.autoFillService.AutoFillService
+import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
+import com.example.finalprojectapp.autoFillService.adapters.DataSetAdapter
+import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
@@ -11,28 +15,50 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
- class AutoFillServiceModule  {
+class AutoFillServiceModule  {
 
-    private lateinit var packageName: String
+
+
+
+    @Inject
+    lateinit var context: Context
+
+    @Inject
+    lateinit var dataSetAdapter: Lazy<DataSetAdapter>
+
+
+
+
+
+    @Provides
+    fun provideScope(): CoroutineScope {
+        return CoroutineScope(Job() + Dispatchers.IO)
+    }
+
 
     @Provides
     @Singleton
-    @Inject
-    fun provideAutoFillServiceModule(autoFillService:AutoFillService): AutoFillService {
-        return autoFillService
+    fun provideSharedPreferences(context: Application): SharedPreferences {
+        return SingleEncryptedSharedPreferences().getSharedPreference(context)
     }
 
-    fun setPackageNameParsing(packageName:String){
-        this.packageName=packageName
-    }
 
-    @Provides
-    @Singleton
-    @Inject
-    fun providePackageNameParsing(): String {
-        return this.packageName
-    }
 
+//    @Provides
+//    fun provideAutoFillServiceModule(
+//        autoFillService: AutoFillService
+//    ): AutoFillService {
+//        return autoFillService
+//    }
+
+
+//    @Provides
+//    fun providesDataSetAdapter(
+//        localServiceDAO: ServiceRepository,
+//        coroutineScope: CoroutineScope
+//    ): DataSetAdapter {
+//        return DataSetAdapter(localServiceDAO, packageName, coroutineScope)
+//    }
 
 
 }

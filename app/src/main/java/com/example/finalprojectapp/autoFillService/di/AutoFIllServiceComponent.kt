@@ -1,19 +1,25 @@
 package com.example.finalprojectapp.autoFillService.di
 
+import android.content.Context
 import com.example.finalprojectapp.autoFillService.AutoFillService
-import dagger.Subcomponent
+import com.example.finalprojectapp.di.modules.DataBaseModule
+import dagger.BindsInstance
+import dagger.Component
 import javax.inject.Singleton
 
-@Subcomponent(modules = [AutoFillServiceModule::class])
+@Singleton
+@Component(modules = [AutoFillServiceModule::class, DataBaseModule::class])
 interface AutoFIllServiceComponent {
 
-    @Subcomponent.Factory
-    interface Factory {
-        fun create(): AutoFIllServiceComponent
+
+
+    @Component.Factory
+    interface Factory{
+        fun create(@BindsInstance context: Context,@BindsInstance packageName: String):AutoFIllServiceComponent
     }
 
-    fun inject(autoFillService: AutoFillService)
 
+    fun inject(autoFillService: AutoFillService)
 
 
 }

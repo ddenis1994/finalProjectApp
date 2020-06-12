@@ -1,6 +1,8 @@
 package com.example.finalprojectapp.autoFillService.adapters
 
+import android.content.Context
 import android.view.View
+import com.example.finalprojectapp.R
 import com.example.finalprojectapp.autoFillService.AutoFillNodeData
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.data.model.Credentials
@@ -9,12 +11,15 @@ import com.example.finalprojectapp.data.model.Service
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
+import javax.inject.Inject
 
-class DataSetAdapter(
+class DataSetAdapter @Inject constructor (
     private val localServiceDAO: ServiceRepository,
     val packageName: String,
     private val coroutineScope: CoroutineScope
 ) {
+    @Inject
+    lateinit var context:Context
 
     suspend fun getDataAsync(): Deferred<Service?> {
         return coroutineScope.async {
@@ -64,6 +69,7 @@ class DataSetAdapter(
             hashLocal[View.AUTOFILL_HINT_EMAIL_ADDRESS]!=null -> hashLocal[View.AUTOFILL_HINT_EMAIL_ADDRESS]!!
             hashLocal[View.AUTOFILL_HINT_NAME]!=null -> hashLocal[View.AUTOFILL_HINT_NAME]!!
             hashLocal[View.AUTOFILL_HINT_PHONE]!=null -> hashLocal[View.AUTOFILL_HINT_PHONE]!!
+            hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_NUMBER]!=null -> context.resources.getString(R.string.creditCard)+hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_NUMBER]!!.takeLast(4)
             hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE]!=null -> hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE]!!
             else -> "SecretDataSet"
         }

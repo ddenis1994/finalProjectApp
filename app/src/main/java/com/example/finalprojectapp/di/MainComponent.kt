@@ -2,8 +2,10 @@ package com.example.finalprojectapp.di
 
 import android.app.Application
 import android.content.Context
+import android.service.autofill.AutofillService
 import com.example.finalprojectapp.MainActivity
 import com.example.finalprojectapp.autoFillService.di.AutoFIllServiceComponent
+import com.example.finalprojectapp.autoFillService.di.AutoFillServiceModule
 
 import com.example.finalprojectapp.di.modules.AppMainModule
 import com.example.finalprojectapp.di.modules.DataBaseModule
@@ -22,7 +24,7 @@ interface MainComponent {
 
     fun inject(mainActivity: MainActivity)
 
-    fun autoFillServiceComponent(): AutoFIllServiceComponent.Factory
+//    fun autoFillServiceComponent(): AutoFIllServiceComponent.Builder
     fun credentialInnerViewModelComponent(): CredentialInnerComponent.Factory
     fun credentialViewModelComponent(): CredentialsFragmentComponent.Factory
     fun uiComponent(): UIComponent.Factory
@@ -43,5 +45,5 @@ interface MainComponent {
 
 }
 
-@Module(subcomponents = [AutoFIllServiceComponent::class, UIComponent::class])
+@Module(subcomponents = [/*AutoFIllServiceComponent::class,*/ UIComponent::class])
 object SubComponentsModule

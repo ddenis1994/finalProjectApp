@@ -3,9 +3,9 @@ package com.example.finalprojectapp.autoFillService
 import android.app.assist.AssistStructure
 import android.os.CancellationSignal
 import android.service.autofill.*
-import com.example.finalprojectapp.MainApplication
 import com.example.finalprojectapp.autoFillService.adapters.DataSetAdapter
 import com.example.finalprojectapp.autoFillService.adapters.ResponseAdapter
+import com.example.finalprojectapp.autoFillService.di.DaggerAutoFIllServiceComponent
 import com.example.finalprojectapp.credentialsDB.NotificationRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepositoryLocal
@@ -18,20 +18,20 @@ import javax.inject.Inject
 class AutoFillService : AutofillService() {
 
 
-    @Inject lateinit var mainRepository: ServiceRepository
-    @Inject lateinit var mainRepositoryLocal: ServiceRepositoryLocal
-    @Inject lateinit var notificationRepository: NotificationRepository
-    @Inject lateinit var coroutineScope: CoroutineScope
+    @Inject
+    lateinit var mainRepository: ServiceRepository
+    @Inject
+    lateinit var mainRepositoryLocal: ServiceRepositoryLocal
+    @Inject
+    lateinit var notificationRepository: NotificationRepository
+    @Inject
+    lateinit var coroutineScope: CoroutineScope
     private lateinit var clientViewMetadata: List<AutofillFieldMetadata>
-    private lateinit var dataSetAdapter: DataSetAdapter
+    @Inject
+    lateinit var dataSetAdapter: DataSetAdapter
     private lateinit var responseAdapter: ResponseAdapter
     private lateinit var clientViewSaveData: MutableList<AutoFillNodeData>
 
-
-    override fun onCreate() {
-        (applicationContext as MainApplication).appComponent.autoFillServiceComponent().create().inject(this)
-        super.onCreate()
-    }
 
     override fun onFillRequest(
         request: FillRequest, cancellationSignal: CancellationSignal,
@@ -40,17 +40,15 @@ class AutoFillService : AutofillService() {
         val context: List<FillContext> = request.fillContexts
         val structure: AssistStructure = context[context.size - 1].structure
 
+        DaggerAutoFIllServiceComponent.factory()
+            .create(this, structure.activityComponent.packageName).inject(this)
+
         val newParserV2 = ClientParser(structure)
         clientViewMetadata =
             ClientViewMetadataBuilder(
                 newParserV2
             ).buildClientViewMetadata()
 
-        dataSetAdapter = DataSetAdapter(
-            mainRepository,
-            structure.activityComponent.packageName,
-            coroutineScope
-        )
         responseAdapter = ResponseAdapter(
             this.applicationContext,
             dataSetAdapter,
@@ -66,16 +64,14 @@ class AutoFillService : AutofillService() {
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
         val context = request.fillContexts
         val structure = context[context.size - 1].structure
+        DaggerAutoFIllServiceComponent.factory()
+            .create(this, structure.activityComponent.packageName).inject(this)
         val newParserV2 = ClientParser(structure)
         clientViewSaveData =
             ClientViewMetadataBuilder(
                 newParserV2
             ).buildClientSaveMetadata()
-        dataSetAdapter = DataSetAdapter(
-            mainRepository,
-            structure.activityComponent.packageName,
-            coroutineScope
-        )
+
         val service = dataSetAdapter.generatesServiceClass(clientViewSaveData)
 
         mainRepository.addService(service, callback)
