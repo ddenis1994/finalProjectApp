@@ -19,40 +19,49 @@ import com.example.finalprojectapp.autoFillService.AutofillFieldMetadata
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.ui.auth.ServiceAuthActivity
-import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
-import kotlinx.coroutines.isActive
 import java.security.SecureRandom
-import kotlin.coroutines.coroutineContext
+import javax.inject.Inject
 
-class ResponseAdapter constructor(
+class ResponseAdapter @Inject constructor(
     private val context: Context,
     private val dataSetAdapter: DataSetAdapter,
-    private val clientViewMetadata: List<AutofillFieldMetadata>,
-    private val callback: FillCallback,
-    private val cancellationSignal: CancellationSignal
+    private val setting: SharedPreferences
 ) {
-    private lateinit var setting: SharedPreferences
+
+    private var clientViewMetadata: List<AutofillFieldMetadata>?=null
+    var callback: FillCallback?=null
+    private var cancellationSignal: CancellationSignal?=null
+
+    fun setData(
+        clientViewMetadata: List<AutofillFieldMetadata>,
+        callback: FillCallback,
+        cancellationSignal: CancellationSignal
+    ) {
+        this.clientViewMetadata=clientViewMetadata
+        this.callback=callback
+        this.cancellationSignal=cancellationSignal
+    }
+
     suspend fun buildResponse() {
-        setting = SingleEncryptedSharedPreferences().getSharedPreference(context)
         if (clientViewMetadata.isNullOrEmpty())
-            cancellationSignal.cancel()
+            cancellationSignal?.cancel()
         val responseBuilder = FillResponse.Builder()
         val service = dataSetAdapter.getDataAsync().await()
         if (service != null)
             withLocalData(service, responseBuilder)
         else
-            withNoData(responseBuilder, dataSetAdapter.packageName)
+            dataSetAdapter.packageName?.let { withNoData(responseBuilder, it) }
 
-        if (clientViewMetadata.isNotEmpty()) {
-            val saveInfo = SaveInfo.Builder(clientViewMetadata.map { it.autofillType }
+        if (clientViewMetadata?.isNotEmpty()!! && !clientViewMetadata.isNullOrEmpty()) {
+            val saveInfo = SaveInfo.Builder(clientViewMetadata!!.map { it.autofillType }
                 .reduce { acc, num -> acc or num },
-                clientViewMetadata.map { it.autofillId }.toTypedArray()
+                clientViewMetadata!!.map { it.autofillId }.toTypedArray()
             ).build()
             responseBuilder.setSaveInfo(saveInfo)
 
-            callback.onSuccess(responseBuilder.build())
+            callback?.onSuccess(responseBuilder.build())
         } else
-            callback.onFailure("cannot find hints")
+            callback?.onFailure("cannot find hints")
     }
 
     private fun withLocalData(service: Service, fillResponse: FillResponse.Builder) {
@@ -72,7 +81,7 @@ class ResponseAdapter constructor(
             it.credentials?.forEach { cre ->
                 cre.hint.map { hint -> hashLocal.put(hint, cre) }
             }
-            clientViewMetadata.forEach { meta ->
+            clientViewMetadata?.forEach { meta ->
                 val presentation = RemoteViews(service.name, R.layout.simple_list_item_1)
                 presentation.setTextViewText(R.id.text1, it.dataSetName)
                 meta.autofillHints.map { hint ->
@@ -101,7 +110,7 @@ class ResponseAdapter constructor(
             it.credentials?.forEach { cre ->
                 cre.hint.map { hint -> hashLocal.put(hint, cre) }
             }
-            clientViewMetadata.forEach { meta ->
+            clientViewMetadata?.forEach { meta ->
                 val presentation = RemoteViews(service.name, R.layout.simple_list_item_1)
                 presentation.setTextViewText(R.id.text1, it.dataSetName)
                 meta.autofillHints.map { hint ->
@@ -134,7 +143,7 @@ class ResponseAdapter constructor(
         ).intentSender
 
         val list = mutableListOf<AutofillId>()
-        clientViewMetadata.forEach { meta ->
+        clientViewMetadata?.forEach { meta ->
             list.add(meta.autofillId)
         }
 
@@ -144,7 +153,7 @@ class ResponseAdapter constructor(
 
 
     private fun withNoData(fillResponse: FillResponse.Builder, service: String) {
-        clientViewMetadata.forEach { meta ->
+        clientViewMetadata?.forEach { meta ->
             meta.autofillHints.forEach {
                 if (it == View.AUTOFILL_HINT_PASSWORD) {
                     val recommendedPassword = generatePassword()
@@ -188,6 +197,8 @@ class ResponseAdapter constructor(
 
         return sb.toString()
     }
+
+
 
 
 }

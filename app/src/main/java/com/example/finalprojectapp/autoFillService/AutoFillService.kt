@@ -24,15 +24,20 @@ class AutoFillService : AutofillService() {
     @Inject
     lateinit var mainRepository: ServiceRepository
     @Inject
-    lateinit var mainRepositoryLocal: ServiceRepositoryLocal
-    @Inject
-    lateinit var notificationRepository: NotificationRepository
-    @Inject
     lateinit var coroutineScope: CoroutineScope
-    private lateinit var clientViewMetadata: List<AutofillFieldMetadata>
     @Inject
     lateinit var dataSetAdapter: DataSetAdapter
-    private lateinit var responseAdapter: ResponseAdapter
+    @Inject
+    lateinit var  responseAdapter : ResponseAdapter
+
+    private lateinit var clientViewMetadata: List<AutofillFieldMetadata>
+
+    override fun onConnected() {
+        DaggerAutoFIllServiceComponent.factory()
+            .create(this).inject(this)
+        super.onConnected()
+    }
+
     private lateinit var clientViewSaveData: MutableList<AutoFillNodeData>
 
 
@@ -42,9 +47,8 @@ class AutoFillService : AutofillService() {
     ) {
         val context: List<FillContext> = request.fillContexts
         val structure: AssistStructure = context[context.size - 1].structure
+        dataSetAdapter.packageName=structure.activityComponent.packageName
 
-        DaggerAutoFIllServiceComponent.factory()
-            .create(this, structure.activityComponent.packageName).inject(this)
 
         val newParserV2 = ClientParser(structure)
         clientViewMetadata =
@@ -52,9 +56,7 @@ class AutoFillService : AutofillService() {
                 newParserV2
             ).buildClientViewMetadata()
 
-        responseAdapter = ResponseAdapter(
-            this.applicationContext,
-            dataSetAdapter,
+        responseAdapter.setData(
             clientViewMetadata,
             callback,
             cancellationSignal
@@ -67,15 +69,13 @@ class AutoFillService : AutofillService() {
     override fun onDisconnected() {
         super.onDisconnected()
         coroutineScope.coroutineContext.cancel()
-        Log.e("resr", "onDisconnected: " )
     }
 
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
         val context = request.fillContexts
         val structure = context[context.size - 1].structure
-        DaggerAutoFIllServiceComponent.factory()
-            .create(this, structure.activityComponent.packageName).inject(this)
         val newParserV2 = ClientParser(structure)
+
         clientViewSaveData =
             ClientViewMetadataBuilder(
                 newParserV2
@@ -83,7 +83,9 @@ class AutoFillService : AutofillService() {
 
         val service = dataSetAdapter.generatesServiceClass(clientViewSaveData)
 
-        mainRepository.addService(service, callback)
+        if (service != null) {
+            mainRepository.addService(service, callback)
+        }
 
     }
 

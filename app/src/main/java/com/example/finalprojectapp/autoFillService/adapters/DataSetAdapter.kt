@@ -12,23 +12,30 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class DataSetAdapter @Inject constructor (
+@Singleton
+class DataSetAdapter @Inject constructor(
     private val localServiceDAO: ServiceRepository,
-    val packageName: String,
     private val coroutineScope: CoroutineScope
 ) {
     @Inject
-    lateinit var context:Context
+    lateinit var context: Context
+
+    var packageName: String? = null
+        set(value) {
+            if (value?.isNotEmpty()!!)
+                field = value
+        }
 
     suspend fun getDataAsync(): Deferred<Service?> {
         return coroutineScope.async {
-            localServiceDAO.publicGetServiceByName(packageName)
+            packageName?.let { localServiceDAO.publicGetServiceByName(it) }
         }
     }
 
-    fun generatesServiceClass(clientViewSaveData: MutableList<AutoFillNodeData>): Service {
-        val credentialsList= mutableListOf<Credentials>()
+    fun generatesServiceClass(clientViewSaveData: MutableList<AutoFillNodeData>): Service? {
+        val credentialsList = mutableListOf<Credentials>()
         clientViewSaveData.forEach {
             if (!it.autofillHints.isNullOrEmpty()) {
                 if (it.textValue != null)
@@ -39,38 +46,51 @@ class DataSetAdapter @Inject constructor (
                     credentialsList.add(
                         Credentials(
                             it.autofillHints?.toList()!!,
-                            it.dataValue!!.toString()))
+                            it.dataValue!!.toString()
+                        )
+                    )
             }
         }
 
-        val dataSet= listOf(
+        val dataSet = listOf(
             DataSet(
-                credentials = credentialsList,dataSetName = chooseNameDataSet(clientViewSaveData)
+                credentials = credentialsList, dataSetName = chooseNameDataSet(clientViewSaveData)
             )
         )
-        return Service(
-            name = packageName,
-            dataSets = dataSet
-        )
+        return packageName?.let { pak ->
+            Service(
+                name = pak,
+                dataSets = dataSet
+            )
+        }
     }
 
     private fun chooseNameDataSet(dataSet: List<AutoFillNodeData>): String {
         val hashLocal = mutableMapOf<String, String>()
         dataSet.forEach {
-            it.autofillHints?.map { hint-> it.textValue?.let { it1 -> hashLocal.put(hint, it1) } }
-            it.autofillHints?.map { hint-> it.dataValue?.let { it1 -> hashLocal.put(hint, it1.toString()) } }
+            it.autofillHints?.map { hint -> it.textValue?.let { it1 -> hashLocal.put(hint, it1) } }
+            it.autofillHints?.map { hint ->
+                it.dataValue?.let { it1 ->
+                    hashLocal.put(
+                        hint,
+                        it1.toString()
+                    )
+                }
+            }
         }
         return priority(hashLocal)
     }
 
     private fun priority(hashLocal: MutableMap<String, String>): String {
         return when {
-            hashLocal[View.AUTOFILL_HINT_USERNAME]!=null -> hashLocal[View.AUTOFILL_HINT_USERNAME]!!
-            hashLocal[View.AUTOFILL_HINT_EMAIL_ADDRESS]!=null -> hashLocal[View.AUTOFILL_HINT_EMAIL_ADDRESS]!!
-            hashLocal[View.AUTOFILL_HINT_NAME]!=null -> hashLocal[View.AUTOFILL_HINT_NAME]!!
-            hashLocal[View.AUTOFILL_HINT_PHONE]!=null -> hashLocal[View.AUTOFILL_HINT_PHONE]!!
-            hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_NUMBER]!=null -> context.resources.getString(R.string.creditCard)+hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_NUMBER]!!.takeLast(4)
-            hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE]!=null -> hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE]!!
+            hashLocal[View.AUTOFILL_HINT_USERNAME] != null -> hashLocal[View.AUTOFILL_HINT_USERNAME]!!
+            hashLocal[View.AUTOFILL_HINT_EMAIL_ADDRESS] != null -> hashLocal[View.AUTOFILL_HINT_EMAIL_ADDRESS]!!
+            hashLocal[View.AUTOFILL_HINT_NAME] != null -> hashLocal[View.AUTOFILL_HINT_NAME]!!
+            hashLocal[View.AUTOFILL_HINT_PHONE] != null -> hashLocal[View.AUTOFILL_HINT_PHONE]!!
+            hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_NUMBER] != null -> context.resources.getString(
+                R.string.creditCard
+            ) + hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_NUMBER]!!.takeLast(4)
+            hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE] != null -> hashLocal[View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE]!!
             else -> "SecretDataSet"
         }
     }

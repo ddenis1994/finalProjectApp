@@ -45,7 +45,7 @@ class LocalCryptography @Inject constructor(//private var instance: SharedPrefer
     }
 
 
-    private fun localEncryptCredentials(credentials: Credentials): Credentials? {
+    private fun localEncryptCredentials(credentials: Credentials?): Credentials? {
         var newCredentials: Credentials = credentials ?: return null
         if (credentials.innerHashValue.isNullOrEmpty())
             newCredentials = hashBuilder.makeHash(credentials) as Credentials

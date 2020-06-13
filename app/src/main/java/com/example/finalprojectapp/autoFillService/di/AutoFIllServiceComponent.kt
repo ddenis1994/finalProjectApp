@@ -15,7 +15,7 @@ interface AutoFIllServiceComponent {
 
     @Component.Factory
     interface Factory{
-        fun create(@BindsInstance context: Context,@BindsInstance packageName: String):AutoFIllServiceComponent
+        fun create(@BindsInstance context: Context):AutoFIllServiceComponent
     }
 
 

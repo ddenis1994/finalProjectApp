@@ -17,17 +17,11 @@ import javax.inject.Singleton
 @Module
 class AutoFillServiceModule  {
 
-
-
-
     @Inject
     lateinit var context: Context
 
     @Inject
     lateinit var dataSetAdapter: Lazy<DataSetAdapter>
-
-
-
 
 
     @Provides
@@ -36,30 +30,10 @@ class AutoFillServiceModule  {
         return CoroutineScope(Job() + Dispatchers.IO)
     }
 
-
     @Provides
     @Singleton
-    fun provideSharedPreferences(context: Application): SharedPreferences {
-        return SingleEncryptedSharedPreferences().getSharedPreference(context)
+    fun provideSharedPreferences(context:Context): SharedPreferences {
+        return SingleEncryptedSharedPreferences().getSharedPreference(context.applicationContext)
     }
-
-
-
-//    @Provides
-//    fun provideAutoFillServiceModule(
-//        autoFillService: AutoFillService
-//    ): AutoFillService {
-//        return autoFillService
-//    }
-
-
-//    @Provides
-//    fun providesDataSetAdapter(
-//        localServiceDAO: ServiceRepository,
-//        coroutineScope: CoroutineScope
-//    ): DataSetAdapter {
-//        return DataSetAdapter(localServiceDAO, packageName, coroutineScope)
-//    }
-
 
 }
