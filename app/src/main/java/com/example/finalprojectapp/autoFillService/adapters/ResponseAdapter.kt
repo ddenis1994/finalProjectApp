@@ -28,9 +28,9 @@ class ResponseAdapter @Inject constructor(
     private val setting: SharedPreferences
 ) {
 
-    private var clientViewMetadata: List<AutofillFieldMetadata>?=null
-    var callback: FillCallback?=null
-    private var cancellationSignal: CancellationSignal?=null
+    private lateinit var  clientViewMetadata: List<AutofillFieldMetadata>
+    private lateinit var callback: FillCallback
+    private lateinit var  cancellationSignal: CancellationSignal
 
     fun setData(
         clientViewMetadata: List<AutofillFieldMetadata>,
@@ -44,7 +44,7 @@ class ResponseAdapter @Inject constructor(
 
     suspend fun buildResponse() {
         if (clientViewMetadata.isNullOrEmpty())
-            cancellationSignal?.cancel()
+            cancellationSignal.cancel()
         val responseBuilder = FillResponse.Builder()
         val service = dataSetAdapter.getDataAsync().await()
         if (service != null)
@@ -52,16 +52,17 @@ class ResponseAdapter @Inject constructor(
         else
             dataSetAdapter.packageName?.let { withNoData(responseBuilder, it) }
 
-        if (clientViewMetadata?.isNotEmpty()!! && !clientViewMetadata.isNullOrEmpty()) {
-            val saveInfo = SaveInfo.Builder(clientViewMetadata!!.map { it.autofillType }
+        if (clientViewMetadata.isNotEmpty() && !clientViewMetadata.isNullOrEmpty()) {
+            val saveInfo = SaveInfo.Builder(
+                clientViewMetadata.map { it.autofillType }
                 .reduce { acc, num -> acc or num },
-                clientViewMetadata!!.map { it.autofillId }.toTypedArray()
+                clientViewMetadata.map { it.autofillId }.toTypedArray()
             ).build()
             responseBuilder.setSaveInfo(saveInfo)
 
-            callback?.onSuccess(responseBuilder.build())
+            callback.onSuccess(responseBuilder.build())
         } else
-            callback?.onFailure("cannot find hints")
+            callback.onFailure("cannot find hints")
     }
 
     private fun withLocalData(service: Service, fillResponse: FillResponse.Builder) {
@@ -81,7 +82,7 @@ class ResponseAdapter @Inject constructor(
             it.credentials?.forEach { cre ->
                 cre.hint.map { hint -> hashLocal.put(hint, cre) }
             }
-            clientViewMetadata?.forEach { meta ->
+            clientViewMetadata.forEach { meta ->
                 val presentation = RemoteViews(service.name, R.layout.simple_list_item_1)
                 presentation.setTextViewText(R.id.text1, it.dataSetName)
                 meta.autofillHints.map { hint ->
@@ -110,7 +111,7 @@ class ResponseAdapter @Inject constructor(
             it.credentials?.forEach { cre ->
                 cre.hint.map { hint -> hashLocal.put(hint, cre) }
             }
-            clientViewMetadata?.forEach { meta ->
+            clientViewMetadata.forEach { meta ->
                 val presentation = RemoteViews(service.name, R.layout.simple_list_item_1)
                 presentation.setTextViewText(R.id.text1, it.dataSetName)
                 meta.autofillHints.map { hint ->
@@ -143,7 +144,7 @@ class ResponseAdapter @Inject constructor(
         ).intentSender
 
         val list = mutableListOf<AutofillId>()
-        clientViewMetadata?.forEach { meta ->
+        clientViewMetadata.forEach { meta ->
             list.add(meta.autofillId)
         }
 
@@ -153,7 +154,7 @@ class ResponseAdapter @Inject constructor(
 
 
     private fun withNoData(fillResponse: FillResponse.Builder, service: String) {
-        clientViewMetadata?.forEach { meta ->
+        clientViewMetadata.forEach { meta ->
             meta.autofillHints.forEach {
                 if (it == View.AUTOFILL_HINT_PASSWORD) {
                     val recommendedPassword = generatePassword()
