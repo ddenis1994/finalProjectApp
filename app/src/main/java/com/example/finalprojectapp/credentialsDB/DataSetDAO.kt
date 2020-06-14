@@ -17,8 +17,8 @@ interface DataSetDAO {
     suspend fun privateGetDataSetByHash(hashData:String): DataSet
 
     @Transaction
-    @Query("SELECT * FROM dataSet_ Where :hashData = hashData")
-    suspend fun privateGetDataSet(hashData:String): DataSet
+    @Query("SELECT * FROM dataSet_ Where :hashData like hashData")
+    suspend fun privateGetDataSet(hashData:String): DataSet?
 
     @Update
     fun privateUpdateNewCre(vararg newManyToMany: DataSetCredentialsManyToMany):Int
