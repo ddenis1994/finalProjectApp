@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.finalprojectapp.data.model.LoggedInUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 /**
@@ -13,6 +14,7 @@ import com.google.firebase.auth.UserProfileChangeRequest
 class LoginDataSource(private val activity: FragmentActivity) {
 
     private val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
 
     fun login(username: String, password: String): MutableLiveData<Result<LoggedInUser>> {
@@ -49,6 +51,7 @@ class LoginDataSource(private val activity: FragmentActivity) {
                     }.build()
                 auth.currentUser!!.updateProfile(profileProfileUpdates).addOnCompleteListener {
                     if (it.isSuccessful) {
+                        db.collection("users").document(auth.uid!!).set(hashMapOf("test" to "today"))
                         val result =
                             auth.currentUser?.uid?.let { it1 -> LoggedInUser(it1, username) }
                         if (result != null)

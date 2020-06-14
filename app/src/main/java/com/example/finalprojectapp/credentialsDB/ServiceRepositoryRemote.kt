@@ -35,7 +35,7 @@ class ServiceRepositoryRemote @Inject constructor(
                 .set(service.copy(dataSets = null))
                 .addOnSuccessListener {
                     toUpload?.dataSets?.forEach { dataSet ->
-                        dataSet.hashData?.let { dataSetHash ->
+                        dataSet.hashData.let { dataSetHash ->
                             db.collection("users").document(user.uid)
                                 .collection("services").document(service.name)
                                 .collection("dataSets").document(dataSetHash)

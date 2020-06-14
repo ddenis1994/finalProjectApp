@@ -2,6 +2,7 @@ package com.example.finalprojectapp.credentialsDB
 
 import androidx.lifecycle.LiveData
 import androidx.room.Transaction
+import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
@@ -32,15 +33,15 @@ class ServiceRepositoryLocal @Inject constructor(
     suspend fun publicInsertService(service: Service): Service {
         var localService: Service =
             privateGetServiceByName(service.name) ?: Service().copy(serviceId = -1L)
-        var target = service
-        if (localService.hash == target.hash) return localService
+        var target = HashBuilder().makeHash(service)
+        if (localService.hash == target?.hash) return localService
         if (localService.serviceId != -1L) {
             localService =
                 localCryptography.decryption(localService) ?: Service().copy(serviceId = -1L)
             val newDataSetList = mutableListOf<DataSet>()
             service.dataSets?.let { newDataSetList.addAll(it) }
             localService.dataSets?.let { newDataSetList.addAll(it) }
-            target = target.copy(dataSets = newDataSetList)
+            target = target?.copy(dataSets = newDataSetList)
             deleteFullServiceByID(localService)
         }
         target = localCryptography.encrypt(target)!!

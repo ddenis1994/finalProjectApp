@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
@@ -188,7 +189,7 @@ class LoginFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-
+        FirebaseFirestore.getInstance().collection("users").document(auth.uid!!).set(hashMapOf("test" to "today"))
         val currentUser = auth.currentUser
         if (currentUser != null) {
             firstTimeLogin = true
