@@ -34,7 +34,7 @@ interface DataSetDAO {
     suspend fun deleteAllDataSets()
 
     @Query("DELETE FROM dataSetCredentialsManyToMany  WHERE dataSetId=:dataSetId")
-    fun deleteFromRelationship(dataSetId: Long): Int
+    suspend fun deleteFromRelationship(dataSetId: Long): Int
 
     @Query("Select d.dataSetName,d.dataSetId from dataSet_ d where d.serviceId=:serviceId ")
      fun publicGetAllDataSetsByServiceId(serviceId:Long):LiveData<List<LayoutDataSetView>>
@@ -58,7 +58,7 @@ interface DataSetDAO {
     fun deleteDataSetRelationship(vararg dataSetCredentialsManyToMany: DataSetCredentialsManyToMany)
 
     @Delete
-    fun deleteDataSet(vararg dataSet: DataSet)
+    suspend fun deleteDataSet(vararg dataSet: DataSet)
 
     @Query("SELECT * FROM dataSet_  Where :hashData like hashData")
     suspend fun privateFindByHashData(hashData: String): DataSet

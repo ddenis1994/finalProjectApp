@@ -48,7 +48,7 @@ interface ServiceDAO {
     suspend fun privateGetServiceByNameQuery(name:String): ServiceToDataSet?
 
     @Delete
-    fun privateDeleteService(vararg service: Service)
+    suspend fun privateDeleteService(vararg service: Service)
 
     @Query("delete from service_ where serviceId=:id")
     suspend fun privateDeleteServiceByID(id:Long)

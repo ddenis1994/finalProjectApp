@@ -3,17 +3,13 @@ package com.example.finalprojectapp.autoFillService
 import android.app.assist.AssistStructure
 import android.os.CancellationSignal
 import android.service.autofill.*
-import android.util.Log
 import com.example.finalprojectapp.autoFillService.adapters.DataSetAdapter
 import com.example.finalprojectapp.autoFillService.adapters.ResponseAdapter
 import com.example.finalprojectapp.autoFillService.di.DaggerAutoFIllServiceComponent
-import com.example.finalprojectapp.credentialsDB.NotificationRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
-import com.example.finalprojectapp.credentialsDB.ServiceRepositoryLocal
 import com.example.finalprojectapp.data.autoFilleService.ClientViewMetadataBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -68,7 +64,7 @@ class AutoFillService : AutofillService() {
 
     override fun onDisconnected() {
         super.onDisconnected()
-        coroutineScope.coroutineContext.cancel()
+        //coroutineScope.coroutineContext.cancel()
     }
 
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {

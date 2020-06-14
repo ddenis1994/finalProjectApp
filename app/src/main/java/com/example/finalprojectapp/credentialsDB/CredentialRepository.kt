@@ -16,21 +16,25 @@ class CredentialRepository @Inject constructor(
     suspend fun publicInsertArrayCredentials(listCredentials: List<Credentials>): List<Long> {
         val list = mutableListOf<Long>()
         listCredentials.forEach {
-            publicInsertCredentials(it)?.let { it1 -> list.add(it1) }
+            publicInsertCredentials(it).let { it1 -> list.add(it1) }
         }
         return list
     }
 
-    suspend fun publicInsertCredentials(credentials: Credentials): Long? {
+    suspend fun publicInsertCredentials(credentials: Credentials): Long {
         return kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-            if (credentials.salt != null) return@withContext null
+            if (credentials.salt != null) return@withContext -1L
             val encryptedCredentials = localCryptography.encrypt(credentials)
-            var resultInsert: Long? = null
+            var resultInsert: Long =-1L
             encryptedCredentials?.let {
                 resultInsert = credentialsDao.privateInsertCredentials(it)
                 if (resultInsert == -1L)
                     resultInsert =
-                        credentialsDao.privateGetCredentialsByHashData(it.innerHashValue!!).credentialsId
+                        it.innerHashValue?.let { hash ->
+                            credentialsDao.privateGetCredentialsByHashData(
+                                hash
+                            )?.credentialsId
+                        }?: -1L
             }
             return@withContext resultInsert
         }

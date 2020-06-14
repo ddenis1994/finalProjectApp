@@ -46,7 +46,6 @@ class ServiceRepositoryLocal @Inject constructor(
         target = localCryptography.encrypt(target)!!
 
 
-
         val result = target.let { serviceDAO.privateInsertService(it) }
         val list = mutableListOf<Pair<Long, List<Long>>>()
         target.dataSets?.forEach {
@@ -58,7 +57,7 @@ class ServiceRepositoryLocal @Inject constructor(
                 }
         }
 
-        return localCryptography.decryption(target)?: Service()
+        return localCryptography.decryption(target) ?: Service()
     }
 
 
@@ -71,10 +70,6 @@ class ServiceRepositoryLocal @Inject constructor(
 
     suspend fun findServiceAndDataSet(dataSetId: Long) =
         serviceDAO.publicFindServiceAndDataSet(dataSetId)
-
-    fun deleteDataSet(dataSetId: Long) {
-        dataSetRepository.deleteDataSetById(dataSetId)
-    }
 
 
     suspend fun publicGetServiceByName(string: String): Service? {
@@ -131,16 +126,11 @@ class ServiceRepositoryLocal @Inject constructor(
         return service.service.copy(dataSets = list)
     }
 
-    private suspend fun deleteFullServiceByID(service: Service) {
-
-        withContext(Dispatchers.IO) {
-            service.dataSets?.forEach {
-                dataSetRepository.privateDeleteDataSet(it)
-            }
-            serviceDAO.privateDeleteService(service)
-
-
+    suspend fun deleteFullServiceByID(service: Service) {
+        service.dataSets?.forEach {
+            dataSetRepository.privateDeleteDataSet(it)
         }
+        serviceDAO.privateDeleteService(service)
     }
 
 
@@ -154,7 +144,7 @@ class ServiceRepositoryLocal @Inject constructor(
     }
 
     fun getCredentialByDataSetID(dataSetId: Long): LiveData<List<LayoutCredentialView>> {
-        return dataSetRepository.getCredentialByDataSetID(dataSetId)
+        return dataSetRepository.getLocalCredentialByDataSetID(dataSetId)
     }
 
     suspend fun publicInsertCredentials(credential: Credentials) {
@@ -170,7 +160,7 @@ class ServiceRepositoryLocal @Inject constructor(
 
     }
 
-    fun deleteDataSetById(dataSetId: Long) {
+    suspend fun deleteDataSetById(dataSetId: Long) {
         dataSetRepository.deleteDataSetById(dataSetId)
     }
 
@@ -189,12 +179,16 @@ class ServiceRepositoryLocal @Inject constructor(
     ): Service {
         return withContext(Dispatchers.IO) {
             dataSetRepository.publicDeleteCredential(credentialID, dataSetId)
-            return@withContext serviceDAO.privateGetServiceByName(serviceName)?: Service()
+            return@withContext serviceDAO.privateGetServiceByName(serviceName) ?: Service()
         }
     }
 
     fun publicGetServiceNameByDataSetID(dataSetId: Long): String {
-        return serviceDAO.getServiceByDataSetId(dataSetId)?: ""
+        return serviceDAO.getServiceByDataSetId(dataSetId) ?: ""
+    }
+
+    suspend fun deleteService(service: Service) {
+        serviceDAO.privateDeleteService(service)
     }
 
 

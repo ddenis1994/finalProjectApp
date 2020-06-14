@@ -79,6 +79,7 @@ class LocalCryptography @Inject constructor(//private var instance: SharedPrefer
     private fun localDecryptCredential(credentials: Credentials?): Credentials? {
         var newCredential = credentials ?: return null
         newCredential = newCredential.copy()
+        if (newCredential.salt!=null) return null
         val iv = credentials.iv ?: return credentials
         val spec = GCMParameterSpec(128, Base64.getDecoder().decode(iv))
         cipher.init(Cipher.DECRYPT_MODE, getKey(), spec)

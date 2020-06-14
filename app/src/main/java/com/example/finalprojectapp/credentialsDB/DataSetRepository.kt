@@ -1,6 +1,7 @@
 package com.example.finalprojectapp.credentialsDB
 
 import androidx.room.Transaction
+import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
@@ -16,7 +17,7 @@ class DataSetRepository @Inject constructor(
 ) {
 
 
-    fun getCredentialByDataSetID(dataSetId: Long) =
+    fun getLocalCredentialByDataSetID(dataSetId: Long) =
         dataSetDAO.publicGetAllCredentialsByDataSetID(dataSetId)
 
     fun getDataSetById(serviceID: Long) = dataSetDAO.publicGetAllDataSetsByServiceId(serviceID)
@@ -47,7 +48,7 @@ class DataSetRepository @Inject constructor(
         return dataSet.copy(credentials = listCredentials)
     }
 
-    fun privateDeleteDataSet(dataSet: DataSet) {
+    suspend fun privateDeleteDataSet(dataSet: DataSet) {
         val rel = dataSetDAO.findAllRelationshipToDataSet(dataSet.dataSetId)
         rel.forEach {
             dataSetDAO.deleteDataSetRelationship(it)
@@ -59,9 +60,10 @@ class DataSetRepository @Inject constructor(
     }
 
     @Transaction
-    fun deleteDataSetById(dataSetId: Long) {
+    suspend fun deleteDataSetById(dataSetId: Long) {
         dataSetDAO.deleteDataSet(DataSet().copy(dataSetId = dataSetId))
         dataSetDAO.deleteFromRelationship(dataSetId)
+
     }
 
     private suspend fun privateInsertDataSet(dataSet: DataSet): Long {
@@ -69,8 +71,7 @@ class DataSetRepository @Inject constructor(
     }
 
     suspend fun publicInsertCredentials(credentials: Credentials): Long {
-        //Todo fix the type
-        return credentialRepository.publicInsertCredentials(credentials)!!
+        return credentialRepository.publicInsertCredentials(credentials)
     }
 
     private suspend fun privateInsertCredentials(dataSetCredentialsManyToMany: DataSetCredentialsManyToMany): Long {
@@ -98,24 +99,16 @@ class DataSetRepository @Inject constructor(
             target.let {
                 var result = privateInsertDataSet(it)
                 if (result == -1L) {
-                    result  = dataSetDAO.privateGetDataSet(it.hashData)?.dataSetId!!
+                    val temp  = dataSetDAO.privateGetDataSet(it.hashData)
+                    result=temp?.dataSetId?: return@withContext null
                 }
                 val creList = mutableListOf<Long>()
                 dataSet.credentials?.forEach { cre ->
                     val insertResult = credentialRepository.publicInsertCredentials(cre)
-                    insertResult?.let { it1 ->
-                        DataSetCredentialsManyToMany(
-                            dataSetId = result,
-                            credentialsId = it1
-                        )
-                    }?.let { it2 ->
-                        privateInsertCredentials(
-                            it2
-                        )
-                    }
-                    if (insertResult != null) {
-                        creList.add(insertResult)
-                    }
+                    privateInsertCredentials(
+                        DataSetCredentialsManyToMany(dataSetId = result, credentialsId = insertResult)
+                    )
+                    creList.add(insertResult)
                 }
                 return@withContext Pair(result, creList)
             }

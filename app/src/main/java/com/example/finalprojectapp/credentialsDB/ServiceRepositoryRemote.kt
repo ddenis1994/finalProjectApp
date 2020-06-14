@@ -55,24 +55,17 @@ class ServiceRepositoryRemote @Inject constructor(
         }
     }
 
-    //new version
     internal fun deleteRemoteDataSet(
         service: Service,
-        dataSetId: Long
+        hashData: String
     ) {
-        var dataSet: DataSet
-        service.dataSets?.forEach { dataSetSearch ->
-            if (dataSetSearch.serviceId == dataSetId) {
-                dataSet = dataSetSearch.copy()
-                user?.uid?.let { it1 ->
-                    db.collection("users").document(it1)
-                        .collection("services").document(service.name)
-                        .collection("dataSets").document(dataSet.hashData)
-                        .delete().addOnSuccessListener {
-                            updateAfterDeleteDataSet(service)
-                        }
+        user?.uid?.let { uid ->
+            db.collection("users").document(uid)
+                .collection("services").document(service.name)
+                .collection("dataSets").document(hashData)
+                .delete().addOnSuccessListener {
+                    updateAfterDeleteDataSet(service)
                 }
-            }
         }
 
 

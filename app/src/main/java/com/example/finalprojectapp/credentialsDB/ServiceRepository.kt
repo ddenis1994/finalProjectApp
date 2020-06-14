@@ -3,14 +3,13 @@ package com.example.finalprojectapp.credentialsDB
 import android.service.autofill.SaveCallback
 import androidx.lifecycle.LiveData
 import androidx.room.Transaction
+import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class ServiceRepository @Inject constructor(
@@ -69,13 +68,25 @@ class ServiceRepository @Inject constructor(
     //deleteDataSet
     suspend fun deleteDataSet(dataSetId: Long) {
         val serviceName = serviceRepositoryLocal.publicGetServiceNameByDataSetID(dataSetId)
-        val service=serviceRepositoryLocal.publicGetServiceByName(serviceName)
-        serviceRepositoryLocal.getDataSetByID(dataSetId)
-        if (service != null) {
-            serviceRepositoryRemote.deleteRemoteDataSet(service,dataSetId)
+        val dataSet=serviceRepositoryLocal.getDataSetByID(dataSetId)
+        withContext(Dispatchers.IO) {
+            val job=this.async {
+                serviceRepositoryLocal.deleteDataSetById(dataSetId)
+
+            }
+            job.await()
+            val service1=serviceRepositoryLocal.publicGetServiceByName(serviceName)
+            val newHash=HashBuilder().makeHash(service1)
+            if ( newHash?.dataSets!=null && ( newHash.dataSets!!.isNullOrEmpty())){
+                serviceRepositoryLocal.deleteFullServiceByID( newHash)
+            }
+            if ( newHash != null) {
+                serviceRepositoryRemote.deleteRemoteDataSet(newHash,dataSet.hashData)
+            }
         }
-        serviceRepositoryLocal.deleteDataSetById(dataSetId)
     }
+
+
 
 
     suspend fun publicGetServiceByName(string: String): Service? =
@@ -83,7 +94,7 @@ class ServiceRepository @Inject constructor(
 
 
     suspend fun publicInsertLocalService(service: Service): Service {
-        return serviceRepositoryLocal.publicInsertService(service)!!
+        return serviceRepositoryLocal.publicInsertService(service)
     }
 
 

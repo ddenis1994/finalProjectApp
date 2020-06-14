@@ -25,8 +25,8 @@ interface CredentialDAO {
     @Query("SELECT * FROM credentials_ Where credentialsId = :dataSet ")
     suspend fun privateGetCredentialsID(dataSet: Long): Credentials
 
-    @Query("SELECT * FROM credentials_ Where innerHashValue = :dataSet ")
-    suspend fun privateGetCredentialsByHashData(dataSet: String): Credentials
+    @Query("SELECT * FROM credentials_ Where innerHashValue like :dataSet ")
+    suspend fun privateGetCredentialsByHashData(dataSet: String): Credentials?
 
     @Delete
     fun deleteCredential(vararg dataSet: Credentials)
