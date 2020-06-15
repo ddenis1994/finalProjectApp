@@ -71,7 +71,7 @@ class AutoFillService : AutofillService() {
         val context = request.fillContexts
         val structure = context[context.size - 1].structure
         val newParserV2 = ClientParser(structure)
-
+        dataSetAdapter.packageName=structure.activityComponent.packageName
         clientViewSaveData =
             ClientViewMetadataBuilder(
                 newParserV2

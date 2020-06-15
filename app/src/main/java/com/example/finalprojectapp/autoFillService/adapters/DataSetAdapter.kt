@@ -5,6 +5,7 @@ import android.view.View
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.autoFillService.AutoFillNodeData
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
+import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
@@ -22,9 +23,9 @@ class DataSetAdapter @Inject constructor(
     @Inject
     lateinit var context: Context
 
-    var packageName: String? = null
+    var packageName: String=""
         set(value) {
-            if (value?.isNotEmpty()!!)
+            if (value.isNotEmpty())
                 field = value
         }
 
@@ -57,11 +58,11 @@ class DataSetAdapter @Inject constructor(
                 credentials = credentialsList, dataSetName = chooseNameDataSet(clientViewSaveData)
             )
         )
-        return packageName?.let { pak ->
-            Service(
+        return packageName.let { pak ->
+            HashBuilder().makeHash(Service(
                 name = pak,
                 dataSets = dataSet
-            )
+            ))
         }
     }
 

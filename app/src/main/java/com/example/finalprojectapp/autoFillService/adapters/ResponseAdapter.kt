@@ -159,7 +159,9 @@ class ResponseAdapter @Inject constructor(
                 if (it == View.AUTOFILL_HINT_PASSWORD) {
                     val recommendedPassword = generatePassword()
                     val presentation = RemoteViews(service, R.layout.simple_list_item_1)
-                    presentation.setTextViewText(R.id.text1, recommendedPassword)
+                    presentation.setTextViewText(R.id.text1,
+                        recommendedPassword
+                    )
                     val dataSet = Dataset.Builder()
                     dataSet.setValue(
                         meta.autofillId,

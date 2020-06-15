@@ -189,7 +189,6 @@ class LoginFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        FirebaseFirestore.getInstance().collection("users").document(auth.uid!!).set(hashMapOf("test" to "today"))
         val currentUser = auth.currentUser
         if (currentUser != null) {
             firstTimeLogin = true

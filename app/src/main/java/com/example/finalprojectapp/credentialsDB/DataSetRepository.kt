@@ -1,7 +1,6 @@
 package com.example.finalprojectapp.credentialsDB
 
 import androidx.room.Transaction
-import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
@@ -46,6 +45,30 @@ class DataSetRepository @Inject constructor(
             }
         }
         return dataSet.copy(credentials = listCredentials)
+    }
+
+    suspend fun getDataSetByID2(id: Long): DataSet {
+        val dataSets = dataSetDAO.privateGetDataSetToCredentials2(id)
+        val newCredentials = mutableListOf<Credentials>()
+        dataSets.forEach {
+            newCredentials.add(
+                Credentials(
+                    it.credentialHints,
+                    it.credentialData,
+                    it.credentialEncryptPasswordHash,
+                    it.credentialEncryptType,
+                    it.credentialHash,
+                    it.credentialIV,
+                    it.CredentialSalt,
+                    null,
+                    it.credentialID
+                )
+            )
+        }
+        return DataSet(
+            newCredentials, dataSets[0].dataSetHash, dataSets[0].dataSetName
+            , dataSets[0].dataSetId, dataSets[0].serviceId
+        )
     }
 
     suspend fun privateDeleteDataSet(dataSet: DataSet) {
@@ -99,14 +122,17 @@ class DataSetRepository @Inject constructor(
             target.let {
                 var result = privateInsertDataSet(it)
                 if (result == -1L) {
-                    val temp  = dataSetDAO.privateGetDataSet(it.hashData)
-                    result=temp?.dataSetId?: return@withContext null
+                    val temp = dataSetDAO.privateGetDataSet(it.hashData)
+                    result = temp?.dataSetId ?: return@withContext null
                 }
                 val creList = mutableListOf<Long>()
                 dataSet.credentials?.forEach { cre ->
                     val insertResult = credentialRepository.publicInsertCredentials(cre)
                     privateInsertCredentials(
-                        DataSetCredentialsManyToMany(dataSetId = result, credentialsId = insertResult)
+                        DataSetCredentialsManyToMany(
+                            dataSetId = result,
+                            credentialsId = insertResult
+                        )
                     )
                     creList.add(insertResult)
                 }

@@ -12,19 +12,18 @@ import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 interface DataSetDAO {
 
 
-
     @Query("SELECT * FROM dataSet_ Where :hashData = hashData")
-    suspend fun privateGetDataSetByHash(hashData:String): DataSet
+    suspend fun privateGetDataSetByHash(hashData: String): DataSet
 
     @Transaction
     @Query("SELECT * FROM dataSet_ Where :hashData like hashData")
-    suspend fun privateGetDataSet(hashData:String): DataSet?
+    suspend fun privateGetDataSet(hashData: String): DataSet?
 
     @Update
-    fun privateUpdateNewCre(vararg newManyToMany: DataSetCredentialsManyToMany):Int
+    fun privateUpdateNewCre(vararg newManyToMany: DataSetCredentialsManyToMany): Int
 
     @Query("SELECT r.DataSetCredentialsManyToManyID FROM  dataSetCredentialsManyToMany r , credentials_ c   Where :dataSetID = r.dataSetId AND r.credentialsId = c.credentialsId And c.hint Like :hints")
-    suspend fun privateGetUnionDataSetAndCredentialsHash(dataSetID:Long,hints: String): Long?
+    suspend fun privateGetUnionDataSetAndCredentialsHash(dataSetID: Long, hints: String): Long?
 
 
     @Query("Delete from dataSetCredentialsManyToMany")
@@ -37,22 +36,42 @@ interface DataSetDAO {
     suspend fun deleteFromRelationship(dataSetId: Long): Int
 
     @Query("Select d.dataSetName,d.dataSetId from dataSet_ d where d.serviceId=:serviceId ")
-     fun publicGetAllDataSetsByServiceId(serviceId:Long):LiveData<List<LayoutDataSetView>>
+    fun publicGetAllDataSetsByServiceId(serviceId: Long): LiveData<List<LayoutDataSetView>>
 
     @Query("Select c.iv,c.data,c.hint,c.credentialsId from dataSetCredentialsManyToMany r,credentials_ c where r.dataSetId=:dataSetId and r.credentialsId = c.credentialsId")
-    fun publicGetAllCredentialsByDataSetID(dataSetId:Long):LiveData<List<LayoutCredentialView>>
+    fun publicGetAllCredentialsByDataSetID(dataSetId: Long): LiveData<List<LayoutCredentialView>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun privateInsertDataSet(dataSet: DataSet):Long
+    suspend fun privateInsertDataSet(dataSet: DataSet): Long
 
     @Query("SELECT * FROM dataSet_ Where :hashData = dataSetId")
-    suspend fun privateGetDataSetByDataSetID(hashData:Long): DataSet
+    suspend fun privateGetDataSetByDataSetID(hashData: Long): DataSet
 
     @Query("SELECT * FROM dataSetCredentialsManyToMany Where dataSetId =:num ")
-    suspend fun privateGetDataSetToCredentials(num:Long): List<DataSetCredentialsManyToMany>
+    suspend fun privateGetDataSetToCredentials(num: Long): List<DataSetCredentialsManyToMany>
+
+    // TODO: 15/06/2020 experimental new way for data set query
+    @Query("SELECT d.dataSetId as dataSetId ," +
+            " d.serviceId as serviceId" +
+            ",d.dataSetName as dataSetName," +
+            "d.hashData as dataSetHash ," +
+            "c.credentialsId as credentialID," +
+            "c.hint as credentialHints," +
+            "c.data as credentialData," +
+            "c.encryptPasswordHash as credentialEncryptPasswordHash," +
+            " c.encryptType as  credentialEncryptType," +
+            " c.innerHashValue as credentialHash," +
+            " c.iv as credentialIV," +
+            "c.salt as CredentialSalt" +
+            " FROM dataSetCredentialsManyToMany r,dataSet_ d ,credentials_ c Where d.dataSetId = :num and r.dataSetId = :num and r.credentialsId = c.credentialsId")
+    suspend fun privateGetDataSetToCredentials2(num: Long): List<Data>
+
+    data class Data(val dataSetId: Long,val serviceId: Long?,val dataSetName:String,val dataSetHash:String
+    ,val credentialID: Long,val credentialData:String,val credentialHints:List<String>,val credentialEncryptPasswordHash:String?,
+    val credentialEncryptType:String,val credentialHash:String,val credentialIV:String?,val CredentialSalt:String?)
 
     @Query("SELECT * FROM dataSetCredentialsManyToMany  Where :dataSetId like dataSetId")
-    fun findAllRelationshipToDataSet(vararg dataSetId:Long):List<DataSetCredentialsManyToMany>
+    fun findAllRelationshipToDataSet(vararg dataSetId: Long): List<DataSetCredentialsManyToMany>
 
     @Delete
     fun deleteDataSetRelationship(vararg dataSetCredentialsManyToMany: DataSetCredentialsManyToMany)
@@ -64,10 +83,10 @@ interface DataSetDAO {
     suspend fun privateFindByHashData(hashData: String): DataSet
 
     @Query("SELECT * FROM dataSet_  Where :hashData like hashData And serviceId = :service")
-    suspend fun privateFindByHashDataAndServiceId(hashData: String,service: Long): DataSet?
+    suspend fun privateFindByHashDataAndServiceId(hashData: String, service: Long): DataSet?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun privateInsertCredentials(dataSetCredentialsManyToMany: DataSetCredentialsManyToMany):Long
+    suspend fun privateInsertCredentials(dataSetCredentialsManyToMany: DataSetCredentialsManyToMany): Long
 
     @Query("DELETE FROM dataSetCredentialsManyToMany  WHERE credentialsId=:credentialId and dataSetId=:dataSetId")
     fun deleteFromRelationshipCredential(credentialId: Long, dataSetId: Long): Int
@@ -80,6 +99,6 @@ interface DataSetDAO {
     fun privateGetRelationshipCredential(credentialID: Long): List<DataSetCredentialsManyToMany>
 
     @Query("SELECT * FROM dataSet_")
-    fun publicGetAllDataSet():List<DataSet>
+    fun publicGetAllDataSet(): List<DataSet>
 
 }
