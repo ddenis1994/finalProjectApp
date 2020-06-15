@@ -1,4 +1,4 @@
-package com.example.finalprojectapp.dataBaseTest
+package com.example.finalprojectapp.credentialDB
 
 
 import androidx.room.Room
@@ -11,10 +11,9 @@ import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
-import junit.framework.Assert.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertNotEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class DataBaseUnitTest {
@@ -51,32 +50,6 @@ class DataBaseUnitTest {
         db.close()
     }
 
-    @Nested
-    @DisplayName("Credentials")
-    inner class CredentialsTest {
-
-
-        @DisplayName("test one Insert with encryption")
-        @Test
-        fun test2() = runBlocking {
-            val data = "dataToTest"
-            serverDAO.publicInsertCredentials(credentials.copy(data = data))
-            val i = serverDAO.privateGetAllCredentials()
-            assertNotEquals(data, i[0].data)
-
-        }
-
-
-
-
-
-
-
-
-        //endregion
-
-
-    }
 
     @Nested
     @DisplayName("Data Set tests")
@@ -85,8 +58,8 @@ class DataBaseUnitTest {
         @DisplayName("insert Service")
         fun insertDataSet() = runBlocking {
             val result = db.dataSetDAO().privateInsertDataSet(dataSet)
-            val y = db.credentialDAO().privateInsertCredentials(credentials)
-            val dataSet2 = db.dataSetDAO().getUsersWithPlaylists()
+            val y = db.credentialDAO().insertCredentials(credentials)
+            val dataSet2 = db.dataSetDAO().getDataSetWithCredentials()
             assertEquals(dataSet2[0].credentials.size, 2)
             assert(true)
         }

@@ -33,7 +33,6 @@ class DashboardViewModel @Inject constructor(
     private fun chalkForRepeatedPassword(owner: LifecycleOwner): LiveData<DashBoardData>  {
         val liveDataAdapter=MutableLiveData<DashBoardData>()
         viewModelScope.launch {
-            //delay(100)
                 mainRepository.publicGetAllHashCredentials()
                     .observe(owner, Observer { data ->
                         var repeatedList = data.groupBy { it.id }.filter { it.value.size > 1 }

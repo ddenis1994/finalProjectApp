@@ -60,7 +60,11 @@ class ServiceRepository @Inject constructor(
         scope.launch {
             val result=this.async { serviceRepositoryLocal.deleteLocalCredential(serviceName,credentialID,dataSetId) }
             val dataSet=this.async { serviceRepositoryLocal.getDataSetByID(dataSetId) }
-            serviceRepositoryRemote.deleteRemoteCredential(result.await(),dataSet.await())
+            dataSet.await()?.let {
+                serviceRepositoryRemote.deleteRemoteCredential(result.await(),
+                    it
+                )
+            }
         }
     }
 
@@ -80,7 +84,7 @@ class ServiceRepository @Inject constructor(
                 serviceRepositoryLocal.deleteFullServiceByID( newHash)
             }
             if ( newHash != null) {
-                serviceRepositoryRemote.deleteRemoteDataSet(newHash,dataSet.hashData)
+                dataSet?.hashData?.let { serviceRepositoryRemote.deleteRemoteDataSet(newHash, it) }
             }
         }
     }

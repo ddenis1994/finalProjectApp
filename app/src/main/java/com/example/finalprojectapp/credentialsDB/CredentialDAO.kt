@@ -20,7 +20,7 @@ interface CredentialDAO {
     suspend fun deleteAllCredentials()
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun privateInsertCredentials(vararg credentials: Credentials):List<Long>
+    suspend fun insertCredentials(vararg credentials: Credentials):List<Long>
 
 
     @Query("SELECT * FROM credentials_ Where credentialsId = :id")

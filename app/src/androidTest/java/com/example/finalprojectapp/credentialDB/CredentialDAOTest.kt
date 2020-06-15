@@ -1,4 +1,4 @@
-package com.example.finalprojectapp.dataBaseTest.credential
+package com.example.finalprojectapp.credentialDB
 
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
@@ -35,7 +35,7 @@ class CredentialDAOTest {
     @DisplayName("test one Insert")
     @Test
     fun testGetAllCredentials() = runBlocking {
-        credentialDAO.privateInsertCredentials(credentials.copy())
+        credentialDAO.insertCredentials(credentials.copy())
         val i = credentialDAO.getAllCredentials()
         assertEquals(1, i.size)
     }
@@ -43,8 +43,8 @@ class CredentialDAOTest {
     @DisplayName("test 2 different Credentials insert")
     @Test
     fun testGetAllCredentials2() = runBlocking {
-        credentialDAO.privateInsertCredentials(credentials)
-        credentialDAO.privateInsertCredentials(credentials.copy(data = "2",innerHashValue = "1"))
+        credentialDAO.insertCredentials(credentials)
+        credentialDAO.insertCredentials(credentials.copy(data = "2",innerHashValue = "1"))
         val i = credentialDAO.getAllCredentials()
 
         assertEquals(2, i.size)
@@ -54,8 +54,8 @@ class CredentialDAOTest {
     @Test
     fun testUniqueCredentials() = runBlocking {
 
-        val first =  credentialDAO.privateInsertCredentials(credentials)
-        val second =  credentialDAO.privateInsertCredentials(credentials)
+        val first =  credentialDAO.insertCredentials(credentials)
+        val second =  credentialDAO.insertCredentials(credentials)
         val i = credentialDAO.getAllCredentials()
 
         assertNotEquals(first[0], second[0])
@@ -67,7 +67,7 @@ class CredentialDAOTest {
     @Test
     fun test2CredentialsAsList() = runBlocking {
         val listCredentials = arrayOf(credentials.copy(), credentials.copy(data = "2",innerHashValue = "2"))
-        val g = credentialDAO.privateInsertCredentials(*listCredentials)
+        val g = credentialDAO.insertCredentials(*listCredentials)
         val i =  credentialDAO.getAllCredentials()
         assertEquals(2, g.size)
         assertEquals(2, i.size)
@@ -77,7 +77,7 @@ class CredentialDAOTest {
     @Test
     fun testWithHashValue() = runBlocking {
         val oldHashValue = "old"
-        credentialDAO.privateInsertCredentials(credentials.copy(innerHashValue = oldHashValue))
+        credentialDAO.insertCredentials(credentials.copy(innerHashValue = oldHashValue))
         val i =  credentialDAO.getAllCredentials()
         assertEquals(oldHashValue, i[0].innerHashValue)
     }
@@ -86,7 +86,7 @@ class CredentialDAOTest {
     @Test
     fun testUpdateCredentials() = runBlocking {
         val newData="new data"
-        credentialDAO.privateInsertCredentials(credentials.copy())
+        credentialDAO.insertCredentials(credentials.copy())
         val i = credentialDAO.getAllCredentials()
         assertEquals(i.size,1)
         credentialDAO.updateCredentials(i[0].copy(data =newData ))
@@ -101,7 +101,7 @@ class CredentialDAOTest {
     fun testGetCredentialsWithSalt() = runBlocking {
         val salt="ok"
         val toInsert= arrayOf(credentials,credentials.copy(salt = salt,data = salt,innerHashValue = "a"))
-        credentialDAO.privateInsertCredentials(*toInsert)
+        credentialDAO.insertCredentials(*toInsert)
         val i =  credentialDAO.getCredentialsWithSalt()
         assertEquals(i.size,1)
         assertEquals(i[0].salt, salt)
@@ -110,7 +110,7 @@ class CredentialDAOTest {
     @Test
     fun testDeleteAllCredentials() = runBlocking {
         val toInsert= arrayOf(credentials,credentials.copy(innerHashValue = "a"))
-        credentialDAO.privateInsertCredentials(*toInsert)
+        credentialDAO.insertCredentials(*toInsert)
         val i =  credentialDAO.getAllCredentials()
         assertEquals(2,i.size)
         credentialDAO.deleteAllCredentials()
@@ -121,7 +121,7 @@ class CredentialDAOTest {
     @Test
     fun testGetCredentialsByID() = runBlocking {
         val toInsert= arrayOf(credentials,credentials.copy(innerHashValue = "a"))
-        credentialDAO.privateInsertCredentials(*toInsert)
+        credentialDAO.insertCredentials(*toInsert)
         val i =  credentialDAO.getAllCredentials()
         assertEquals(2,i.size)
         val result=credentialDAO.getCredentialsByID(1L)
@@ -135,7 +135,7 @@ class CredentialDAOTest {
     fun testGetCredentialsByHashData() = runBlocking {
         val hash="a"
         val toInsert= arrayOf(credentials,credentials.copy(innerHashValue = "a"))
-        credentialDAO.privateInsertCredentials(*toInsert)
+        credentialDAO.insertCredentials(*toInsert)
         val i =  credentialDAO.getAllCredentials()
         assertEquals(2,i.size)
         val result=credentialDAO.getCredentialsByHashData(hash)
@@ -149,7 +149,7 @@ class CredentialDAOTest {
     fun testDeleteCredential() = runBlocking {
         val hash="a"
         val toInsert= arrayOf(credentials,credentials.copy(innerHashValue = "a"))
-        credentialDAO.privateInsertCredentials(*toInsert)
+        credentialDAO.insertCredentials(*toInsert)
         val i =  credentialDAO.getAllCredentials()
         assertEquals(2,i.size)
         val result=credentialDAO.getCredentialsByHashData(hash)

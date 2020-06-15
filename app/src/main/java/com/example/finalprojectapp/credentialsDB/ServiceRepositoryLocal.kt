@@ -78,7 +78,7 @@ class ServiceRepositoryLocal @Inject constructor(
 
         val list = mutableListOf<DataSet>()
         service.dataSets?.forEach {
-            list.add(dataSetRepository.getDataSetByID(it.dataSetId))
+            dataSetRepository.getDataSetByID(it.dataSetId)?.let { it1 -> list.add(it1) }
         }
         return service.copy(dataSets = list)
     }
@@ -110,7 +110,7 @@ class ServiceRepositoryLocal @Inject constructor(
         service.forEach { ser ->
             val list = mutableListOf<DataSet>()
             ser.dataSets.forEach {
-                list.add(dataSetRepository.getDataSetByID(it.dataSetId))
+                dataSetRepository.getDataSetByID(it.dataSetId)?.let { it1 -> list.add(it1) }
             }
             servicesList.add(ser.service.copy(dataSets = list))
 
@@ -122,7 +122,7 @@ class ServiceRepositoryLocal @Inject constructor(
         val service = serviceDAO.privateGetServiceByNameQuery(string) ?: return null
         val list = mutableListOf<DataSet>()
         service.dataSets.forEach {
-            list.add(dataSetRepository.getDataSetByID(it.dataSetId))
+            dataSetRepository.getDataSetByID(it.dataSetId)?.let { it1 -> list.add(it1) }
         }
         return service.service.copy(dataSets = list)
     }
@@ -169,7 +169,7 @@ class ServiceRepositoryLocal @Inject constructor(
         return serviceDAO.getServiceByDataSetId(dataSetId)
     }
 
-    suspend fun getDataSetByID(dataSetId: Long): DataSet {
+    suspend fun getDataSetByID(dataSetId: Long): DataSet? {
         return dataSetRepository.getDataSetByID(dataSetId)
     }
 

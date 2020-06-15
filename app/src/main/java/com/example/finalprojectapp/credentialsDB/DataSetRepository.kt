@@ -33,42 +33,18 @@ class DataSetRepository @Inject constructor(
     }
 
 
-    suspend fun getDataSetByID(id: Long): DataSet {
-        val dataSet = dataSetDAO.privateGetDataSetByDataSetID(id)
-        val allData = dataSetDAO.privateGetDataSetToCredentials(dataSet.dataSetId)
+    suspend fun getDataSetByID(id: Long): DataSet? {
+        val dataSet = dataSetDAO.getDataSetByDataSetID(id)
+        val allData = dataSet?.dataSetId?.let { dataSetDAO.privateGetDataSetToCredentials(it) }
         val listCredentials = mutableListOf<Credentials>()
-        allData.forEach {
+        allData?.forEach {
             credentialRepository.publicGetCredentialsID(it.credentialsId)?.let { it1 ->
                 listCredentials.add(
                     it1
                 )
             }
         }
-        return dataSet.copy(credentials = listCredentials)
-    }
-
-    suspend fun getDataSetByID2(id: Long): DataSet {
-        val dataSets = dataSetDAO.privateGetDataSetToCredentials2(id)
-        val newCredentials = mutableListOf<Credentials>()
-        dataSets.forEach {
-            newCredentials.add(
-                Credentials(
-                    it.credentialHints,
-                    it.credentialData,
-                    it.credentialEncryptPasswordHash,
-                    it.credentialEncryptType,
-                    it.credentialHash,
-                    it.credentialIV,
-                    it.CredentialSalt,
-                    null,
-                    it.credentialID
-                )
-            )
-        }
-        return DataSet(
-            newCredentials, dataSets[0].dataSetHash, dataSets[0].dataSetName
-            , dataSets[0].dataSetId, dataSets[0].serviceId
-        )
+        return dataSet?.copy(credentials = listCredentials)
     }
 
     suspend fun privateDeleteDataSet(dataSet: DataSet) {
@@ -90,7 +66,7 @@ class DataSetRepository @Inject constructor(
     }
 
     private suspend fun privateInsertDataSet(dataSet: DataSet): Long {
-        return dataSetDAO.privateInsertDataSet(dataSet)
+        return dataSetDAO.privateInsertDataSet(dataSet)[0]
     }
 
     suspend fun publicInsertCredentials(credentials: Credentials): Long {
@@ -122,7 +98,7 @@ class DataSetRepository @Inject constructor(
             target.let {
                 var result = privateInsertDataSet(it)
                 if (result == -1L) {
-                    val temp = dataSetDAO.privateGetDataSetByHash(it.hashData)
+                    val temp = dataSetDAO.getDataSetByHash(it.hashData)
                     result = temp?.dataSetId ?: return@withContext null
                 }
                 val creList = mutableListOf<Long>()
@@ -141,19 +117,19 @@ class DataSetRepository @Inject constructor(
         }
     }
 
-    suspend fun getDataSetByHash(hash: String): DataSet {
+    suspend fun getDataSetByHash(hash: String): DataSet? {
 
-        val dataSet = dataSetDAO.privateGetDataSetByHash(hash)
-        val allData = dataSetDAO.privateGetDataSetToCredentials(dataSet.dataSetId)
+        val dataSet = dataSetDAO.getDataSetByHash(hash)
+        val allData = dataSet?.dataSetId?.let { dataSetDAO.privateGetDataSetToCredentials(it) }
         val listCredentials = mutableListOf<Credentials>()
-        allData.forEach {
+        allData?.forEach {
             credentialRepository.publicGetCredentialsID(it.credentialsId)?.let { it1 ->
                 listCredentials.add(
                     it1
                 )
             }
         }
-        return dataSet.copy(credentials = listCredentials)
+        return dataSet?.copy(credentials = listCredentials)
     }
 
     suspend fun privateGetAllCredentials(): List<Credentials> {
@@ -161,7 +137,7 @@ class DataSetRepository @Inject constructor(
     }
 
     suspend fun publicInsertArrayCredentials(listCredentials: List<Credentials>): List<Long> {
-        return credentialRepository.publicInsertArrayCredentials(listCredentials)
+        return credentialRepository.insertArrayCredentials(listCredentials)
     }
 
     fun getAllData(): List<DataSet> {
