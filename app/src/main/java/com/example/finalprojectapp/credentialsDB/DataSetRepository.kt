@@ -122,7 +122,7 @@ class DataSetRepository @Inject constructor(
             target.let {
                 var result = privateInsertDataSet(it)
                 if (result == -1L) {
-                    val temp = dataSetDAO.privateGetDataSet(it.hashData)
+                    val temp = dataSetDAO.privateGetDataSetByHash(it.hashData)
                     result = temp?.dataSetId ?: return@withContext null
                 }
                 val creList = mutableListOf<Long>()

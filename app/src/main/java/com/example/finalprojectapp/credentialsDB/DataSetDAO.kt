@@ -5,7 +5,9 @@ import androidx.room.*
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
+
 import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
+import com.example.finalprojectapp.data.model.relationship.DataSetWithCredentials
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 
 @Dao
@@ -14,10 +16,6 @@ interface DataSetDAO {
 
     @Query("SELECT * FROM dataSet_ Where :hashData = hashData")
     suspend fun privateGetDataSetByHash(hashData: String): DataSet
-
-    @Transaction
-    @Query("SELECT * FROM dataSet_ Where :hashData like hashData")
-    suspend fun privateGetDataSet(hashData: String): DataSet?
 
     @Update
     fun privateUpdateNewCre(vararg newManyToMany: DataSetCredentialsManyToMany): Int
@@ -41,6 +39,7 @@ interface DataSetDAO {
     @Query("Select c.iv,c.data,c.hint,c.credentialsId from dataSetCredentialsManyToMany r,credentials_ c where r.dataSetId=:dataSetId and r.credentialsId = c.credentialsId")
     fun publicGetAllCredentialsByDataSetID(dataSetId: Long): LiveData<List<LayoutCredentialView>>
 
+    @Transaction
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun privateInsertDataSet(dataSet: DataSet): Long
 
@@ -49,6 +48,12 @@ interface DataSetDAO {
 
     @Query("SELECT * FROM dataSetCredentialsManyToMany Where dataSetId =:num ")
     suspend fun privateGetDataSetToCredentials(num: Long): List<DataSetCredentialsManyToMany>
+
+
+    @Transaction
+    @Query("SELECT * FROM dataSet_")
+    fun getUsersWithPlaylists(): List<DataSetWithCredentials>
+
 
     // TODO: 15/06/2020 experimental new way for data set query
     @Query("SELECT d.dataSetId as dataSetId ," +
@@ -84,6 +89,7 @@ interface DataSetDAO {
 
     @Query("SELECT * FROM dataSet_  Where :hashData like hashData And serviceId = :service")
     suspend fun privateFindByHashDataAndServiceId(hashData: String, service: Long): DataSet?
+
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun privateInsertCredentials(dataSetCredentialsManyToMany: DataSetCredentialsManyToMany): Long

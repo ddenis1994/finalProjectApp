@@ -11,29 +11,25 @@ interface CredentialDAO {
     fun updateCredentials(it1: Credentials) :Int
 
     @Query("SELECT * FROM credentials_ Where salt not null ")
-    suspend fun getAllEncryptedCredentials(): List<Credentials>
+    suspend fun getCredentialsWithSalt(): List<Credentials>
 
     @Query("SELECT * FROM credentials_")
-    suspend fun privateGetAllCredentials(): List<Credentials>
+    suspend fun getAllCredentials(): List<Credentials>
 
     @Query("Delete from credentials_")
     suspend fun deleteAllCredentials()
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun privateInsertCredentials(credentials: Credentials):Long
+    suspend fun privateInsertCredentials(vararg credentials: Credentials):List<Long>
 
-    @Query("SELECT * FROM credentials_ Where credentialsId = :dataSet ")
-    suspend fun privateGetCredentialsID(dataSet: Long): Credentials
 
-    @Query("SELECT * FROM credentials_ Where innerHashValue like :dataSet ")
-    suspend fun privateGetCredentialsByHashData(dataSet: String): Credentials?
+    @Query("SELECT * FROM credentials_ Where credentialsId = :id")
+    suspend fun getCredentialsByID(id: Long): Credentials?
+
+    @Query("SELECT * FROM credentials_ Where innerHashValue like :hash ")
+    suspend fun getCredentialsByHashData(hash: String): Credentials?
 
     @Delete
     fun deleteCredential(vararg dataSet: Credentials)
-
-
-
-
-
 
 }

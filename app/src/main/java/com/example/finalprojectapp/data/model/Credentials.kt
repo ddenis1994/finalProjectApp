@@ -9,8 +9,8 @@ import com.google.firebase.firestore.ServerTimestamp
 
 @Entity(tableName = "credentials_",indices = [Index(value = ["innerHashValue"],unique = true)])
 data class Credentials (
-    var hint:List<String>,
-    var data:String,
+    var hint:List<String> = mutableListOf<String>(),
+    var data:String="",
     var encryptPasswordHash:String?=null,
     var encryptType:String="",
     var innerHashValue:String?=null,
@@ -20,10 +20,6 @@ data class Credentials (
     val timestamp: ServerTimestamp?=null,
     @PrimaryKey(autoGenerate = true)
     @Exclude
-    var credentialsId: Long=0
-){
-    constructor() : this(
-        mutableListOf<String>(),
-        ""
-    )
-}
+    var credentialsId: Long=0,
+    var credentialDataSetId:Long=0
+)

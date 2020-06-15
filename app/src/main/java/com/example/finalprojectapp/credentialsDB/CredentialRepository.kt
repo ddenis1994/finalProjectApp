@@ -27,11 +27,11 @@ class CredentialRepository @Inject constructor(
             val encryptedCredentials = localCryptography.encrypt(credentials)
             var resultInsert: Long =-1L
             encryptedCredentials?.let {
-                resultInsert = credentialsDao.privateInsertCredentials(it)
+                resultInsert = credentialsDao.privateInsertCredentials(it)[0]
                 if (resultInsert == -1L)
                     resultInsert =
                         it.innerHashValue?.let { hash ->
-                            credentialsDao.privateGetCredentialsByHashData(
+                            credentialsDao.getCredentialsByHashData(
                                 hash
                             )?.credentialsId
                         }?: -1L
@@ -42,7 +42,7 @@ class CredentialRepository @Inject constructor(
 
 
     suspend fun publicGetCredentialsID(dataSet: Long): Credentials? {
-        val result = credentialsDao.privateGetCredentialsID(dataSet)
+        val result = credentialsDao.getCredentialsByID(dataSet)
         return if (localCryptography.decryption(result) == null)
             null
         else
@@ -55,7 +55,7 @@ class CredentialRepository @Inject constructor(
     }
 
     suspend fun privateGetAllCredentials(): List<Credentials> {
-        return credentialsDao.privateGetAllCredentials()
+        return credentialsDao.getAllCredentials()
     }
 
 }

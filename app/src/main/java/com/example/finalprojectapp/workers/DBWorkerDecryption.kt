@@ -6,14 +6,13 @@ import androidx.work.WorkerParameters
 import com.example.finalprojectapp.credentialsDB.LocalDataBase
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.crypto.RemoteCryptography
-import javax.inject.Inject
 
 class DBWorkerDecryption(appContext: Context, workerParams: WorkerParameters)
     : CoroutineWorker(appContext, workerParams) {
     lateinit var localCryptography:LocalCryptography
     override suspend  fun doWork(): Result  {
         val localDB= LocalDataBase.getDatabase(applicationContext)
-        val test = localDB.credentialDAO().getAllEncryptedCredentials()
+        val test = localDB.credentialDAO().getCredentialsWithSalt()
 
         val remoteCryptography= RemoteCryptography(applicationContext)
 
