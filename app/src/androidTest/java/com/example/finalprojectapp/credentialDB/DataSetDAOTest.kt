@@ -92,12 +92,7 @@ class DataSetDAOTest {
         dataSetDao.deleteDataSet(toDelete?.dataSet!!)
     }
 
-    @DisplayName("find all passwords in dataSetCredentials")
-    @Test
-    fun publicGetAllHashCredentials() {
-        val result=dataSetDao.publicGetAllHashCredentials2()
-        assertNotNull(result)
-    }
+
 
     @DisplayName("find all passwords in dataSetCredentials with id")
     @Test

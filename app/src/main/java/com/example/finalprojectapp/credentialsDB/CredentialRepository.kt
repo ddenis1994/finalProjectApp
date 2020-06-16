@@ -12,7 +12,7 @@ class CredentialRepository @Inject constructor(
     private val localCryptography: LocalCryptography
 ) {
 
-    fun deleteCredential(credentials: Credentials) = credentialsDao.deleteCredential(credentials)
+     internal fun deleteCredential(credentials: Credentials) = credentialsDao.deleteCredential(credentials)
 
 
     suspend fun insertCredentials(vararg listCredentials: Credentials): List<Long> =
@@ -50,6 +50,9 @@ class CredentialRepository @Inject constructor(
     fun deleteCredentialByDataSetID(dataSetId: Long) {
         credentialsDao.deleteCredentialByDataSetID(dataSetId)
     }
+
+    fun getCredentialByDataSetID(dataSetId: Long)=credentialsDao.publicGetAllCredentialsByDataSetID(dataSetId)
+    fun publicGetAllHashCredentials()=credentialsDao.publicGetAllHashCredentials()
 
 
 }

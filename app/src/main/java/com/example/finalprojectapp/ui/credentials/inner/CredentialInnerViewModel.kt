@@ -3,6 +3,8 @@ package com.example.finalprojectapp.ui.credentials.inner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.finalprojectapp.credentialsDB.CredentialRepository
+import com.example.finalprojectapp.credentialsDB.DataSetRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.Credentials
@@ -10,8 +12,11 @@ import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import javax.inject.Inject
 
 class CredentialInnerViewModel @Inject constructor(
-    private val mainRepository: ServiceRepository
+    private val mainRepository: CredentialRepository
 ) : ViewModel() {
+
+    @Inject
+    lateinit var dataSetRepository: DataSetRepository
 
     private var _data = MutableLiveData<List<LayoutCredentialView>>()
     val data: LiveData<List<LayoutCredentialView>> = _data
@@ -43,8 +48,9 @@ class CredentialInnerViewModel @Inject constructor(
         _data.postValue(data)
     }
 
-    fun deleteCredential(serviceName: String, dataSetId: Long, credentialID: Long) {
-        mainRepository.deleteCredential(serviceName,dataSetId,credentialID)
+    suspend fun deleteCredential(serviceName: String, dataSetId: Long, credentialID: Long) {
+        dataSetRepository.publicDeleteCredential(credentialID,dataSetId)
+
     }
 
 

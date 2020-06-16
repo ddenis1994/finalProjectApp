@@ -101,28 +101,12 @@ class ServiceRepository @Inject constructor(
     }
 
 
-    suspend fun publicGetUnionServiceNameAndCredentialsHash(
-        service: Service,
-        oldCredentials: Credentials,
-        newCredentials: Credentials
-    ): Int? = serviceRepositoryLocal.publicGetUnionServiceNameAndCredentialsHash(
-        service,
-        oldCredentials,
-        newCredentials
-    )
-
     suspend fun publicGetAllServiceSuspend(): List<Service> =
         serviceRepositoryLocal.publicGetAllServiceSuspand()
 
 
     fun getDataSetById(dataSetId: Long): LiveData<List<LayoutDataSetView>> =
         serviceRepositoryLocal.getDataSetById(dataSetId)
-
-    fun publicGetAllHashCredentials(): LiveData<List<DashboardViewModel.HashAndId>> =
-        serviceRepositoryLocal.publicGetAllHashCredentials()
-
-    fun getCredentialByDataSetID(dataSetId: Long): LiveData<List<LayoutCredentialView>> =
-        serviceRepositoryLocal.getCredentialByDataSetID(dataSetId)
 
     fun updateRemotePassword(hash: String?) :Boolean {
         TODO("Not yet implemented")

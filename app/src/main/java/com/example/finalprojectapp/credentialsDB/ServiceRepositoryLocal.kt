@@ -4,17 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.room.Transaction
 import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.crypto.LocalCryptography
-import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
-import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
 import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import javax.inject.Inject
 
 class ServiceRepositoryLocal @Inject constructor(
@@ -71,7 +67,7 @@ class ServiceRepositoryLocal @Inject constructor(
 
 
     suspend fun findServiceAndDataSet(dataSetId: Long) =
-        serviceDAO.publicFindServiceAndDataSet(dataSetId)
+        serviceDAO.publicFindServiceAndDataSet(/*dataSetId*/)
 
 
     suspend fun publicGetServiceByName(string: String): Service? {
@@ -82,27 +78,6 @@ class ServiceRepositoryLocal @Inject constructor(
             dataSetRepository.getDataSetByID(it.dataSetId)?.let { it1 -> list.add(it1) }
         }
         return service.copy(dataSets = list)
-    }
-
-    suspend fun publicGetUnionServiceNameAndCredentialsHash(
-        service: Service,
-        oldCredentials: Credentials,
-        newCredentials: Credentials
-    ): Int? {
-        val credentialsInner = dataSetRepository.publicInsertCredentials(oldCredentials)
-        val dataSet =
-            serviceDAO.privateGetUnionServiceNameAndCredentialsHash(service.name, credentialsInner)
-        val json = Json(JsonConfiguration.Stable)
-        val data = newCredentials.hint.let {
-            Converters.Data(it)
-        }
-        val hint = json.stringify(Converters.Data.serializer(), data)
-        val manyId = dataSet?.let {
-            dataSetRepository.privateGetUnionDataSetAndCredentialsHash(it, hint)
-        }
-        val newCre = dataSetRepository.publicInsertCredentials(newCredentials)
-        return dataSet?.let { manyId?.let { it1 -> DataSetCredentialsManyToMany(it, newCre, it1) } }
-            ?.let { dataSetRepository.privateUpdateNewCre(it) }
     }
 
     suspend fun publicGetAllServiceSuspand(): List<Service> {
@@ -128,6 +103,27 @@ class ServiceRepositoryLocal @Inject constructor(
         return service.service.copy(dataSets = list)
     }
 
+//    suspend fun publicGetUnionServiceNameAndCredentialsHash(
+//        service: Service,
+//        oldCredentials: Credentials,
+//        newCredentials: Credentials
+//    ): Int? {
+//        val credentialsInner = dataSetRepository.publicInsertCredentials(oldCredentials)
+//        val dataSet =
+//            serviceDAO.privateGetUnionServiceNameAndCredentialsHash(service.name, credentialsInner)
+//        val json = Json(JsonConfiguration.Stable)
+//        val data = newCredentials.hint.let {
+//            Converters.Data(it)
+//        }
+//        val hint = json.stringify(Converters.Data.serializer(), data)
+//        val manyId = dataSet?.let {
+//            dataSetRepository.privateGetUnionDataSetAndCredentialsHash(it, hint)
+//        }
+//        val newCre = dataSetRepository.publicInsertCredentials(newCredentials)
+//        return dataSet?.let { manyId?.let { it1 -> DataSetCredentialsManyToMany(it, newCre, it1) } }
+//            ?.let { dataSetRepository.privateUpdateNewCre(it) }
+//    }
+
     suspend fun deleteFullServiceByID(service: Service) {
         service.dataSets?.forEach {
             dataSetRepository.privateDeleteDataSet(it)
@@ -138,15 +134,6 @@ class ServiceRepositoryLocal @Inject constructor(
 
     fun getDataSetById(dataSetId: Long): LiveData<List<LayoutDataSetView>> {
         return dataSetRepository.getDataSetByServiceId(dataSetId)
-    }
-
-    fun publicGetAllHashCredentials(): LiveData<List<DashboardViewModel.HashAndId>> {
-        return dataSetRepository.publicGetAllHashCredentials()
-
-    }
-
-    fun getCredentialByDataSetID(dataSetId: Long): LiveData<List<LayoutCredentialView>> {
-        return dataSetRepository.getLocalCredentialByDataSetID(dataSetId)
     }
 
 

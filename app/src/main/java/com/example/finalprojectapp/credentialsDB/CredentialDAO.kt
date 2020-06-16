@@ -1,7 +1,10 @@
 package com.example.finalprojectapp.credentialsDB
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.finalprojectapp.data.model.Credentials
+import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
+import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 
 @Dao
 interface CredentialDAO {
@@ -35,5 +38,11 @@ interface CredentialDAO {
 
     @Query("Delete from credentials_ where credentialDataSetId = :dataSetId")
     fun deleteCredentialByDataSetID(dataSetId: Long)
+
+    @Query("Select c.iv,c.data,c.hint,c.credentialsId from credentials_ c where c.credentialDataSetId =:dataSetId")
+    fun publicGetAllCredentialsByDataSetID(dataSetId: Long): LiveData<List<LayoutCredentialView>>
+
+    @Query("select  c.credentialsId,c.innerHashValue hash, c.credentialDataSetId dataSet from  credentials_ c where  c.hint like '%Password%' or '%password%'   ")
+    fun publicGetAllHashCredentials(): LiveData<List<DashboardViewModel.HashAndId>?>
 
 }

@@ -22,6 +22,8 @@ import com.example.finalprojectapp.R
 import com.example.finalprojectapp.adapters.CredentialsAdapter
 import kotlinx.android.synthetic.main.fragment_inner_credential.*
 import kotlinx.android.synthetic.main.fragment_inner_credential.view.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -129,7 +131,11 @@ class CredentialInnerFragment : Fragment() {
                     Toast.makeText(requireContext(), "copy user", Toast.LENGTH_SHORT).show()
                 }
                 requestCodeDeleteCredential -> {
-                    viewModel.data.value?.get(target)?.id?.let { viewModel.deleteCredential(serviceName,dataSetId,it) }
+                    GlobalScope.launch {
+                        viewModel.data.value?.get(target)?.id?.let {
+                            viewModel.deleteCredential(serviceName, dataSetId, it)
+                        }
+                    }
                 }
             }
 

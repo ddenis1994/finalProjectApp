@@ -48,6 +48,17 @@ class CredentialDAOTest {
 
     }
 
+    @DisplayName("find all passwords in dataSetCredentials")
+    @Test
+    fun publicGetAllHashCredentials() = runBlocking{
+        credentialDAO.insertCredentials(
+            credentials.copy(),
+            credentials.copy(hint = listOf("password"))
+        )
+        val result=credentialDAO.publicGetAllHashCredentials()
+        assertNotNull(result)
+    }
+
 
     @DisplayName("test one Insert")
     @Test

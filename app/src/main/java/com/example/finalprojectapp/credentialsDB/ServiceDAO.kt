@@ -10,7 +10,7 @@ import com.example.finalprojectapp.data.model.relationship.ServiceToDataSet
 @Dao
 interface ServiceDAO {
 
-    @Query("SELECT r.dataSetId FROM service_ s, dataSetCredentialsManyToMany r,dataSet_ d,credentials_ c Where :serviceName like s.name AND d.serviceId = s.serviceId AND c.credentialsId==:credentialsID AND d.dataSetId = r.dataSetId And r.credentialsId = c.credentialsId")
+    @Query("SELECT d.dataSetId FROM service_ s, dataSet_ d,credentials_ c Where :serviceName like s.name AND d.serviceId = s.serviceId AND c.credentialsId==:credentialsID ")
     suspend fun privateGetUnionServiceNameAndCredentialsHash(serviceName:String,credentialsID: Long): Long?
 
     @Transaction
@@ -20,8 +20,9 @@ interface ServiceDAO {
     @Query("Delete from service_")
     suspend fun deleteAllService()
 
-    @Query("select s.name serviceName,d.dataSetName dataSetName from dataSetCredentialsManyToMany r, dataSet_ d ,service_ s where d.serviceId = s.serviceId and d.dataSetId = r.dataSetId and r.credentialsId = :credentialID" )
-    suspend fun publicFindServiceAndDataSet(credentialID: Long): List<LayoutDashBoardRepeatedPassword>
+    // TODO: 16/06/2020 fix this 
+    @Query("select s.name serviceName,d.dataSetName dataSetName from  dataSet_ d ,service_ s where d.serviceId = s.serviceId " )
+    suspend fun publicFindServiceAndDataSet(/*credentialID: Long*/): List<LayoutDashBoardRepeatedPassword>
 
     @Query("select count(*) from  service_ ")
     fun publicGetNumOfServices():LiveData<Int>
@@ -53,6 +54,7 @@ interface ServiceDAO {
     @Query("delete from service_ where serviceId=:id")
     suspend fun privateDeleteServiceByID(id:Long)
 
+    // TODO: 16/06/2020 remove in production
     @Transaction
     @Query("Select * from service_")
     fun privateGetService():List<ServiceToDataSet>

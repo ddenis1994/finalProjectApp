@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import androidx.room.ColumnInfo
 import com.example.finalprojectapp.adapters.DashBoardRecyclerRepeatedPasswordAdapter
+import com.example.finalprojectapp.credentialsDB.CredentialRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.data.model.DashBoardData
 import kotlinx.coroutines.launch
@@ -12,6 +13,9 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     private val mainRepository: ServiceRepository
 ) : ViewModel() {
+
+    @Inject
+    lateinit var credentialRepository: CredentialRepository
 
 
     private val _data = MediatorLiveData<DashBoardData>()
@@ -33,13 +37,13 @@ class DashboardViewModel @Inject constructor(
     private fun chalkForRepeatedPassword(owner: LifecycleOwner): LiveData<DashBoardData>  {
         val liveDataAdapter=MutableLiveData<DashBoardData>()
         viewModelScope.launch {
-                mainRepository.publicGetAllHashCredentials()
+                credentialRepository.publicGetAllHashCredentials()
                     .observe(owner, Observer { data ->
-                        var repeatedList = data.groupBy { it.id }.filter { it.value.size > 1 }
+                        var repeatedList = data?.groupBy { it.id }?.filter { it.value.size > 1 }
                         val oldList = _data.value?.passwordRepeated
                         if (!oldList.isNullOrEmpty())
-                            repeatedList = repeatedList.filter { !oldList.contains(it.key) }
-                        if (repeatedList.isNotEmpty()) {
+                            repeatedList = repeatedList?.filter { !oldList.contains(it.key) }
+                        if (!repeatedList.isNullOrEmpty()) {
                             liveDataAdapter.postValue(
                                 _data.value?.copy(
                                     securityRisks = _data.value!!.securityRisks + repeatedList.size,

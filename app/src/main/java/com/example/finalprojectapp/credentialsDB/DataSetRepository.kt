@@ -3,7 +3,6 @@ package com.example.finalprojectapp.credentialsDB
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
-import com.example.finalprojectapp.data.model.relationship.DataSetCredentialsManyToMany
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -15,15 +14,8 @@ class DataSetRepository @Inject constructor(
 ) {
 
 
-    fun getLocalCredentialByDataSetID(dataSetId: Long) =
-        dataSetDAO.publicGetAllCredentialsByDataSetID(dataSetId)
-
     fun getDataSetByServiceId(serviceID: Long) =
         dataSetDAO.publicGetAllDataSetsByServiceId(serviceID)
-
-
-    fun publicGetAllHashCredentials() =
-        dataSetDAO.publicGetAllHashCredentials()
 
 
     suspend fun publicDeleteCredential(credentialID: Long, dataSetId: Long) {
@@ -49,22 +41,10 @@ class DataSetRepository @Inject constructor(
     }
 
 
-    suspend fun publicInsertCredentials(credentials: Credentials): Long =
-        // credentialRepository.publicInsertCredentials(credentials)
-        -1L
-
     suspend fun deleteAllDataSets() {
         credentialRepository.deleteAllCredentials()
         dataSetDAO.deleteAllDataSets()
     }
-
-
-    suspend fun privateGetUnionDataSetAndCredentialsHash(it: Long, hint: String): Long? =
-        dataSetDAO.privateGetUnionDataSetAndCredentialsHash(it, hint)
-
-
-    fun privateUpdateNewCre(it: DataSetCredentialsManyToMany): Int =
-        dataSetDAO.privateUpdateNewCre(it)
 
 
     suspend fun publicInsertDataSet(vararg dataSets: DataSet): List<Pair<Long, List<Long>?>>? =
