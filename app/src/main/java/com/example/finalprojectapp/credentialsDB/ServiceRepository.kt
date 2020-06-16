@@ -4,11 +4,8 @@ import android.service.autofill.SaveCallback
 import androidx.lifecycle.LiveData
 import androidx.room.Transaction
 import com.example.finalprojectapp.crypto.HashBuilder
-import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.Service
-import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
-import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
@@ -31,7 +28,10 @@ class ServiceRepository @Inject constructor(
                 serviceRepositoryLocal.publicInsertService(service)
             }
             localInsert.await().let {
-                serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(it, callback) }
+                if (it != null) {
+                    serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(it, callback)
+                }
+            }
 
 
         }
@@ -51,22 +51,22 @@ class ServiceRepository @Inject constructor(
     suspend fun findServiceAndDataSet(dataSetId: Long) =
         serviceRepositoryLocal.findServiceAndDataSet(dataSetId)
 
-
-    fun deleteCredential(
-        serviceName: String,
-        dataSetId: Long,
-        credentialID: Long
-    ) {
-        scope.launch {
-            val result=this.async { serviceRepositoryLocal.deleteLocalCredential(serviceName,credentialID,dataSetId) }
-            val dataSet=this.async { serviceRepositoryLocal.getDataSetByID(dataSetId) }
-            dataSet.await()?.let {
-                serviceRepositoryRemote.deleteRemoteCredential(result.await(),
-                    it
-                )
-            }
-        }
-    }
+//
+//    fun deleteCredential(
+//        serviceName: String,
+//        dataSetId: Long,
+//        credentialID: Long
+//    ) {
+//        scope.launch {
+//            val result=this.async { serviceRepositoryLocal.deleteLocalCredential(serviceName,credentialID,dataSetId) }
+//            val dataSet=this.async { serviceRepositoryLocal.getDataSetByID(dataSetId) }
+//            dataSet.await()?.let {
+//                serviceRepositoryRemote.deleteRemoteCredential(result.await(),
+//                    it
+//                )
+//            }
+//        }
+//    }
 
 
     suspend fun deleteDataSet(dataSetId: Long) {
@@ -78,7 +78,7 @@ class ServiceRepository @Inject constructor(
 
             }
             job.await()
-            val service1=serviceRepositoryLocal.publicGetServiceByName(serviceName)
+            val service1=serviceRepositoryLocal.getServiceByName(serviceName)
             val newHash=HashBuilder().makeHash(service1)
             if ( newHash?.dataSets!=null && ( newHash.dataSets!!.isNullOrEmpty())){
                 serviceRepositoryLocal.deleteFullServiceByID( newHash)
@@ -93,12 +93,7 @@ class ServiceRepository @Inject constructor(
 
 
     suspend fun publicGetServiceByName(string: String): Service? =
-        serviceRepositoryLocal.publicGetServiceByName(string)
-
-
-    suspend fun publicInsertLocalService(service: Service): Service {
-        return serviceRepositoryLocal.publicInsertService(service)
-    }
+        serviceRepositoryLocal.getServiceByName(string)
 
 
     suspend fun publicGetAllServiceSuspend(): List<Service> =

@@ -57,21 +57,7 @@ class DataBaseUnitTest {
 //    @DisplayName("Service")
 //    inner class DataSetTest {
 //
-//        @Test
-//        @DisplayName("insert Service")
-//        fun insertDataSet()= runBlocking {
-//           serverDAO.publicInsertLocalService(
-//               Service()
-//                   .copy(dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "8"))))))
-//            serverDAO.publicInsertLocalService(
-//                Service()
-//                    .copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "2"),credentials.copy(data = "18"))))))
-//            serverDAO.publicInsertLocalService(
-//                Service()
-//                    .copy(name = "why",dataSets = listOf(dataSet.copy(credentials = listOf(credentials,credentials.copy(data = "3"))))))
-//            val allData=serverDAO.publicGetAllServiceSuspend()
-//            assertEquals(2, allData.size)
-//        }
+
 //
 //        @Test
 //        @DisplayName("insert single Service")

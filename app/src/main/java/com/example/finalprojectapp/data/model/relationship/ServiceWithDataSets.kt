@@ -6,7 +6,7 @@ import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
 
 
-data class ServiceToDataSet (
+data class ServiceWithDataSets (
     @Embedded val service: Service,
     @Relation(
         parentColumn = "serviceId",

@@ -9,7 +9,7 @@ import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.ServerTimestamp
 
 @Entity(tableName = "service_",indices = [Index(value = ["hash"],unique = true)])
-data class Service (
+data class Service(
     var name:String,
     var hash:String,
     @Ignore

@@ -1,16 +1,11 @@
 package com.example.finalprojectapp.credentialsDB
 
 import androidx.lifecycle.LiveData
-import androidx.room.Transaction
 import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
-import com.example.finalprojectapp.data.model.adpters.LayoutCredentialView
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
-import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ServiceRepositoryLocal @Inject constructor(
@@ -20,42 +15,31 @@ class ServiceRepositoryLocal @Inject constructor(
 ) {
 
 
-    @Transaction
     suspend fun nukeALl() {
         dataSetRepository.deleteAllDataSets()
         serviceDAO.deleteAllService()
     }
 
-    suspend fun publicInsertService(service: Service): Service {
-        var localService: Service =
-            privateGetServiceByName(service.name) ?: Service().copy(serviceId = -1L)
-        var target = HashBuilder().makeHash(service)
-        if (localService.hash == target?.hash) return localService
-        if (localService.serviceId != -1L) {
-            localService =
-                localCryptography.decryption(localService) ?: Service().copy(serviceId = -1L)
-            val newDataSetList = mutableListOf<DataSet>()
-            service.dataSets?.let { newDataSetList.addAll(it) }
-            localService.dataSets?.let { newDataSetList.addAll(it) }
-            target = target?.copy(dataSets = newDataSetList)
-            deleteFullServiceByID(localService)
+
+
+    suspend fun publicInsertService(service: Service): Service? {
+        val localService =
+            getServiceByName(service.name)
+        var target = localCryptography.encrypt(service)?: return null
+        if (localService!=null){
+            if (localService.hash == target.hash) return localService
+            target.dataSets?.map { dataSetRepository.publicInsertDataSet(it.copy(serviceId = localService.serviceId)) }
+            target=getServiceByName(service.name)!!
+            serviceDAO.updateService(target)
+            return localCryptography.decryption(target)
         }
-        target = localCryptography.encrypt(target)!!
-
-
-        val result = target.let { serviceDAO.privateInsertService(it) }
-        val list = mutableListOf<Pair<Long, List<Long>>>()
-        target.dataSets?.forEach {
-            // TODO: 16/06/2020 fix this with multi values
-//            dataSetRepository.publicInsertDataSet(it.copy(serviceId = result))
-//                .let { it1 ->
-//                    if (it1 != null) {
-//                        list.add(it1)
-//                    }
-//                }
+        else{
+            val result = serviceDAO.privateInsertService(target)
+            target.dataSets?.map { dataSetRepository.publicInsertDataSet(it.copy(serviceId = result)) }
+            target=getServiceByName(service.name)!!
+            return localCryptography.decryption(target)
         }
 
-        return localCryptography.decryption(target) ?: Service()
     }
 
 
@@ -67,18 +51,8 @@ class ServiceRepositoryLocal @Inject constructor(
 
 
     suspend fun findServiceAndDataSet(dataSetId: Long) =
-        serviceDAO.publicFindServiceAndDataSet(/*dataSetId*/)
+        serviceDAO.findServiceAndDataSetsAndCredentials(dataSetId)
 
-
-    suspend fun publicGetServiceByName(string: String): Service? {
-        val service = privateGetServiceByName(string) ?: return null
-
-        val list = mutableListOf<DataSet>()
-        service.dataSets?.forEach {
-            dataSetRepository.getDataSetByID(it.dataSetId)?.let { it1 -> list.add(it1) }
-        }
-        return service.copy(dataSets = list)
-    }
 
     suspend fun publicGetAllServiceSuspand(): List<Service> {
         val service = serviceDAO.privateGetAllService()
@@ -94,13 +68,14 @@ class ServiceRepositoryLocal @Inject constructor(
         return servicesList
     }
 
-    private suspend fun privateGetServiceByName(string: String): Service? {
-        val service = serviceDAO.privateGetServiceByNameQuery(string) ?: return null
-        val list = mutableListOf<DataSet>()
+    // TODO: 16/06/2020 return private in production
+    suspend fun getServiceByName(string: String): Service? {
+        val service = serviceDAO.getServiceByName(string) ?: return null
         service.dataSets.forEach {
-            dataSetRepository.getDataSetByID(it.dataSetId)?.let { it1 -> list.add(it1) }
+            val cre = dataSetRepository.getDataSetByID(it.dataSetId)?.credentials
+            it.credentials = cre
         }
-        return service.service.copy(dataSets = list)
+        return service.service.copy(dataSets = service.dataSets)
     }
 
 //    suspend fun publicGetUnionServiceNameAndCredentialsHash(
@@ -128,7 +103,7 @@ class ServiceRepositoryLocal @Inject constructor(
         service.dataSets?.forEach {
             dataSetRepository.privateDeleteDataSet(it)
         }
-        serviceDAO.privateDeleteService(service)
+        serviceDAO.deleteService(service)
     }
 
 
@@ -141,31 +116,12 @@ class ServiceRepositoryLocal @Inject constructor(
         dataSetRepository.deleteDataSetById(dataSetId)
     }
 
-    fun getServiceByDataSetId(dataSetId: Long): String? {
-        return serviceDAO.getServiceByDataSetId(dataSetId)
-    }
-
     suspend fun getDataSetByID(dataSetId: Long): DataSet? {
         return dataSetRepository.getDataSetByID(dataSetId)
     }
 
-    suspend fun deleteLocalCredential(
-        serviceName: String,
-        credentialID: Long,
-        dataSetId: Long
-    ): Service {
-        return withContext(Dispatchers.IO) {
-            dataSetRepository.publicDeleteCredential(credentialID, dataSetId)
-            return@withContext serviceDAO.privateGetServiceByName(serviceName) ?: Service()
-        }
-    }
-
     fun publicGetServiceNameByDataSetID(dataSetId: Long): String {
-        return serviceDAO.getServiceByDataSetId(dataSetId) ?: ""
-    }
-
-    suspend fun deleteService(service: Service) {
-        serviceDAO.privateDeleteService(service)
+        return serviceDAO.getServiceByDataSetId(dataSetId)?.service?.name ?: ""
     }
 
 
