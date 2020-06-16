@@ -25,12 +25,21 @@ class DataSetRepository @Inject constructor(
     fun publicGetAllHashCredentials() =
         dataSetDAO.publicGetAllHashCredentials()
 
+    // TODO: 16/06/2020 delete this need only to delete by credential id 
     fun publicDeleteCredential(credentialID: Long, dataSetId: Long) {
         dataSetDAO.deleteFromRelationshipCredential(credentialID, dataSetId)
         val result = dataSetDAO.privateGetRelationshipCredential(credentialID)
         if (result.isEmpty())
             credentialRepository.deleteCredential(Credentials().copy(credentialsId = credentialID))
     }
+
+    suspend fun publicDeleteCredential2(credentialID: Long, dataSetId: Long) {
+        credentialRepository.deleteCredential(Credentials().copy(credentialsId = credentialID))
+        val result = dataSetDAO.getDataSetWithCredentialsByDataSetID(dataSetId)
+        if (result?.credentials!!.isEmpty())
+            dataSetDAO.deleteDataSet(DataSet().copy(dataSetId = dataSetId))
+    }
+    
 
 
     suspend fun getDataSetByID(id: Long): DataSet? {
@@ -65,17 +74,17 @@ class DataSetRepository @Inject constructor(
 
     }
 
-    private suspend fun privateInsertDataSet(dataSet: DataSet): Long {
-        return dataSetDAO.privateInsertDataSet(dataSet)[0]
-    }
+    private suspend fun privateInsertDataSet(dataSet: DataSet): Long =
+        dataSetDAO.privateInsertDataSet(dataSet)[0]
 
-    suspend fun publicInsertCredentials(credentials: Credentials): Long {
-        return credentialRepository.publicInsertCredentials(credentials)
-    }
 
-    private suspend fun privateInsertCredentials(dataSetCredentialsManyToMany: DataSetCredentialsManyToMany): Long {
-        return dataSetDAO.privateInsertCredentials(dataSetCredentialsManyToMany)
-    }
+    suspend fun publicInsertCredentials(credentials: Credentials): Long =
+        credentialRepository.publicInsertCredentials(credentials)
+
+
+    private suspend fun privateInsertCredentials(dataSetCredentialsManyToMany: DataSetCredentialsManyToMany): Long =
+        dataSetDAO.privateInsertCredentials(dataSetCredentialsManyToMany)
+
 
     suspend fun deleteAllDataSets() {
         credentialRepository.deleteAllCredentials()
@@ -84,13 +93,12 @@ class DataSetRepository @Inject constructor(
     }
 
 
-    suspend fun privateGetUnionDataSetAndCredentialsHash(it: Long, hint: String): Long? {
-        return dataSetDAO.privateGetUnionDataSetAndCredentialsHash(it, hint)
-    }
+    suspend fun privateGetUnionDataSetAndCredentialsHash(it: Long, hint: String): Long? =
+        dataSetDAO.privateGetUnionDataSetAndCredentialsHash(it, hint)
 
-    fun privateUpdateNewCre(it: DataSetCredentialsManyToMany): Int {
-        return dataSetDAO.privateUpdateNewCre(it)
-    }
+
+    fun privateUpdateNewCre(it: DataSetCredentialsManyToMany): Int =
+        dataSetDAO.privateUpdateNewCre(it)
 
     suspend fun publicInsertDataSet(dataSet: DataSet): Pair<Long, List<Long>>? {
         return withContext(Dispatchers.IO) {
@@ -132,17 +140,12 @@ class DataSetRepository @Inject constructor(
         return dataSet?.copy(credentials = listCredentials)
     }
 
-    suspend fun privateGetAllCredentials(): List<Credentials> {
-        return credentialRepository.privateGetAllCredentials()
-    }
+    suspend fun privateGetAllCredentials(): List<Credentials> =
+        credentialRepository.privateGetAllCredentials()
 
-    suspend fun publicInsertArrayCredentials(listCredentials: List<Credentials>): List<Long> {
-        return credentialRepository.insertArrayCredentials(listCredentials)
-    }
 
-    fun getAllData(): List<DataSet> {
-        return dataSetDAO.publicGetAllDataSet()
-    }
+    suspend fun publicInsertArrayCredentials(listCredentials: List<Credentials>): List<Long> =
+        credentialRepository.insertArrayCredentials(listCredentials)
 
 
 }

@@ -1,37 +1,38 @@
 package com.example.finalprojectapp.credentialsDB
 
+import com.example.finalprojectapp.crypto.LocalCryptography
+import com.example.finalprojectapp.data.model.Credentials
+import com.example.finalprojectapp.data.model.DataSet
+import com.example.finalprojectapp.data.model.relationship.DataSetWithCredentials
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.junit5.MockKExtension
+import io.mockk.mockkClass
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.extension.ExtendWith
 
+@ExtendWith(MockKExtension::class)
 internal class DataSetRepositoryTest {
 
-    @Test
-    fun getLocalCredentialByDataSetID() {
-    }
+    private var fakeCredentialRepository = mockkClass(CredentialRepository::class)
+    private var fakeDataSetDao = mockkClass(DataSetDAO::class)
+    private var fakeLocalCryptography = mockkClass(LocalCryptography::class)
 
-    @Test
-    fun getDataSetById() {
-    }
+    private val dataSetRepository=DataSetRepository(fakeCredentialRepository,fakeDataSetDao,fakeLocalCryptography)
 
-    @Test
-    fun publicGetAllHashCredentials() {
-    }
 
+    @DisplayName("delete data set and credentials")
     @Test
-    fun publicDeleteCredential() {
-    }
-
-    @Test
-    fun getDataSetByID() {
-    }
-
-    @Test
-    fun getDataSetByID2() {
-    }
-
-    @Test
-    fun privateDeleteDataSet() {
+    fun privateDeleteDataSet() = runBlocking {
+        every { fakeCredentialRepository.deleteCredential(credentials = Credentials().copy(credentialsId = 1L)) } returns Unit
+        every {fakeDataSetDao.getDataSetWithCredentialsByDataSetID(1L) } returns DataSetWithCredentials()
+       coEvery {fakeDataSetDao.deleteDataSet(DataSet().copy(dataSetId = 1L)) } returns Unit
+        val result=dataSetRepository.publicDeleteCredential2(1L,1L)
+        assertTrue(false)
     }
 
     @Test
@@ -39,20 +40,9 @@ internal class DataSetRepositoryTest {
     }
 
     @Test
-    fun publicInsertCredentials() {
-    }
-
-    @Test
     fun deleteAllDataSets() {
     }
 
-    @Test
-    fun privateGetUnionDataSetAndCredentialsHash() {
-    }
-
-    @Test
-    fun privateUpdateNewCre() {
-    }
 
     @Test
     fun publicInsertDataSet() {
@@ -62,15 +52,4 @@ internal class DataSetRepositoryTest {
     fun getDataSetByHash() {
     }
 
-    @Test
-    fun privateGetAllCredentials() {
-    }
-
-    @Test
-    fun publicInsertArrayCredentials() {
-    }
-
-    @Test
-    fun getAllData() {
-    }
 }

@@ -37,8 +37,8 @@ class DataSetDAOTest {
     @BeforeAll
     fun beforeAllTests() = runBlocking {
         dataSetDao.privateInsertDataSet(*dataSets)
-        db.credentialDAO().insertCredentials(credentials.copy(credentialDataSetId = 1L,hint = listOf("password"),innerHashValue = "as"))
-        db.credentialDAO().insertCredentials(credentials.copy(credentialDataSetId = 2L,hint = listOf("pass"),innerHashValue = "as"))
+        db.credentialDAO().insertCredentials(credentials.copy(credentialDataSetId = 1L,hint = listOf("password"),innerHashValue = "1"))
+        db.credentialDAO().insertCredentials(credentials.copy(credentialDataSetId = 2L,hint = listOf("pass"),innerHashValue = "2"))
         val al = dataSetDao.publicGetAllDataSet()
         assertEquals(2, al.size)
     }
@@ -60,16 +60,6 @@ class DataSetDAOTest {
 
 
     }
-
-    // TODO: 15/06/2020 fix live data query
-//    @DisplayName("get data set by id")
-//    @Test
-//    fun publicGetAllDataSetsByServiceId() = runBlocking{
-//        val result = dataSetDao.publicGetAllDataSetsByServiceId(1).value
-//        assertNotNull(result)
-//        assertNotNull(result!![0])
-//        assertEquals(result[0].dataSetName, dataSet1.dataSetName)
-//    }
 
 
 
@@ -107,6 +97,19 @@ class DataSetDAOTest {
     fun publicGetAllHashCredentials() {
         val result=dataSetDao.publicGetAllHashCredentials2()
         assertNotNull(result)
+    }
+
+    @DisplayName("find all passwords in dataSetCredentials with id")
+    @Test
+    fun getDataSetWithCredentialsByDataSetID() {
+        val result=dataSetDao.getDataSetWithCredentialsByDataSetID(1L)
+        assertNotNull(result)
+        assertEquals("1", result?.credentials?.get(0)!!.innerHashValue)
+        val result2=dataSetDao.getDataSetWithCredentialsByDataSetID(2L)
+        assertNotNull(result)
+        assertEquals("2", result2?.credentials?.get(0)!!.innerHashValue)
+
+
     }
 
 

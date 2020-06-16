@@ -51,19 +51,7 @@ class DataBaseUnitTest {
     }
 
 
-    @Nested
-    @DisplayName("Data Set tests")
-    inner class DataSetTest {
-        @Test
-        @DisplayName("insert Service")
-        fun insertDataSet() = runBlocking {
-            val result = db.dataSetDAO().privateInsertDataSet(dataSet)
-            val y = db.credentialDAO().insertCredentials(credentials)
-            val dataSet2 = db.dataSetDAO().getDataSetWithCredentials()
-            assertEquals(dataSet2[0].credentials.size, 2)
-            assert(true)
-        }
-    }
+
 
 //    @Nested
 //    @DisplayName("Service")

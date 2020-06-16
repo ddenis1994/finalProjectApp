@@ -51,10 +51,6 @@ interface DataSetDAO {
     fun publicGetAllCredentialsByDataSetID(dataSetId: Long): LiveData<List<LayoutCredentialView>>
 
 
-
-
-
-
     @Query("SELECT * FROM dataSetCredentialsManyToMany Where dataSetId =:num ")
     suspend fun privateGetDataSetToCredentials(num: Long): List<DataSetCredentialsManyToMany>
 
@@ -62,6 +58,11 @@ interface DataSetDAO {
     @Transaction
     @Query("SELECT * FROM dataSet_")
     fun getDataSetWithCredentials(): List<DataSetWithCredentials>
+
+
+    @Transaction
+    @Query("SELECT * FROM dataSet_ where dataSetId =:dataSetId")
+    fun getDataSetWithCredentialsByDataSetID(dataSetId: Long): DataSetWithCredentials?
 
 
     // TODO: 15/06/2020 remove go to one to many
