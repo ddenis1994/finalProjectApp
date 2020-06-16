@@ -21,22 +21,22 @@ internal class CredentialRepositoryTest {
 
 
 
-    @DisplayName("test Insert redentials")
+    @DisplayName("test Insert credentials")
     @Test
     fun publicInsertCredentials() = runBlocking {
 
         assertEquals(
-            -1L,
-            credentialsLocalRepository.publicInsertCredentials(credentials.copy(salt = "a"))
+            listOf(-1L),
+            credentialsLocalRepository.insertCredentials(credentials.copy(salt = "a"))
         )
         every { localCryptography.encrypt(credentials) } returns credentials
         coEvery { credentialDAO.insertCredentials(credentials) } returns listOf(1L)
-        val result=credentialsLocalRepository.publicInsertCredentials(credentials)
-        assertEquals(result,1L)
+        val result=credentialsLocalRepository.insertCredentials(credentials)
+        assertEquals(result, listOf(1L))
         coEvery { credentialDAO.insertCredentials(credentials) } returns listOf(-1L)
         coEvery { credentialDAO.getCredentialsByHashData("")} returns credentials.copy(credentialsId = 2L)
-        val result2=credentialsLocalRepository.publicInsertCredentials(credentials)
-        assertEquals(result2,2L)
+        val result2=credentialsLocalRepository.insertCredentials(credentials)
+        assertEquals(result2, listOf(2L))
         assertTrue(true)
 
 

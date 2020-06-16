@@ -50,12 +50,13 @@ class ServiceRepositoryLocal @Inject constructor(
         val result = target.let { serviceDAO.privateInsertService(it) }
         val list = mutableListOf<Pair<Long, List<Long>>>()
         target.dataSets?.forEach {
-            dataSetRepository.publicInsertDataSet(it.copy(serviceId = result))
-                .let { it1 ->
-                    if (it1 != null) {
-                        list.add(it1)
-                    }
-                }
+            // TODO: 16/06/2020 fix this with multi values
+//            dataSetRepository.publicInsertDataSet(it.copy(serviceId = result))
+//                .let { it1 ->
+//                    if (it1 != null) {
+//                        list.add(it1)
+//                    }
+//                }
         }
 
         return localCryptography.decryption(target) ?: Service()
@@ -136,7 +137,7 @@ class ServiceRepositoryLocal @Inject constructor(
 
 
     fun getDataSetById(dataSetId: Long): LiveData<List<LayoutDataSetView>> {
-        return dataSetRepository.getDataSetById(dataSetId)
+        return dataSetRepository.getDataSetByServiceId(dataSetId)
     }
 
     fun publicGetAllHashCredentials(): LiveData<List<DashboardViewModel.HashAndId>> {
@@ -148,18 +149,6 @@ class ServiceRepositoryLocal @Inject constructor(
         return dataSetRepository.getLocalCredentialByDataSetID(dataSetId)
     }
 
-    suspend fun publicInsertCredentials(credential: Credentials) {
-        dataSetRepository.publicInsertCredentials(credential)
-    }
-
-    suspend fun privateGetAllCredentials(): List<Credentials> {
-        return dataSetRepository.privateGetAllCredentials()
-    }
-
-    suspend fun publicInsertArrayCredentials(listCredentials: List<Credentials>): List<Long> {
-        return dataSetRepository.publicInsertArrayCredentials(listCredentials)
-
-    }
 
     suspend fun deleteDataSetById(dataSetId: Long) {
         dataSetRepository.deleteDataSetById(dataSetId)

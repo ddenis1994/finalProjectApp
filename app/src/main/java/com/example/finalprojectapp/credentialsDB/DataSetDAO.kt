@@ -15,10 +15,10 @@ interface DataSetDAO {
 
 
     @Query("SELECT * FROM dataSet_ Where :hashData = hashData")
-    suspend fun getDataSetByHash(hashData: String): DataSet?
+    suspend fun getDataSetByHash(hashData: String): DataSetWithCredentials?
 
     @Query("SELECT * FROM dataSet_ Where dataSetId=:id")
-    suspend fun getDataSetByDataSetID(id: Long): DataSet?
+    suspend fun getDataSetByDataSetID(id: Long): DataSetWithCredentials?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun privateInsertDataSet(vararg dataSet: DataSet): List<Long>
@@ -32,9 +32,7 @@ interface DataSetDAO {
     @Query("SELECT r.DataSetCredentialsManyToManyID FROM  dataSetCredentialsManyToMany r , credentials_ c   Where :dataSetID = r.dataSetId AND r.credentialsId = c.credentialsId And c.hint Like :hints")
     suspend fun privateGetUnionDataSetAndCredentialsHash(dataSetID: Long, hints: String): Long?
 
-    // TODO: 15/06/2020 remove go to one to many
-    @Query("Delete from dataSetCredentialsManyToMany")
-    suspend fun deleteAllR()
+
 
     @Query("Delete from dataSet_")
     suspend fun deleteAllDataSets()
@@ -62,7 +60,7 @@ interface DataSetDAO {
 
     @Transaction
     @Query("SELECT * FROM dataSet_ where dataSetId =:dataSetId")
-    fun getDataSetWithCredentialsByDataSetID(dataSetId: Long): DataSetWithCredentials?
+    suspend fun getDataSetWithCredentialsByDataSetID(dataSetId: Long): DataSetWithCredentials?
 
 
     // TODO: 15/06/2020 remove go to one to many

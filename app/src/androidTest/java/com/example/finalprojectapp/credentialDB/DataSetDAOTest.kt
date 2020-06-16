@@ -56,7 +56,7 @@ class DataSetDAOTest {
     fun privateGetDataSetByHash() = runBlocking {
         val result = dataSetDao.getDataSetByHash(hash1)
         assertNotNull(result)
-        assertEquals(result!!.hashData, hash1)
+        assertEquals(result!!.dataSet.hashData, hash1)
 
 
     }
@@ -68,7 +68,7 @@ class DataSetDAOTest {
     fun getDataSetByDataSetID() = runBlocking{
         val result = dataSetDao.getDataSetByDataSetID(1L)
         assertNotNull(result)
-        assertEquals(result!!.hashData, hash1)
+        assertEquals(result!!.dataSet.hashData, hash1)
     }
     @DisplayName("get all dataSet with credentials")
     @Test
@@ -88,8 +88,8 @@ class DataSetDAOTest {
         dataSetDao.privateInsertDataSet(DataSet(hashData = hashDelete))
         assertEquals(3,dataSetDao.publicGetAllDataSet().size)
         val toDelete=dataSetDao.getDataSetByHash(hashDelete)
-        assertNotNull(toDelete)
-        dataSetDao.deleteDataSet(toDelete!!)
+        assertNotNull(toDelete?.dataSet)
+        dataSetDao.deleteDataSet(toDelete?.dataSet!!)
     }
 
     @DisplayName("find all passwords in dataSetCredentials")
@@ -101,7 +101,7 @@ class DataSetDAOTest {
 
     @DisplayName("find all passwords in dataSetCredentials with id")
     @Test
-    fun getDataSetWithCredentialsByDataSetID() {
+    fun getDataSetWithCredentialsByDataSetID() = runBlocking{
         val result=dataSetDao.getDataSetWithCredentialsByDataSetID(1L)
         assertNotNull(result)
         assertEquals("1", result?.credentials?.get(0)!!.innerHashValue)

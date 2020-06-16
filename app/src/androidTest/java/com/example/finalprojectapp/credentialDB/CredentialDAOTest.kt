@@ -31,6 +31,23 @@ class CredentialDAOTest {
         db.close()
     }
 
+    @DisplayName("delete from credentials by data set")
+    @Test
+    fun  deleteCredentialByDataSetID(): Unit = runBlocking{
+        val dataSetIDDelete=3L
+        credentialDAO.insertCredentials(
+            credentials.copy(),
+            credentials.copy(credentialDataSetId = dataSetIDDelete,innerHashValue = "$dataSetIDDelete")
+        )
+        val i = credentialDAO.getAllCredentials()
+        assertEquals(2, i.size)
+        credentialDAO.deleteCredentialByDataSetID(dataSetIDDelete)
+        assertEquals(1, credentialDAO.getAllCredentials().size)
+        assertNotEquals(dataSetIDDelete, credentialDAO.getAllCredentials()[0].credentialDataSetId)
+        assertEquals(0, credentialDAO.getAllCredentials()[0].credentialDataSetId)
+
+    }
+
 
     @DisplayName("test one Insert")
     @Test

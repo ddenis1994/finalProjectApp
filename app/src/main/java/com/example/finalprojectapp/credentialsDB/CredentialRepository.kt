@@ -15,43 +15,41 @@ class CredentialRepository @Inject constructor(
     fun deleteCredential(credentials: Credentials) = credentialsDao.deleteCredential(credentials)
 
 
-    suspend fun insertArrayCredentials(listCredentials: List<Credentials>): List<Long> =
-        credentialsDao.insertCredentials(*(listCredentials.toTypedArray()))
-
-
-    suspend fun publicInsertCredentials(credentials: Credentials): Long {
-        return withContext(Dispatchers.IO) {
-            if (credentials.salt != null) return@withContext -1L
-            val encryptedCredentials = localCryptography.encrypt(credentials)
-            var resultInsert: Long = -1L
-            encryptedCredentials?.let {
-                resultInsert = credentialsDao.insertCredentials(it)[0]
-                if (resultInsert == -1L)
-                    resultInsert =
-                        it.innerHashValue?.let { hash ->
-                            credentialsDao.getCredentialsByHashData(
-                                hash
-                            )?.credentialsId
-                        } ?: -1L
-            }
-            return@withContext resultInsert
+    suspend fun insertCredentials(vararg listCredentials: Credentials): List<Long> =
+        withContext(Dispatchers.IO) {
+            return@withContext listCredentials.map { insertSingleCredential(it) }
         }
+
+
+    private suspend fun insertSingleCredential(credentials: Credentials): Long {
+        if (credentials.salt != null) return -1L
+        val encryptedCredentials = localCryptography.encrypt(credentials)
+        var resultInsert: Long = -1L
+        encryptedCredentials?.let {
+            resultInsert = credentialsDao.insertCredentials(it)[0]
+            if (resultInsert == -1L)
+                resultInsert =
+                    it.innerHashValue?.let { hash ->
+                        credentialsDao.getCredentialsByHashData(
+                            hash
+                        )?.credentialsId
+                    } ?: -1L
+        }
+        return resultInsert
     }
 
 
-    suspend fun publicGetCredentialsID(dataSet: Long): Credentials? {
-        val result = credentialsDao.getCredentialsByID(dataSet)
-        return localCryptography.decryption(result)
-
-    }
+    suspend fun publicGetCredentialsID(dataSet: Long): Credentials? =
+        localCryptography.decryption(credentialsDao.getCredentialsByID(dataSet))
 
 
     suspend fun deleteAllCredentials() =
         credentialsDao.deleteAllCredentials()
 
 
-    suspend fun privateGetAllCredentials(): List<Credentials> =
-        credentialsDao.getAllCredentials()
+    fun deleteCredentialByDataSetID(dataSetId: Long) {
+        credentialsDao.deleteCredentialByDataSetID(dataSetId)
+    }
 
 
 }

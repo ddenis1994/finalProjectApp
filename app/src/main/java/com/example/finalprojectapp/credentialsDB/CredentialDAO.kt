@@ -32,4 +32,8 @@ interface CredentialDAO {
     @Delete
     fun deleteCredential(vararg dataSet: Credentials)
 
+
+    @Query("Delete from credentials_ where credentialDataSetId = :dataSetId")
+    fun deleteCredentialByDataSetID(dataSetId: Long)
+
 }

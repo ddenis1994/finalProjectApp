@@ -124,15 +124,6 @@ class ServiceRepository @Inject constructor(
     fun getCredentialByDataSetID(dataSetId: Long): LiveData<List<LayoutCredentialView>> =
         serviceRepositoryLocal.getCredentialByDataSetID(dataSetId)
 
-    suspend fun publicInsertCredentials(credential: Credentials) =
-        serviceRepositoryLocal.publicInsertCredentials(credential)
-
-    suspend fun privateGetAllCredentials(): List<Credentials> =
-        serviceRepositoryLocal.privateGetAllCredentials()
-
-    suspend fun publicInsertArrayCredentials(listCredentials: List<Credentials>): List<Long> =
-        serviceRepositoryLocal.publicInsertArrayCredentials(listCredentials)
-
     fun updateRemotePassword(hash: String?) :Boolean {
         TODO("Not yet implemented")
     }
