@@ -9,30 +9,24 @@ import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class DataSetAdapter @Inject constructor(
-    private val localServiceDAO: ServiceRepository,
-    private val coroutineScope: CoroutineScope
+    private val localServiceDAO: ServiceRepository
 ) {
     @Inject
     lateinit var context: Context
 
-    var packageName: String=""
+    var packageName: String = ""
         set(value) {
             if (value.isNotEmpty())
                 field = value
         }
 
-    suspend fun getDataAsync(): Deferred<Service?> {
-        return coroutineScope.async {
-            packageName.let { localServiceDAO.publicGetServiceByName(it) }
-        }
+    suspend fun getData(): Service? {
+        return packageName.let { localServiceDAO.publicGetServiceByName(it) }
     }
 
     fun generatesServiceClass(clientViewSaveData: MutableList<AutoFillNodeData>): Service? {
@@ -59,10 +53,12 @@ class DataSetAdapter @Inject constructor(
             )
         )
         return packageName.let { pak ->
-            HashBuilder().makeHash(Service(
-                name = pak,
-                dataSets = dataSet
-            ))
+            HashBuilder().makeHash(
+                Service(
+                    name = pak,
+                    dataSets = dataSet
+                )
+            )
         }
     }
 

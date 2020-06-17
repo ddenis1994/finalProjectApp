@@ -19,11 +19,10 @@ class ServiceRepository @Inject constructor(
     @Transaction
     suspend fun nukeALl() = serviceRepositoryLocal.nukeALl()
 
-    fun addService(
+    suspend fun addService(
         service: Service,
         callback: SaveCallback
     ) {
-        scope.launch {
             val localInsert=scope.async {
                 serviceRepositoryLocal.publicInsertService(service)
             }
@@ -32,9 +31,6 @@ class ServiceRepository @Inject constructor(
                     serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(it, callback)
                 }
             }
-
-
-        }
     }
 
     suspend fun sync() {

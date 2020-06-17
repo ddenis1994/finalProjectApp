@@ -34,6 +34,8 @@ class AutoFillService : AutofillService() {
         super.onConnected()
     }
 
+
+
     private lateinit var clientViewSaveData: MutableList<AutoFillNodeData>
 
 
@@ -64,7 +66,7 @@ class AutoFillService : AutofillService() {
 
     override fun onDisconnected() {
         super.onDisconnected()
-        //coroutineScope.coroutineContext.cancel()
+        coroutineScope.cancel()
     }
 
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
@@ -80,7 +82,9 @@ class AutoFillService : AutofillService() {
         val service = dataSetAdapter.generatesServiceClass(clientViewSaveData)
 
         if (service != null) {
-            mainRepository.addService(service, callback)
+            coroutineScope.launch {
+                mainRepository.addService(service, callback)
+            }
         }
 
     }

@@ -19,6 +19,7 @@ import com.example.finalprojectapp.autoFillService.AutofillFieldMetadata
 import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.ui.auth.ServiceAuthActivity
+import kotlinx.coroutines.yield
 import java.security.SecureRandom
 import javax.inject.Inject
 
@@ -43,14 +44,16 @@ class ResponseAdapter @Inject constructor(
     }
 
     suspend fun buildResponse() {
-        if (clientViewMetadata.isNullOrEmpty())
+        if (clientViewMetadata.isNullOrEmpty()) {
             cancellationSignal.cancel()
+            return
+        }
         val responseBuilder = FillResponse.Builder()
-        val service = dataSetAdapter.getDataAsync().await()
+        val service = dataSetAdapter.getData()
         if (service != null)
             withLocalData(service, responseBuilder)
         else
-            dataSetAdapter.packageName?.let { withNoData(responseBuilder, it) }
+            withNoData(responseBuilder, dataSetAdapter.packageName)
 
         if (clientViewMetadata.isNotEmpty() && !clientViewMetadata.isNullOrEmpty()) {
             val saveInfo = SaveInfo.Builder(
@@ -59,7 +62,7 @@ class ResponseAdapter @Inject constructor(
                 clientViewMetadata.map { it.autofillId }.toTypedArray()
             ).build()
             responseBuilder.setSaveInfo(saveInfo)
-
+            yield()
             callback.onSuccess(responseBuilder.build())
         } else
             callback.onFailure("cannot find hints")
