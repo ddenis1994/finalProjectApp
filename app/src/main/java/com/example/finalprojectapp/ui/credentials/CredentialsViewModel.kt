@@ -11,6 +11,8 @@ class CredentialsViewModel @Inject constructor(
     private val mainRepository: ServiceRepository
     ) : ViewModel() {
 
+    var syncProcess=true
+
     private val _allPasswords = mainRepository.getAllData()
     val allPasswords: LiveData<List<LayoutServiceView>> = _allPasswords
 

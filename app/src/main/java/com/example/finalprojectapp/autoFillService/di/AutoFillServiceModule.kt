@@ -6,6 +6,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.finalprojectapp.autoFillService.adapters.DataSetAdapter
 import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +37,18 @@ class AutoFillServiceModule  {
     @Singleton
     fun provideSharedPreferences(context:Context): SharedPreferences {
         return SingleEncryptedSharedPreferences().getSharedPreference(context.applicationContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRemoteDataBase(): FirebaseFirestore {
+        return FirebaseFirestore.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRemoteUser(): FirebaseUser? {
+        return FirebaseAuth.getInstance().currentUser
     }
 
 }

@@ -2,8 +2,6 @@ package com.example.finalprojectapp.credentialsDB
 
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.Credentials
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -51,7 +49,6 @@ class CredentialRepository @Inject constructor(
     }
 
     fun getCredentialByDataSetID(dataSetId: Long)=credentialsDao.publicGetAllCredentialsByDataSetID(dataSetId)
-    fun publicGetAllHashCredentials()=credentialsDao.publicGetAllHashCredentials()
 
 
 }

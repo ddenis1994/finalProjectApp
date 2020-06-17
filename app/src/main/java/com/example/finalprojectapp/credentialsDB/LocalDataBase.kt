@@ -11,7 +11,7 @@ import com.example.finalprojectapp.data.model.Notification
 import com.example.finalprojectapp.data.model.Service
 
 
-@Database(entities = [Notification::class,Service::class, Credentials::class, DataSet::class], version = 13, exportSchema = false)
+@Database(entities = [Notification::class,Service::class, Credentials::class, DataSet::class], version = 14, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class LocalDataBase: RoomDatabase() {
 

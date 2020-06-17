@@ -46,5 +46,6 @@
     <string name="repeated_password">Repeated Password</string>
     <string name="confirm">confirm</string>
     <string name="creditCard">CreditCard </string>
+    <string name="menu_refresh">refresh</string>
 
 </resources>

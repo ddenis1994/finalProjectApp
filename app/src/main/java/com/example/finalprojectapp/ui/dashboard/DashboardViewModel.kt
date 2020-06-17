@@ -1,93 +1,79 @@
 package com.example.finalprojectapp.ui.dashboard
 
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.room.ColumnInfo
 import com.example.finalprojectapp.adapters.DashBoardRecyclerRepeatedPasswordAdapter
-import com.example.finalprojectapp.credentialsDB.CredentialRepository
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
-import com.example.finalprojectapp.data.model.DashBoardData
-import kotlinx.coroutines.launch
+import com.google.firebase.auth.FirebaseAuth
 import javax.inject.Inject
 
 class DashboardViewModel @Inject constructor(
     private val mainRepository: ServiceRepository
 ) : ViewModel() {
 
-    @Inject
-    lateinit var credentialRepository: CredentialRepository
+    private var _serviceCount = MutableLiveData(-1)
+    val serviceCount: LiveData<Int> = _serviceCount
 
+    private val _securityRisks = MutableLiveData(0)
+    val securityRisks: LiveData<Int> = _securityRisks
 
-    private val _data = MediatorLiveData<DashBoardData>()
-    val data:LiveData<DashBoardData> = _data
-
-
-    init {
-        _data.postValue(DashBoardData())
-        _data.addSource(mainRepository.getNumOfServices()) {_data.postValue(_data.value?.copy(serviceCount = it))
-        }
-    }
-
-    fun addReactedPasswordListener(owner: LifecycleOwner) {
-        _data.addSource(chalkForRepeatedPassword(owner)) { _data.postValue(it) }
-    }
+    private val _connectionToRemote=MutableLiveData(
+        FirebaseAuth.getInstance().currentUser != null
+    )
+    val connectionToRemote:LiveData<Boolean> = _connectionToRemote
 
 
 
-    private fun chalkForRepeatedPassword(owner: LifecycleOwner): LiveData<DashBoardData>  {
-        val liveDataAdapter=MutableLiveData<DashBoardData>()
-        viewModelScope.launch {
-                credentialRepository.publicGetAllHashCredentials()
-                    .observe(owner, Observer { data ->
-                        var repeatedList = data?.groupBy { it.id }?.filter { it.value.size > 1 }
-                        val oldList = _data.value?.passwordRepeated
-                        if (!oldList.isNullOrEmpty())
-                            repeatedList = repeatedList?.filter { !oldList.contains(it.key) }
-                        if (!repeatedList.isNullOrEmpty()) {
-                            liveDataAdapter.postValue(
-                                _data.value?.copy(
-                                    securityRisks = _data.value!!.securityRisks + repeatedList.size,
-                                    repeatedPassport = repeatedList.size,
-                                    passwordRepeated = repeatedList,
-                                    viewAdapter = DashBoardRecyclerRepeatedPasswordAdapter(
-                                        repeatedList.toList(),
-                                        this@DashboardViewModel
-                                    )
-                                )
-                            )
-                        }
-                    })
-        }
-        return liveDataAdapter
-
-    }
+    private var _repeatedPassport = 0
 
 
+    private var _passwordRepeated: Map<String?, List<ServiceNameAndDataSet?>>? = null
 
+
+    private val _viewAdapter = MutableLiveData<DashBoardRecyclerRepeatedPasswordAdapter?>()
+    val viewAdapter:LiveData<DashBoardRecyclerRepeatedPasswordAdapter?> = _viewAdapter
+
+
+    fun getNumOfService() = mainRepository.getNumOfServices()
+
+    fun checkForRepeatedPassword()=mainRepository.checkForRepeatedPassword()
 
 
     fun click() {
-        Log.i("test","Test")
+        Log.i("test", "Test")
     }
 
     fun showListServices(): Unit {
         //TODO make navigation to services fragment
-        Log.i("test","Test")
+        Log.i("test", "Test")
     }
 
-    suspend fun findServiceAndDataSet(dataSetId: Long) = mainRepository.findServiceAndDataSet(dataSetId)
+    fun updateServiceCount(it: Int) {
+        _serviceCount.postValue(it)
+    }
 
-    data class HashAndId(
-        @ColumnInfo(name = "credentialsId") val id: Long,
-        @ColumnInfo(name = "hash") val hash : String,
-        @ColumnInfo(name = "dataSet") val dataSetID : String
+    fun updateRepeatedPassword(password: List<ServiceNameAndDataSet?>?) {
+        var list = password?.groupBy { it?.hash }?.filter { it.value.size > 1 }
+        val oldList = _passwordRepeated
+        if (!oldList.isNullOrEmpty())
+            list = list?.filter { !oldList.contains(it.key) }
+        if (!list.isNullOrEmpty()) {
+            _securityRisks.postValue(securityRisks.value?.plus(list.size))
+            _repeatedPassport=list.size
+            _passwordRepeated=list
+            val temp=DashBoardRecyclerRepeatedPasswordAdapter(list.toList())
+            _viewAdapter.postValue(temp)
+        }
+    }
+
+    data class ServiceNameAndDataSet(
+        @ColumnInfo(name = "serviceName") val serviceName: String,
+        @ColumnInfo(name = "hash") val hash: String,
+        @ColumnInfo(name = "dataSetName") val dataSetName: String
     )
-
-
-
-
-
-
 
 
 }

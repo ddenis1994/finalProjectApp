@@ -3,6 +3,7 @@ package com.example.finalprojectapp.ui.dashboard
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -14,9 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalprojectapp.MainApplication
 import com.example.finalprojectapp.R
+import com.example.finalprojectapp.data.model.DashBoardData
 import com.example.finalprojectapp.databinding.FragmentDashboardBinding
 import com.example.finalprojectapp.utils.SingleEncryptedSharedPreferences
 import kotlinx.android.synthetic.main.fragment_dashboard.*
+import kotlinx.android.synthetic.main.fragment_dashboard.view.*
 import javax.inject.Inject
 
 class DashboardFragment : Fragment() {
@@ -25,12 +28,13 @@ class DashboardFragment : Fragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private val dashboardViewModel by viewModels<DashboardViewModel> {
-        viewModelFactory }
-
+        viewModelFactory
+    }
 
 
     private lateinit var setting: SharedPreferences
     private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -46,32 +50,64 @@ class DashboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         setting = SingleEncryptedSharedPreferences().getSharedPreference(this.requireContext())
-        val binding: FragmentDashboardBinding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_dashboard, container, false
+        val binding = inflater.inflate(
+            R.layout.fragment_dashboard, container, false
         )
-        binding.myViewModel = dashboardViewModel
-
-        dashboardViewModel.data.observe(viewLifecycleOwner, Observer {
-            binding.myData = it
-            recyclerView.apply {
-                adapter = it.viewAdapter
+        dashboardViewModel.serviceCount.observe(
+            viewLifecycleOwner, Observer {
+                binding.service_count_dashboard.text = it.toString()
             }
+        )
+        dashboardViewModel.getNumOfService().observe(viewLifecycleOwner, Observer {
+            dashboardViewModel.updateServiceCount(it)
         })
 
-        if (setting.getBoolean("RepeatedPasswords", false))
-            dashboardViewModel.addReactedPasswordListener(viewLifecycleOwner)
+        dashboardViewModel.connectionToRemote.observe(viewLifecycleOwner, Observer {
+            binding.connection_to_remote.text=it.toString()
+        })
 
-        return binding.root
+        dashboardViewModel.viewAdapter.observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                if (it.itemCount == 0)
+                    recyclerView.visibility = View.GONE
+                else {
+                    viewAdapter = it
+                    recyclerView.apply {
+                        adapter = viewAdapter
+                    }
+                    recyclerView.visibility = View.VISIBLE
+                }
+            }
+
+        })
+
+        dashboardViewModel.securityRisks.observe(
+            viewLifecycleOwner, Observer {
+                if (it != 0) {
+                    binding.security_risks.text = it.toString()
+                    binding.security_risks_container.visibility = View.VISIBLE
+                } else binding.security_risks_container.visibility = View.GONE
+            }
+        )
+
+        if (setting.getBoolean("RepeatedPasswords", false))
+            dashboardViewModel.checkForRepeatedPassword().observe(viewLifecycleOwner, Observer {
+                dashboardViewModel.updateRepeatedPassword(it)
+            })
+
+        return binding
     }
 
     override fun onStart() {
         super.onStart()
-        setHasOptionsMenu(true)
-        viewManager = LinearLayoutManager(context)
-        recyclerView = repeatedPasswordRecyclerView.apply {
+        viewManager = LinearLayoutManager(requireContext())
+        recyclerView = repeatedPasswordRecyclerView2.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
         }
+        setHasOptionsMenu(true)
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

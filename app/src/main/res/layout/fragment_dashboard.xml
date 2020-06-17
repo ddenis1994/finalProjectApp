@@ -1,25 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <data>
-
-        <import type="android.view.View" />
-
-        <variable
-            name="MyData"
-            type="com.example.finalprojectapp.data.model.DashBoardData" />
-
-        <variable
-            name="MyViewModel"
-            type="com.example.finalprojectapp.ui.dashboard.DashboardViewModel" />
-
-    </data>
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:onClick="@{()-> (MyData.serviceCount >0) ? MyViewModel.showListServices() : null }"
         android:orientation="vertical">
 
         <TextView
@@ -50,18 +35,17 @@
                     android:text="No of stored Services :" />
 
                 <TextView
+                    android:id="@+id/service_count_dashboard"
                     style="@style/Credentials.text.big"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-
-                    android:text="@{String.valueOf(MyData.serviceCount)}" />
+                    android:text="0" />
 
                 <ProgressBar
                     android:id="@+id/progressBar"
                     style="?android:attr/progressBarStyle"
                     android:layout_width="wrap_content"
-
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
@@ -73,6 +57,7 @@
             style="@style/Credentials.Container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/security_risks_container"
             android:orientation="vertical">
 
             <LinearLayout
@@ -83,8 +68,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:visibility="@{MyData.serviceCount > 0 ? View.GONE : View.VISIBLE}">
+                    android:orientation="horizontal">
 
                     <com.google.android.material.textview.MaterialTextView
                         style="@style/Credentials.text.big"
@@ -94,10 +78,11 @@
                         android:text="@string/security_risks" />
 
                     <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/security_risks"
                         style="@style/Credentials.text.big"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="@{String.valueOf(MyData.securityRisks)}"
+                        android:text="0"
                         android:textColor="@color/colorBad" />
                 </LinearLayout>
 
@@ -105,8 +90,7 @@
                     android:id="@+id/repeatCheck"
                     style="?android:attr/progressBarStyle"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="@{MyData.serviceCount!=-1 ? View.GONE :View.VISIBLE}" />
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
@@ -114,8 +98,7 @@
                 style="@style/Credentials.Container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="@{MyData.repeatedPassport > 0 ? View.VISIBLE : View.GONE}">
+                android:orientation="vertical">
 
                 <com.google.android.material.textview.MaterialTextView
                     style="@style/Credentials.text"
@@ -125,9 +108,9 @@
                     android:textColor="@color/colorBad" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/repeatedPasswordRecyclerView"
+                    android:id="@+id/repeatedPasswordRecyclerView2"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent" />
             </LinearLayout>
 
         </LinearLayout>
@@ -146,12 +129,12 @@
                 android:text="Connection to remote : " />
 
             <TextView
+                android:id="@+id/connection_to_remote"
                 style="@style/Credentials.text.big"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
-                android:gravity="center"
-                android:text="@{String.valueOf(MyData.connectionToRemote)}" />
+                android:gravity="center" />
 
         </LinearLayout>
 
@@ -159,7 +142,6 @@
             style="@style/Credentials.Container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{() -> MyViewModel.click()}"
             android:orientation="horizontal">
 
             <TextView
@@ -174,8 +156,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
-                android:gravity="center"
-                android:text="@{String.valueOf(MyData.passwordStrange)}" />
+                android:gravity="center" />
 
         </LinearLayout>
 

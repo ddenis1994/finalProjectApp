@@ -9,6 +9,7 @@ import com.example.finalprojectapp.autoFillService.di.DaggerAutoFIllServiceCompo
 import com.example.finalprojectapp.credentialsDB.ServiceRepository
 import com.example.finalprojectapp.data.autoFilleService.ClientViewMetadataBuilder
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -82,7 +83,7 @@ class AutoFillService : AutofillService() {
         val service = dataSetAdapter.generatesServiceClass(clientViewSaveData)
 
         if (service != null) {
-            coroutineScope.launch {
+            GlobalScope.launch {
                 mainRepository.addService(service, callback)
             }
         }

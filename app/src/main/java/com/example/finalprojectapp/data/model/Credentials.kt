@@ -7,9 +7,9 @@ import androidx.room.PrimaryKey
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.ServerTimestamp
 
-@Entity(tableName = "credentials_")
+@Entity(tableName = "credentials_",indices = [androidx.room.Index(value = ["credentialDataSetId", "innerHashValue"])])
 data class Credentials (
-    var hint:List<String> = mutableListOf<String>(),
+    var hint:List<String> = mutableListOf(),
     var data:String="",
     var encryptPasswordHash:String?=null,
     var encryptType:String="",

@@ -46,71 +46,73 @@ class ServiceRepositoryLocal @Inject constructor(
         return target
     }
 
-    private suspend fun insertNewService(service: Service):Service?{
+    private suspend fun insertNewService(service: Service): Service? {
         val result = serviceDAO.privateInsertService(service)
         service.dataSets?.map { dataSetRepository.publicInsertDataSet(it.copy(serviceId = result)) }
         return getServiceByName(service.name)!!
     }
 
 
-        fun getAllData() =
-            serviceDAO.publicGetAllServiceName()
+    fun getAllData() =
+        serviceDAO.publicGetAllServiceName()
 
-        fun getNumOfServices() =
-            serviceDAO.publicGetNumOfServices()
-
-
-        suspend fun findServiceAndDataSet(dataSetId: Long) =
-            serviceDAO.findServiceAndDataSetsAndCredentials(dataSetId)
+    fun getNumOfServices() =
+        serviceDAO.publicGetNumOfServices()
 
 
-        suspend fun publicGetAllServiceSuspand(): List<Service> {
-            val service = serviceDAO.privateGetAllService()
-            val servicesList = mutableListOf<Service>()
-            service.forEach { ser ->
-                val list = mutableListOf<DataSet>()
-                ser.dataSets.forEach {
-                    dataSetRepository.getDataSetByID(it.dataSetId)?.let { it1 -> list.add(it1) }
-                }
-                servicesList.add(ser.service.copy(dataSets = list))
+    suspend fun findServiceAndDataSet(dataSetId: Long) =
+        serviceDAO.findServiceAndDataSetsAndCredentials(dataSetId)
 
+    fun checkForRepeatedPassword() = serviceDAO.checkForRepeatedPassword()
+
+
+    suspend fun publicGetAllServiceSuspand(): List<Service> {
+        val service = serviceDAO.privateGetAllService()
+        val servicesList = mutableListOf<Service>()
+        service.forEach { ser ->
+            val list = mutableListOf<DataSet>()
+            ser.dataSets.forEach {
+                dataSetRepository.getDataSetByID(it.dataSetId)?.let { it1 -> list.add(it1) }
             }
-            return servicesList
+            servicesList.add(ser.service.copy(dataSets = list))
+
         }
-
-        suspend fun getServiceByName(string: String): Service? {
-            val service = serviceDAO.getServiceByName(string) ?: return null
-            service.dataSets.forEach {
-                val cre = dataSetRepository.getDataSetByID(it.dataSetId)?.credentials
-                it.credentials = cre
-            }
-            return localCryptography.decryption(service.service.copy(dataSets = service.dataSets))
-        }
-
-        suspend fun deleteFullServiceByID(service: Service) {
-            service.dataSets?.forEach {
-                dataSetRepository.privateDeleteDataSet(it)
-            }
-            serviceDAO.deleteService(service)
-        }
-
-
-        fun getDataSetById(dataSetId: Long): LiveData<List<LayoutDataSetView>> {
-            return dataSetRepository.getDataSetByServiceId(dataSetId)
-        }
-
-
-        suspend fun deleteDataSetById(dataSetId: Long) {
-            dataSetRepository.deleteDataSetById(dataSetId)
-        }
-
-        suspend fun getDataSetByID(dataSetId: Long): DataSet? {
-            return dataSetRepository.getDataSetByID(dataSetId)
-        }
-
-        fun publicGetServiceNameByDataSetID(dataSetId: Long): String {
-            return serviceDAO.getServiceByDataSetId(dataSetId)?.service?.name ?: ""
-        }
-
-
+        return servicesList
     }
+
+    suspend fun getServiceByName(string: String): Service? {
+        val service = serviceDAO.getServiceByName(string) ?: return null
+        service.dataSets.forEach {
+            val cre = dataSetRepository.getDataSetByID(it.dataSetId)?.credentials
+            it.credentials = cre
+        }
+        return localCryptography.decryption(service.service.copy(dataSets = service.dataSets))
+    }
+
+    suspend fun deleteFullServiceByID(service: Service) {
+        service.dataSets?.forEach {
+            dataSetRepository.privateDeleteDataSet(it)
+        }
+        serviceDAO.deleteService(service)
+    }
+
+
+    fun getDataSetById(dataSetId: Long): LiveData<List<LayoutDataSetView>> {
+        return dataSetRepository.getDataSetByServiceId(dataSetId)
+    }
+
+
+    suspend fun deleteDataSetById(dataSetId: Long) {
+        dataSetRepository.deleteDataSetById(dataSetId)
+    }
+
+    suspend fun getDataSetByID(dataSetId: Long): DataSet? {
+        return dataSetRepository.getDataSetByID(dataSetId)
+    }
+
+    fun publicGetServiceNameByDataSetID(dataSetId: Long): String {
+        return serviceDAO.getServiceByDataSetId(dataSetId)?.service?.name ?: ""
+    }
+
+
+}

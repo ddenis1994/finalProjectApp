@@ -42,7 +42,5 @@ interface CredentialDAO {
     @Query("Select c.iv,c.data,c.hint,c.credentialsId from credentials_ c where c.credentialDataSetId =:dataSetId")
     fun publicGetAllCredentialsByDataSetID(dataSetId: Long): LiveData<List<LayoutCredentialView>>
 
-    @Query("select  c.credentialsId,c.innerHashValue hash, c.credentialDataSetId dataSet from  credentials_ c where  c.hint like '%Password%' or '%password%'   ")
-    fun publicGetAllHashCredentials(): LiveData<List<DashboardViewModel.HashAndId>?>
 
 }

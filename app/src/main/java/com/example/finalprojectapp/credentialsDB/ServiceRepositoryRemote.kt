@@ -16,7 +16,8 @@ class ServiceRepositoryRemote @Inject constructor(
     private val notificationRepository: NotificationRepository,
     private val coroutineScope: CoroutineScope,
     private val serviceRepositoryLocal: ServiceRepositoryLocal,
-    private val remoteCryptography: RemoteCryptography
+    private val remoteCryptography: RemoteCryptography,
+    private val dataSetRepositoryRemote: DataSetRepositoryRemote
 ) {
 
     internal val user = FirebaseAuth.getInstance().currentUser
@@ -32,22 +33,8 @@ class ServiceRepositoryRemote @Inject constructor(
                 .collection("services").document(service.name)
                 .set(service.copy(dataSets = null))
                 .addOnSuccessListener {
-                    toUpload?.dataSets?.forEach { dataSet ->
-                        dataSet.hashData.let { dataSetHash ->
-                            db.collection("users").document(user.uid)
-                                .collection("services").document(service.name)
-                                .collection("dataSets").document(dataSetHash)
-                                .set(dataSet)
-                                .addOnSuccessListener {
-                                    notificationRepository.insert(
-                                        Notification(
-                                            0, "Inserted Credentials", service.name,
-                                            DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-                                        )
-                                    )
-                                }
-                        }
-                    }
+                    toUpload?.dataSets?.toTypedArray()
+                        ?.let { it1 -> dataSetRepositoryRemote.insertDataSet(toUpload.name,*it1 ) }
                 }
         }
     }

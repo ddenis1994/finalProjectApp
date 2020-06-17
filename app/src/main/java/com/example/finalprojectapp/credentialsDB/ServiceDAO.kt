@@ -6,6 +6,7 @@ import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.data.model.adpters.LayoutDashBoardRepeatedPassword
 import com.example.finalprojectapp.data.model.adpters.LayoutServiceView
 import com.example.finalprojectapp.data.model.relationship.ServiceWithDataSets
+import com.example.finalprojectapp.ui.dashboard.DashboardViewModel
 
 @Dao
 interface ServiceDAO {
@@ -17,6 +18,11 @@ interface ServiceDAO {
     @Transaction
     @Query("select s.name serviceName,d.dataSetName dataSetName from  dataSet_ d ,service_ s,credentials_ c where :credentialID=c.credentialsId and d.serviceId = s.serviceId and d.dataSetId= c.credentialDataSetId " )
     suspend fun findServiceAndDataSetsAndCredentials(credentialID: Long): List<LayoutDashBoardRepeatedPassword>
+
+
+
+    @Query("select s.name serviceName, d.dataSetName dataSetName,c.innerHashValue hash from  dataSet_ d ,service_ s,credentials_ c where s.serviceId=d.serviceId and d.dataSetId= c.credentialDataSetId and  c.hint like '%Password%' or '%password%'" )
+    fun checkForRepeatedPassword(): LiveData<List<DashboardViewModel.ServiceNameAndDataSet?>>
 
     @Query("select count(*) from  service_ ")
     fun publicGetNumOfServices():LiveData<Int>

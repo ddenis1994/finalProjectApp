@@ -46,6 +46,8 @@ class ServiceRepository @Inject constructor(
     suspend fun findServiceAndDataSet(dataSetId: Long) =
         serviceRepositoryLocal.findServiceAndDataSet(dataSetId)
 
+    fun checkForRepeatedPassword()=serviceRepositoryLocal.checkForRepeatedPassword()
+
 
     suspend fun deleteDataSet(dataSetId: Long) {
         val serviceName = serviceRepositoryLocal.publicGetServiceNameByDataSetID(dataSetId)

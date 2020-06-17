@@ -4,7 +4,7 @@ import android.app.Application
 import com.example.finalprojectapp.di.DaggerMainComponent
 import com.example.finalprojectapp.di.MainComponent
 
-class MainApplication: Application() {
+open class MainApplication: Application() {
 
     val appComponent: MainComponent by lazy {
         initializeComponent()
@@ -17,11 +17,6 @@ class MainApplication: Application() {
     }
 
 
-//    override fun onCreate() {
-//        super.onCreate()
-//        appComponent=DaggerMainComponent.builder().context(this).build()
-//
-//    }
     fun getComponent(): MainComponent {
         return appComponent
     }

@@ -3,7 +3,6 @@ package com.example.finalprojectapp.ui.credentials
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -14,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.finalprojectapp.MainApplication
 import com.example.finalprojectapp.R
 import com.example.finalprojectapp.adapters.ServiceAdapter
@@ -35,14 +35,17 @@ class CredentialsFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
+    private lateinit var refreshLayout: SwipeRefreshLayout
+
     private val credentialsViewModel by viewModels<CredentialsViewModel> {
-        viewModelFactory }
+        viewModelFactory
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        (requireActivity().application as MainApplication).appComponent.credentialViewModelComponent().create().inject(this)
+        (requireActivity().application as MainApplication).appComponent.credentialViewModelComponent()
+            .create().inject(this)
     }
-
 
 
     override fun onCreateView(
@@ -51,26 +54,32 @@ class CredentialsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_cre, container, false)
+        refreshLayout = root.swipeRefreshLayout
         credentialsViewModel.allPasswords.observe(viewLifecycleOwner, Observer {
-            root.progressBarForLoading.visibility=View.GONE
-            root.textViewForLoading.visibility=View.GONE
-            viewAdapter = ServiceAdapter(it,credentialsViewModel,viewLifecycleOwner,this)
+            root.progressBarForLoading.visibility = View.GONE
+            root.textViewForLoading.visibility = View.GONE
+            viewAdapter = ServiceAdapter(it, credentialsViewModel, viewLifecycleOwner, this)
             recyclerView.apply {
-                adapter=viewAdapter
+                adapter = viewAdapter
             }
         })
-        this.lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                credentialsViewModel.sync()
+
+        refreshLayout.setOnRefreshListener {
+            this.lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    refreshLayout.isRefreshing=true
+                    credentialsViewModel.sync()
+                    refreshLayout.isRefreshing=false
+                }
             }
+
         }
+
         return root
     }
 
     override fun onStart() {
         super.onStart()
-
-
         setHasOptionsMenu(true)
         viewManager = LinearLayoutManager(context)
         recyclerView = list_recycle_view_services.apply {
@@ -82,25 +91,25 @@ class CredentialsFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode==2) {
-            when (resultCode ){
-                AppCompatActivity.RESULT_OK-> if (data != null) {
-                    deleteDataSet(data.getIntExtra("target",-1).toLong())
+        if (requestCode == 2) {
+            when (resultCode) {
+                AppCompatActivity.RESULT_OK -> if (data != null) {
+                    deleteDataSet(data.getIntExtra("target", -1).toLong())
                 }
             }
         }
 
     }
-    private fun deleteDataSet(dataSetId:Long) {
+
+    private fun deleteDataSet(dataSetId: Long) {
         viewLifecycleOwner.lifecycleScope.launch {
-            withContext(Dispatchers.IO){
-
+            withContext(Dispatchers.IO) {
                 credentialsViewModel.deleteDataSet(dataSetId)
-
             }
         }
 
     }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.action_bar_menu, menu)
         this.findNavController()
@@ -108,9 +117,12 @@ class CredentialsFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.navigation_settings-> {
+        when (item.itemId) {
+            R.id.navigation_settings -> {
                 findNavController().navigate(R.id.action_global_settingsFragment)
+            }
+            R.id.menu_refresh -> {
+               refreshLayout.isRefreshing=true
             }
         }
 
