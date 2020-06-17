@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.ServerTimestamp
 
-@Entity(tableName = "credentials_",indices = [Index(value = ["innerHashValue"],unique = true)])
+@Entity(tableName = "credentials_")
 data class Credentials (
     var hint:List<String> = mutableListOf<String>(),
     var data:String="",

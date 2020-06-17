@@ -56,15 +56,13 @@ class DataSetRepository @Inject constructor(
     private suspend fun privateInsertDataSet(dataSet: DataSet): Pair<Long, List<Long>?> {
         val target =
             localCryptography.encrypt(dataSet) ?: return Pair(-1L, null)
-        val result = dataSetDAO.privateInsertDataSet(target)[0]
+        var result = dataSetDAO.privateInsertDataSet(target)[0]
         if (result == -1L) {
-            val oldResult = dataSetDAO.getDataSetByHash(target.hashData)
-            return if (oldResult?.credentials!!.isNotEmpty())
-                Pair(
-                    oldResult.dataSet.dataSetId,
-                    oldResult.credentials.map { cre -> cre.credentialsId })
-            else
-                Pair(oldResult.dataSet.dataSetId, null)
+            val oldResult =
+                target.serviceId?.let { dataSetDAO.getDataSetByNameAndServiceID(it,target.dataSetName) }
+            oldResult?.dataSet?.let { privateDeleteDataSet(it) }
+            result = dataSetDAO.privateInsertDataSet(target)[0]
+            if (result== -1L) return Pair(result,null)
         }
         val newCredentials = target.credentials?.map { credential ->
             credential.copy(credentialDataSetId = result)

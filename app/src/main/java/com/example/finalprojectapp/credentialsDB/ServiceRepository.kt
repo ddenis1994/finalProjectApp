@@ -2,7 +2,6 @@ package com.example.finalprojectapp.credentialsDB
 
 import android.service.autofill.SaveCallback
 import androidx.lifecycle.LiveData
-import androidx.room.Transaction
 import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.data.model.Service
 import com.example.finalprojectapp.data.model.adpters.LayoutDataSetView
@@ -16,7 +15,6 @@ class ServiceRepository @Inject constructor(
 ) {
 
 
-    @Transaction
     suspend fun nukeALl() = serviceRepositoryLocal.nukeALl()
 
     suspend fun addService(
@@ -24,11 +22,12 @@ class ServiceRepository @Inject constructor(
         callback: SaveCallback
     ) {
             val localInsert=scope.async {
-                serviceRepositoryLocal.publicInsertService(service)
+                serviceRepositoryLocal.publicInsertService(service,callback)
             }
             localInsert.await().let {
                 if (it != null) {
-                    serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(it, callback)
+                    yield()
+                    serviceRepositoryRemote.addDataToRemoteWithSaveCallBack(it)
                 }
             }
     }
@@ -46,23 +45,6 @@ class ServiceRepository @Inject constructor(
 
     suspend fun findServiceAndDataSet(dataSetId: Long) =
         serviceRepositoryLocal.findServiceAndDataSet(dataSetId)
-
-//
-//    fun deleteCredential(
-//        serviceName: String,
-//        dataSetId: Long,
-//        credentialID: Long
-//    ) {
-//        scope.launch {
-//            val result=this.async { serviceRepositoryLocal.deleteLocalCredential(serviceName,credentialID,dataSetId) }
-//            val dataSet=this.async { serviceRepositoryLocal.getDataSetByID(dataSetId) }
-//            dataSet.await()?.let {
-//                serviceRepositoryRemote.deleteRemoteCredential(result.await(),
-//                    it
-//                )
-//            }
-//        }
-//    }
 
 
     suspend fun deleteDataSet(dataSetId: Long) {

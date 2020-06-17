@@ -1,5 +1,6 @@
 package com.example.finalprojectapp.credentialsDB
 
+import android.service.autofill.SaveCallback
 import androidx.lifecycle.LiveData
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.DataSet
@@ -20,7 +21,10 @@ class ServiceRepositoryLocal @Inject constructor(
     }
 
 
-    suspend fun publicInsertService(service: Service): Service? {
+    suspend fun publicInsertService(
+        service: Service,
+        callback: SaveCallback?
+    ): Service? {
         val localService =
             getServiceByName(service.name)
         val target = localCryptography.encrypt(service) ?: return null
@@ -30,6 +34,7 @@ class ServiceRepositoryLocal @Inject constructor(
         } else {
             insertNewService(target)
         }
+        callback?.onSuccess()
         return localCryptography.decryption(temp)
     }
 

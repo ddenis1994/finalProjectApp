@@ -1,6 +1,5 @@
 package com.example.finalprojectapp.credentialsDB
 
-import android.service.autofill.SaveCallback
 import com.example.finalprojectapp.crypto.RemoteCryptography
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Notification
@@ -25,8 +24,7 @@ class ServiceRepositoryRemote @Inject constructor(
 
 
     internal fun addDataToRemoteWithSaveCallBack(
-        service: Service,
-        callback: SaveCallback
+        service: Service
     ) {
         val toUpload = remoteCryptography.encrypt(service)
         if (user != null) {
@@ -41,7 +39,6 @@ class ServiceRepositoryRemote @Inject constructor(
                                 .collection("dataSets").document(dataSetHash)
                                 .set(dataSet)
                                 .addOnSuccessListener {
-                                    callback.onSuccess()
                                     notificationRepository.insert(
                                         Notification(
                                             0, "Inserted Credentials", service.name,
@@ -106,7 +103,7 @@ class ServiceRepositoryRemote @Inject constructor(
                             coroutineScope.launch {
                                 val target = remoteCryptography.decryption(service)
                                 if (target != null) {
-                                    serviceRepositoryLocal.publicInsertService(target)
+                                    serviceRepositoryLocal.publicInsertService(target, null)
                                 }
                             }
 
@@ -138,7 +135,10 @@ class ServiceRepositoryRemote @Inject constructor(
                                         remoteCryptography.decryption(service.copy(dataSets = dataSetsList))
                                     this.launch {
                                         if (target != null) {
-                                            serviceRepositoryLocal.publicInsertService(target)
+                                            serviceRepositoryLocal.publicInsertService(
+                                                target,
+                                                null
+                                            )
                                         }
                                     }
                                 }

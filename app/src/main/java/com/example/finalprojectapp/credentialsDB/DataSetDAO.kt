@@ -44,4 +44,8 @@ interface DataSetDAO {
     @Query("SELECT * FROM dataSet_")
     fun publicGetAllDataSet(): List<DataSet>
 
+    @Transaction
+    @Query("SELECT * FROM dataSet_ where serviceId=:serviceId and dataSetName like :dataSetName")
+    fun getDataSetByNameAndServiceID(serviceId: Long, dataSetName: String): DataSetWithCredentials?
+
 }

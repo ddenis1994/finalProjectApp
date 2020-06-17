@@ -6,7 +6,9 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.firebase.firestore.Exclude
 
-@Entity(tableName = "dataSet_",indices = [Index(value = ["hashData"])])
+@Entity(tableName = "dataSet_",indices = [Index(value = ["dataSetName", "serviceId"],
+    unique = true)]
+)
 data class DataSet (
     @Ignore
     var credentials: List<Credentials>?=null,

@@ -54,7 +54,7 @@ class ResponseAdapter @Inject constructor(
             withLocalData(service, responseBuilder)
         else
             withNoData(responseBuilder, dataSetAdapter.packageName)
-
+        yield()
         if (clientViewMetadata.isNotEmpty() && !clientViewMetadata.isNullOrEmpty()) {
             val saveInfo = SaveInfo.Builder(
                 clientViewMetadata.map { it.autofillType }
@@ -62,7 +62,6 @@ class ResponseAdapter @Inject constructor(
                 clientViewMetadata.map { it.autofillId }.toTypedArray()
             ).build()
             responseBuilder.setSaveInfo(saveInfo)
-            yield()
             callback.onSuccess(responseBuilder.build())
         } else
             callback.onFailure("cannot find hints")
