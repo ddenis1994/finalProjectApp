@@ -96,10 +96,6 @@ class ServiceRepository @Inject constructor(
         serviceRepositoryLocal.getServiceByName(string)
 
 
-    suspend fun publicGetAllServiceSuspend(): List<Service> =
-        serviceRepositoryLocal.publicGetAllServiceSuspand()
-
-
     fun getDataSetById(dataSetId: Long): LiveData<List<LayoutDataSetView>> =
         serviceRepositoryLocal.getDataSetById(dataSetId)
 

@@ -5,6 +5,7 @@ import com.example.finalprojectapp.data.model.Credentials
 import com.example.finalprojectapp.data.model.DataSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import javax.inject.Inject
 
 class DataSetRepository @Inject constructor(
@@ -47,36 +48,33 @@ class DataSetRepository @Inject constructor(
     }
 
 
-    suspend fun publicInsertDataSet(vararg dataSets: DataSet): List<Pair<Long, List<Long>?>>? =
-        withContext(Dispatchers.IO) {
-            return@withContext dataSets.map { privateInsertDataSet(it) }
-        }
+    suspend fun publicInsertDataSet(vararg dataSets: DataSet): List<Pair<Long, List<Long>?>>? {
+        return dataSets.map { privateInsertDataSet(it) }.toList()
+    }
 
 
     private suspend fun privateInsertDataSet(dataSet: DataSet): Pair<Long, List<Long>?> {
         val target =
-            localCryptography.encrypt(dataSet.copy()) ?: return Pair(-1L, null)
-        target.let { encryptedDataSet ->
-            val result = dataSetDAO.privateInsertDataSet(encryptedDataSet)[0]
-            if (result == -1L) {
-                val oldResult = dataSetDAO.getDataSetByHash(encryptedDataSet.hashData)
-                return if (oldResult?.credentials!!.isNotEmpty())
-                    Pair(
-                        oldResult.dataSet.dataSetId,
-                        oldResult.credentials.map { cre -> cre.credentialsId })
-                else
-                    Pair(oldResult.dataSet.dataSetId, null)
-            }
-            val newCredentials = encryptedDataSet.credentials?.map { credential ->
-                credential.copy(credentialDataSetId = result)
-            }?.toTypedArray()
-            val credentialsList = newCredentials?.let { credential ->
-                credentialRepository.insertCredentials(
-                    *credential
-                )
-            }
-            return Pair(result, credentialsList)
+            localCryptography.encrypt(dataSet) ?: return Pair(-1L, null)
+        val result = dataSetDAO.privateInsertDataSet(target)[0]
+        if (result == -1L) {
+            val oldResult = dataSetDAO.getDataSetByHash(target.hashData)
+            return if (oldResult?.credentials!!.isNotEmpty())
+                Pair(
+                    oldResult.dataSet.dataSetId,
+                    oldResult.credentials.map { cre -> cre.credentialsId })
+            else
+                Pair(oldResult.dataSet.dataSetId, null)
         }
+        val newCredentials = target.credentials?.map { credential ->
+            credential.copy(credentialDataSetId = result)
+        }?.toTypedArray()
+        val credentialsList = newCredentials?.let { credential ->
+            credentialRepository.insertCredentials(
+                *credential
+            )
+        }
+        return Pair(result, credentialsList)
     }
 
 

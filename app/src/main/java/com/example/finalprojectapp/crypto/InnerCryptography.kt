@@ -11,7 +11,7 @@ open class InnerCryptography @Inject constructor() {
 
     internal fun encryptDataSet(dataSet: DataSet?): DataSet? {
         var newDataSet = dataSet ?: return null
-        if (newDataSet.hashData.isNullOrEmpty())
+        if (newDataSet.hashData.isEmpty())
             newDataSet = hashBuilder.makeHash(newDataSet) as DataSet
 
         if (newDataSet.credentials == null)

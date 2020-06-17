@@ -15,9 +15,8 @@ class CredentialRepository @Inject constructor(
      internal fun deleteCredential(credentials: Credentials) = credentialsDao.deleteCredential(credentials)
 
 
-    suspend fun insertCredentials(vararg listCredentials: Credentials): List<Long> =
-        withContext(Dispatchers.IO) {
-            return@withContext listCredentials.map { insertSingleCredential(it) }
+    suspend fun insertCredentials(vararg listCredentials: Credentials): List<Long> {
+            return listCredentials.map { insertSingleCredential(it) }.toList()
         }
 
 

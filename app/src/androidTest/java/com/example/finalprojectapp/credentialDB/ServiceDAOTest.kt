@@ -73,7 +73,7 @@ class ServiceDAOTest {
     fun deleteService() = runBlocking {
         val result = serviceDao.privateInsertService(service.copy(hash = "toDelete"))
         assertEquals(2, serviceDao.privateGetAllService().size)
-        serviceDao.deleteService(Service().copy(serviceId = result[0]))
+        serviceDao.deleteService(Service().copy(serviceId = result))
         assertEquals(1, serviceDao.privateGetAllService().size)
     }
 
