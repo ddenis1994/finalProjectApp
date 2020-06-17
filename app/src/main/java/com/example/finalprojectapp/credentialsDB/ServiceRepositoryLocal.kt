@@ -1,7 +1,6 @@
 package com.example.finalprojectapp.credentialsDB
 
 import androidx.lifecycle.LiveData
-import com.example.finalprojectapp.crypto.HashBuilder
 import com.example.finalprojectapp.crypto.LocalCryptography
 import com.example.finalprojectapp.data.model.DataSet
 import com.example.finalprojectapp.data.model.Service
@@ -36,7 +35,7 @@ class ServiceRepositoryLocal @Inject constructor(
 
     suspend fun updateExistedService(service: Service): Service? {
         var target: Service = service
-        val insertResult=target.dataSets?.map { dataSetRepository.publicInsertDataSet(it.copy(serviceId = target.serviceId)) }?.toList()
+        target.dataSets?.map { dataSetRepository.publicInsertDataSet(it.copy(serviceId = target.serviceId)) }
         target = getServiceByName(target.name)!!
         serviceDAO.updateService(target)
         return target
@@ -44,7 +43,7 @@ class ServiceRepositoryLocal @Inject constructor(
 
     private suspend fun insertNewService(service: Service):Service?{
         val result = serviceDAO.privateInsertService(service)
-        val insertResult =service.dataSets?.map { dataSetRepository.publicInsertDataSet(it.copy(serviceId = result)) }
+        service.dataSets?.map { dataSetRepository.publicInsertDataSet(it.copy(serviceId = result)) }
         return getServiceByName(service.name)!!
     }
 
@@ -74,14 +73,13 @@ class ServiceRepositoryLocal @Inject constructor(
             return servicesList
         }
 
-        // TODO: 16/06/2020 return private in production
         suspend fun getServiceByName(string: String): Service? {
             val service = serviceDAO.getServiceByName(string) ?: return null
             service.dataSets.forEach {
                 val cre = dataSetRepository.getDataSetByID(it.dataSetId)?.credentials
                 it.credentials = cre
             }
-            return service.service.copy(dataSets = service.dataSets)
+            return localCryptography.decryption(service.service.copy(dataSets = service.dataSets))
         }
 
         suspend fun deleteFullServiceByID(service: Service) {

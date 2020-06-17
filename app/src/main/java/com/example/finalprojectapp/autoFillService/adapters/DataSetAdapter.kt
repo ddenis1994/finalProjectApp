@@ -31,7 +31,7 @@ class DataSetAdapter @Inject constructor(
 
     suspend fun getDataAsync(): Deferred<Service?> {
         return coroutineScope.async {
-            packageName?.let { localServiceDAO.publicGetServiceByName(it) }
+            packageName.let { localServiceDAO.publicGetServiceByName(it) }
         }
     }
 
